@@ -78,6 +78,8 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
         recuperaProdutos();
         //configRv();
         binding.floatingActionButton.setOnClickListener(view -> {
+            DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
+            categoria.setId(databaseReference.push().getKey());
             showDialog(false);
         });
         binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -132,25 +134,6 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
 
 
         configRvProdutos(filtroCategoriaList);
-    }
-
-    private void configRv() {
-        binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        binding.recycler.setHasFixedSize(true);
-        listaCategoriaAdapter = new ListaCategoriaAdapter(R.layout.item_categoria_vertical, categoriaList, this, false, this, this);
-        binding.recycler.setAdapter(listaCategoriaAdapter);
-
-        binding.recycler.setListener(new SwipeLeftRightCallback.Listener() {
-            @Override
-            public void onSwipedLeft(int position) {
-
-            }
-
-            @Override
-            public void onSwipedRight(int position) {
-                showDialogDelete(categoriaList.get(position));
-            }
-        });
     }
 
     private void configRvProdutos(List<Categoria> categoriaList) {
@@ -261,7 +244,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
         categoriaBinding.btnSalvar.setOnClickListener(v -> {
 
 
-            if (!editar) {
+
                 String nomeCategoria = categoriaBinding.edtCategoria.getText().toString().trim();
                 if (!nomeCategoria.isEmpty()) {
 
@@ -272,8 +255,14 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
                     ocultaTeclado();
                     categoriaBinding.progressBar.setVisibility(View.VISIBLE);
                     if (resultUri != null) {
-                        salvar(categoria);
-                    } else {
+                        Toast.makeText(getApplicationContext(), "salvar Imagemdados", Toast.LENGTH_SHORT).show();
+                        salvarImagemDados(categoria);
+                    } else if (resultUri == null & categoria.getUrlImagem() != null){
+
+                            salvarDados(categoria);
+                        Toast.makeText(getApplicationContext(), "salvar dados", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
                         categoriaBinding.progressBar.setVisibility(View.GONE);
                         Toast.makeText(getApplicationContext(), "Escolha uma imagem para a categoria.", Toast.LENGTH_SHORT).show();
                     }
@@ -281,7 +270,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
                 } else {
                     categoriaBinding.edtCategoria.setError("Informação obrigatória.");
                 }
-            }
+
 
         });
 
@@ -296,11 +285,12 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
 
     }
 
-    //---------------------------------------------------- SALVAR -----------------------------------------------------------------
-    public void salvar(Categoria categoria) {
+    //---------------------------------------------------- SALVAR IMAGEM E DADOS-----------------------------------------------------------------
+    public void salvarImagemDados(Categoria categoria) {
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
-        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
-        categoria.setId(databaseReference.push().getKey());
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("categorias").child(categoria.getId());
         StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("empresas")
                 .child(caminho).child("imagens").child("categorias").child(categoria.getId());
 
@@ -329,28 +319,18 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
 
                         UploadTask uploadTask = storageReferencere.putStream(inputStream);
 
-                        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {// teste
-
-                            @Override
-                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-
-                                return storageReferencere.getDownloadUrl();
-                            }
-
-
-                        }).addOnCompleteListener(task -> {
+                        uploadTask.continueWithTask(task -> storageReferencere.getDownloadUrl()).addOnCompleteListener(task -> {
 
                             if (task.isSuccessful()) {
                                 Uri uri = task.getResult();
                                 categoria.setUrlImagem(uri.toString());
-                                databaseReference.child("empresas")
-                                        .child(caminho)
-                                        .child("categorias").child(categoria.getId()).setValue(categoria).addOnCompleteListener(task1 -> {
+                                databaseReference.setValue(categoria).addOnCompleteListener(task1 -> {
 
 
                                     if (task1.isSuccessful()) {
 
                                         categoriaBinding.imagemCategoria.setImageURI(resultUri);
+                                        resultUri = null;
                                         dialog.dismiss();
 
 
@@ -376,6 +356,28 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
 
     }
 
+    private void salvarDados(Categoria categoria){
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("categorias").child(categoria.getId());
+        databaseReference.setValue(categoria).addOnCompleteListener(task1 -> {
+
+
+            if (task1.isSuccessful()) {
+
+                categoriaBinding.imagemCategoria.setImageURI(resultUri);
+                dialog.dismiss();
+
+
+            } else {
+
+                Toast.makeText(getApplicationContext(), "Erro ao cadastrar", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+
     //---------------------------------------------------- RECORTE DE IMAGEM -----------------------------------------------------------------
     private void chamarImagens() {
         CropImage.activity() // chama intenção de busca a imagem
@@ -391,7 +393,6 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
             if (resultCode == RESULT_OK) {
                 resultUri = result.getUri();
                 categoriaBinding.imagemCategoria.setImageURI(resultUri);
-                // binding.imageFake.setVisibility(View.GONE);
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
@@ -408,10 +409,8 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
 
     //---------------------------------------------------- INTERFACES DE CLICKS -----------------------------------------------------------------
     public void onClick(Categoria categoria) {
-        //  Intent intent = new Intent(getContext(), ExibirVolumeActivity.class);
-        //  intent.putExtra("numero", produto);
-        // startActivity(intent);
-        Toast.makeText(getApplicationContext(), categoria.getNome(), Toast.LENGTH_SHORT).show();
+        this.categoria = categoria;
+      showDialog(true );
 
 
     }
