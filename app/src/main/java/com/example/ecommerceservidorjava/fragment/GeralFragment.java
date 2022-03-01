@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 
+import com.example.ecommerceservidorjava.activity.ListaCategoriaActivity;
 import com.example.ecommerceservidorjava.activity.ListaUsuarioActivity;
 import com.example.ecommerceservidorjava.activity.ListaProdutoActivity;
 import com.example.ecommerceservidorjava.databinding.FragmentGeralBinding;
@@ -54,8 +55,8 @@ private FragmentGeralBinding binding;
         });
 
         binding.cardCategoria.setOnClickListener(view -> {
-        String nome = FirebaseHelper.getAuth().getCurrentUser().getEmail();
-            Toast.makeText(getContext(), nome, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), ListaCategoriaActivity.class);
+            startActivity(intent);
 
         });
     }

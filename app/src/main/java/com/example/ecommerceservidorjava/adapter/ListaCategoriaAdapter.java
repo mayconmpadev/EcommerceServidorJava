@@ -10,8 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ItemCategoriaVerticalBinding;
-import com.example.ecommerceservidorjava.databinding.ItemListaUsuarioBinding;
-import com.example.ecommerceservidorjava.model.Usuario;
+import com.example.ecommerceservidorjava.model.Categoria;
 
 import java.util.List;
 
@@ -19,14 +18,14 @@ import java.util.List;
 public class ListaCategoriaAdapter extends RecyclerView.Adapter<ListaCategoriaAdapter.MyViewHolder> {
 
     private final int layout;
-    private final List<Usuario> categoriaList;
+    private final List<Categoria> categoriaList;
     private final Context context;
     private final boolean favorito;
 
     private final OnClickLister onClickLister;
     private final OnLongClickLister onLongClickLister;
 
-    public ListaCategoriaAdapter(int layout, List<Usuario> categoriaList, Context context, boolean favorito, OnClickLister onClickLister, OnLongClickLister onLongClickLister) {
+    public ListaCategoriaAdapter(int layout, List<Categoria> categoriaList, Context context, boolean favorito, OnClickLister onClickLister, OnLongClickLister onLongClickLister) {
         this.layout = layout;
         this.categoriaList = categoriaList;
         this.context = context;
@@ -47,16 +46,15 @@ public class ListaCategoriaAdapter extends RecyclerView.Adapter<ListaCategoriaAd
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Usuario usuario = categoriaList.get(position);
+        Categoria categoria = categoriaList.get(position);
 
-        holder.binding.nomeCategoria.setText(usuario.getNome().substring(0, 1).toUpperCase().concat(usuario.getNome().substring(1)));
-        Glide.with(context).load(usuario.getFoto()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imageView);
+        holder.binding.nomeCategoria.setText(categoria.getNome().substring(0, 1).toUpperCase().concat(categoria.getNome().substring(1)));
+        Glide.with(context).load(categoria.getUrlImagem()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imagemCategoria);
 
 
-
-        holder.binding.getRoot().setOnClickListener(v -> onClickLister.onClick(usuario));
+        holder.binding.getRoot().setOnClickListener(v -> onClickLister.onClick(categoria));
         holder.itemView.setOnLongClickListener(v -> {
-            onLongClickLister.onLongClick(usuario);
+            onLongClickLister.onLongClick(categoria);
             return true;
         });
     }
@@ -79,15 +77,15 @@ public class ListaCategoriaAdapter extends RecyclerView.Adapter<ListaCategoriaAd
     }
 
     public interface OnClickLister {
-        void onClick(Usuario usuario);
+        void onClick(Categoria categoria);
 
-        void onLongClick(Usuario usuario);
+        void onLongClick(Categoria categoria);
 
     }
 
     public interface OnLongClickLister {
 
-        void onLongClick(Usuario usuario);
+        void onLongClick(Categoria categoria);
 
     }
 

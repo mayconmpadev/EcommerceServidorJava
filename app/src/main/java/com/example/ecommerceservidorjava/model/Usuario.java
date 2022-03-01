@@ -1,7 +1,5 @@
 package com.example.ecommerceservidorjava.model;
 
-import com.example.ecommerceservidorjava.util.FirebaseHelper;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
@@ -13,7 +11,7 @@ import java.io.Serializable;
 
         private String nome;
         private String email;
-        private String foto;
+        private String urlImagem;
         private String senha;
         private String telefone;
         private String perfil;
@@ -54,12 +52,12 @@ import java.io.Serializable;
             this.email = email;
         }
 
-        public String getFoto() {
-            return foto;
+        public String getUrlImagem() {
+            return urlImagem;
         }
 
-        public void setFoto(String foto) {
-            this.foto = foto;
+        public void setUrlImagem(String urlImagem) {
+            this.urlImagem = urlImagem;
         }
         @Exclude
         public String getSenha() {

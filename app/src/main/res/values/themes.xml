@@ -75,6 +75,15 @@
         <item name="colorControlNormal">@color/color_verde</item>
     </style>
 
+    <style name="CustomAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/bg_dialog</item>
+        <item name="android:windowMinWidthMinor">80%</item>
+    </style>
+
+    <style name="CustomAlertDialog2" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/bg_dialog</item>
+    </style>
+
     <style name="Search_View_Theme">
         <item name="colorAccent">#FFD7BB</item>
         <item name="colorControlNormal">#FFD7BB</item>

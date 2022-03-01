@@ -62,5 +62,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/textVazio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sua lista esta vazia"
+        android:textSize="18sp"
+        style="@style/TextView"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/recycler"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/searchView" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

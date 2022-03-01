@@ -30,11 +30,9 @@ import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.example.ecommerceservidorjava.util.Util;
 import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -137,10 +135,11 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
     //---------------------------------------------------- SALVAR -----------------------------------------------------------------
     public void salvar(Usuario usuario) {
-        StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("imagens").child("usuarios").child(usuario.getId());
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("empresas").child(caminho).child("imagens").child("usuarios").child(usuario.getId());
 
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
-                .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                .child(caminho)
                 .child("usuarios").child(usuario.getId());
 
         Glide.with(this).asBitmap().load(resultUri).apply(new RequestOptions().override(1024, 768))
@@ -180,7 +179,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
                             if (task.isSuccessful()) {
                                 Uri uri = task.getResult();
-                                usuario.setFoto(uri.toString());
+                                usuario.setUrlImagem(uri.toString());
                                 databaseReference.setValue(usuario).addOnCompleteListener(task1 -> {
 
 

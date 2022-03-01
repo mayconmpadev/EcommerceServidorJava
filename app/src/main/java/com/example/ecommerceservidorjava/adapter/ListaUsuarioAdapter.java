@@ -51,7 +51,7 @@ public class ListaUsuarioAdapter extends RecyclerView.Adapter<ListaUsuarioAdapte
         holder.binding.textNome.setText(usuario.getNome().substring(0, 1).toUpperCase().concat(usuario.getNome().substring(1)));
         holder.binding.textEmeil.setText(usuario.getEmail());
         holder.binding.textPerfil.setText(usuario.getPerfil());
-        Glide.with(context).load(usuario.getFoto()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imgFoto);
+        Glide.with(context).load(usuario.getUrlImagem()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imgFoto);
         if (usuario.isStatus()) {
             holder.binding.textStatus.setText("Ativo");
         } else {

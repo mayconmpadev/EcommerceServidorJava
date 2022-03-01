@@ -11,9 +11,9 @@ public class Produto implements Serializable {
     private String status;
     private String unidade;
 
-    private String caminhoImagem1;
-    private String caminhoImagem2;
-    private String caminhoImagem3;
+    private String urlImagem1;
+    private String urlImagem2;
+    private String urlinhoImagem3;
     private String modelo;
 
     private String quantidadeEtoque;

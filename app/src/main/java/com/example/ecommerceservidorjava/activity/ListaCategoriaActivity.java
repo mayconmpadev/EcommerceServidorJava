@@ -1,40 +1,74 @@
 package com.example.ecommerceservidorjava.activity;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.Toast;
-
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.example.ecommerceservidorjava.R;
-import com.example.ecommerceservidorjava.adapter.ListaUsuarioAdapter;
+import com.example.ecommerceservidorjava.adapter.ListaCategoriaAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaCategoriaBinding;
-import com.example.ecommerceservidorjava.databinding.ActivityListaUsuarioBinding;
-import com.example.ecommerceservidorjava.model.Usuario;
+import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
+import com.example.ecommerceservidorjava.databinding.DialogFormCategoriaBinding;
+import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
+import com.tsuryo.swipeablerv.SwipeLeftRightCallback;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ListaCategoriaActivity extends AppCompatActivity implements ListaUsuarioAdapter.OnClickLister, ListaUsuarioAdapter.OnLongClickLister {
-    ActivityListaCategoriaBinding binding;
-    private final List<Usuario> usuarioList = new ArrayList<>();
-    List<Usuario> filtroProdutoNomeList = new ArrayList<>();
+public class ListaCategoriaActivity extends AppCompatActivity implements ListaCategoriaAdapter.OnClickLister, ListaCategoriaAdapter.OnLongClickLister {
+    private ListaCategoriaAdapter listaCategoriaAdapter;
+    private ActivityListaCategoriaBinding binding;
+    private final List<Categoria> categoriaList = new ArrayList<>();
+    private List<Categoria> filtroCategoriaList = new ArrayList<>();
+    private DialogFormCategoriaBinding categoriaBinding;
+    private AlertDialog dialog;
+    private Categoria categoria;
+    private Uri resultUri;
+    private SPM spm = new SPM(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +76,9 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaUs
         setContentView(binding.getRoot());
         configSearchView();
         recuperaProdutos();
-        binding.floatingActionButton.setOnClickListener(view ->{
-            Intent intent = new Intent(getApplicationContext(), CadastroUsuarioActivity.class);
-            startActivity(intent);
+        //configRv();
+        binding.floatingActionButton.setOnClickListener(view -> {
+            showDialog(false);
         });
         binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -52,12 +86,13 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaUs
                 super.onScrolled(recyclerView, dx, dy);
                 if (dy > 0 && binding.floatingActionButton.getVisibility() == View.VISIBLE) {
                     binding.floatingActionButton.hide();
-                } else if (dy < 0 && binding.floatingActionButton.getVisibility() !=View.VISIBLE) {
+                } else if (dy < 0 && binding.floatingActionButton.getVisibility() != View.VISIBLE) {
                     binding.floatingActionButton.show();
                 }
             }
         });
     }
+
     private void configSearchView() {
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -79,8 +114,8 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaUs
             edtSerachView.setText("");
             edtSerachView.clearFocus();
             ocultaTeclado();
-            filtroProdutoNomeList.clear();
-            configRvProdutos(usuarioList);
+            filtroCategoriaList.clear();
+            configRvProdutos(categoriaList);
         });
 
     }
@@ -89,40 +124,77 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaUs
     private void filtraProdutoNome(String pesquisa) {
 
 
-        for (Usuario usuario : usuarioList) {
-            if (usuario.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
-                filtroProdutoNomeList.add(usuario);
+        for (Categoria categoria : categoriaList) {
+            if (categoria.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+                filtroCategoriaList.add(categoria);
             }
         }
 
 
-        configRvProdutos(filtroProdutoNomeList);
+        configRvProdutos(filtroCategoriaList);
     }
 
-    private void configRvProdutos(List<Usuario> usuarioList) {
+    private void configRv() {
         binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         binding.recycler.setHasFixedSize(true);
-        ListaUsuarioAdapter lojaProdutoAdapter = new ListaUsuarioAdapter(R.layout.item_lista_usuario, usuarioList, getApplicationContext(), true, this, this);
-        binding.recycler.setAdapter(lojaProdutoAdapter);
+        listaCategoriaAdapter = new ListaCategoriaAdapter(R.layout.item_categoria_vertical, categoriaList, this, false, this, this);
+        binding.recycler.setAdapter(listaCategoriaAdapter);
+
+        binding.recycler.setListener(new SwipeLeftRightCallback.Listener() {
+            @Override
+            public void onSwipedLeft(int position) {
+
+            }
+
+            @Override
+            public void onSwipedRight(int position) {
+                showDialogDelete(categoriaList.get(position));
+            }
+        });
+    }
+
+    private void configRvProdutos(List<Categoria> categoriaList) {
+        binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        binding.recycler.setHasFixedSize(true);
+       listaCategoriaAdapter = new ListaCategoriaAdapter(R.layout.item_lista_usuario, categoriaList, getApplicationContext(), true, this, this);
+        binding.recycler.setAdapter(listaCategoriaAdapter);
+        binding.recycler.setListener(new SwipeLeftRightCallback.Listener() {
+            @Override
+            public void onSwipedLeft(int position) {
+
+            }
+
+            @Override
+            public void onSwipedRight(int position) {
+                showDialogDelete(categoriaList.get(position));
+            }
+        });
     }
 
 
     private void recuperaProdutos() {
         SPM spm = new SPM(getApplicationContext());
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         Query produtoRef = FirebaseHelper.getDatabaseReference()
-                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO",""))).child("categoria").orderByChild("nome");
+                .child("empresas").child(caminho).child("categorias").orderByChild("nome");
         produtoRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                usuarioList.clear();
-
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    Usuario produto = ds.getValue(Usuario.class);
-                    usuarioList.add(produto);
+                categoriaList.clear();
+                if (snapshot.exists()) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        Categoria categoria = ds.getValue(Categoria.class);
+                        categoriaList.add(categoria);
+                        binding.progressBar2.setVisibility(View.GONE);
+                        binding.textVazio.setVisibility(View.GONE);
+                    }
+                    configRvProdutos(categoriaList);
+                } else {
                     binding.progressBar2.setVisibility(View.GONE);
+                    binding.textVazio.setVisibility(View.VISIBLE);
                 }
-                configRvProdutos(usuarioList);
+                listaCategoriaAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -132,27 +204,220 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaUs
         });
     }
 
+    //---------------------------------------------------- DIALOGO DE DELETAR -----------------------------------------------------------------
+    private void showDialogDelete(Categoria categoria) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                ListaCategoriaActivity.this, R.style.CustomAlertDialog2);
+
+        DialogDeleteBinding deleteBinding = DialogDeleteBinding
+                .inflate(LayoutInflater.from(ListaCategoriaActivity.this));
+
+        deleteBinding.btnFechar.setOnClickListener(v -> {
+            dialog.dismiss();
+            listaCategoriaAdapter.notifyDataSetChanged();
+            Toast.makeText(getApplicationContext(), "fechar", Toast.LENGTH_SHORT).show();
+        });
+
+        deleteBinding.textTitulo.setText("Deseja remover esta categoria ?");
+
+        deleteBinding.btnSim.setOnClickListener(v -> {
+            categoriaList.remove(categoria);
+
+            if (categoriaList.isEmpty()) {
+                binding.textVazio.setText("Nenhuma categoria cadastrada.");
+            } else {
+                binding.textVazio.setText("");
+            }
+
+            // categoria.delete();
+
+            listaCategoriaAdapter.notifyDataSetChanged();
+
+            dialog.dismiss();
+        });
+
+        builder.setView(deleteBinding.getRoot());
+
+        dialog = builder.create();
+        dialog.show();
+
+    }
+    //---------------------------------------------------- DIALO DE ADICINAR -----------------------------------------------------------------
+    private void showDialog(boolean editar) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListaCategoriaActivity.this, R.style.CustomAlertDialog);
+
+        categoriaBinding = DialogFormCategoriaBinding.inflate(LayoutInflater.from(ListaCategoriaActivity.this));
+
+        if (editar) {
+            categoriaBinding.edtCategoria.setText(categoria.getNome());
+            categoriaBinding.cbTodos.setChecked(categoria.isTodas());
+            Glide.with(getApplicationContext())
+                    .load(categoria.getUrlImagem())
+                    .into(categoriaBinding.imagemCategoria);
+        }
+
+        categoriaBinding.btnFechar.setOnClickListener(v -> dialog.dismiss());
+
+        categoriaBinding.btnSalvar.setOnClickListener(v -> {
 
 
-    // Oculta o teclado do dispotivo
+            if (!editar) {
+                String nomeCategoria = categoriaBinding.edtCategoria.getText().toString().trim();
+                if (!nomeCategoria.isEmpty()) {
+
+                    if (categoria == null) categoria = new Categoria();
+
+                    categoria.setNome(nomeCategoria);
+                    categoria.setTodas(categoriaBinding.cbTodos.isChecked());
+                    ocultaTeclado();
+                    categoriaBinding.progressBar.setVisibility(View.VISIBLE);
+                    if (resultUri != null) {
+                        salvar(categoria);
+                    } else {
+                        categoriaBinding.progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getApplicationContext(), "Escolha uma imagem para a categoria.", Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    categoriaBinding.edtCategoria.setError("Informação obrigatória.");
+                }
+            }
+
+        });
+
+        categoriaBinding.imagemCategoria.setOnClickListener(v -> {
+            chamarImagens();
+        });
+
+        builder.setView(categoriaBinding.getRoot());
+
+        dialog = builder.create();
+        dialog.show();
+
+    }
+
+    //---------------------------------------------------- SALVAR -----------------------------------------------------------------
+    public void salvar(Categoria categoria) {
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
+        categoria.setId(databaseReference.push().getKey());
+        StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("empresas")
+                .child(caminho).child("imagens").child("categorias").child(categoria.getId());
+
+
+        Glide.with(this).asBitmap().load(resultUri).apply(new RequestOptions().override(1024, 768))
+                .listener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+
+                        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+
+                        resource.compress(Bitmap.CompressFormat.JPEG, 70, bytes);
+
+                        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes.toByteArray());
+
+                        try {
+                            bytes.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        UploadTask uploadTask = storageReferencere.putStream(inputStream);
+
+                        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {// teste
+
+                            @Override
+                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+
+                                return storageReferencere.getDownloadUrl();
+                            }
+
+
+                        }).addOnCompleteListener(task -> {
+
+                            if (task.isSuccessful()) {
+                                Uri uri = task.getResult();
+                                categoria.setUrlImagem(uri.toString());
+                                databaseReference.child("empresas")
+                                        .child(caminho)
+                                        .child("categorias").child(categoria.getId()).setValue(categoria).addOnCompleteListener(task1 -> {
+
+
+                                    if (task1.isSuccessful()) {
+
+                                        categoriaBinding.imagemCategoria.setImageURI(resultUri);
+                                        dialog.dismiss();
+
+
+                                    } else {
+
+                                        storageReferencere.delete(); //apaga a imagem previamente salva no banco
+                                        Toast.makeText(getApplicationContext(), "Erro ao cadastrar", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                });
+
+
+                            } else {
+
+                                Toast.makeText(getApplicationContext(), "erro ao salvar imagem", Toast.LENGTH_SHORT).show();
+                            }
+                            categoriaBinding.progressBar.setVisibility(View.INVISIBLE);
+                        });
+
+                        return false;
+                    }
+                }).submit();
+
+    }
+
+    //---------------------------------------------------- RECORTE DE IMAGEM -----------------------------------------------------------------
+    private void chamarImagens() {
+        CropImage.activity() // chama intenção de busca a imagem
+                .setAspectRatio(1, 1)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .start(this);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                resultUri = result.getUri();
+                categoriaBinding.imagemCategoria.setImageURI(resultUri);
+                // binding.imageFake.setVisibility(View.GONE);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        }
+    }
+
+
+    //---------------------------------------------------- OCULTAR TECLADO -----------------------------------------------------------------
     private void ocultaTeclado() {
         InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(binding.searchView.getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
-
-    public void onClick(Usuario produto) {
+    //---------------------------------------------------- INTERFACES DE CLICKS -----------------------------------------------------------------
+    public void onClick(Categoria categoria) {
         //  Intent intent = new Intent(getContext(), ExibirVolumeActivity.class);
         //  intent.putExtra("numero", produto);
         // startActivity(intent);
-        Toast.makeText(getApplicationContext(), produto.getNome(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), categoria.getNome(), Toast.LENGTH_SHORT).show();
 
 
     }
 
     @Override
-    public void onLongClick(Usuario volume) {
+    public void onLongClick(Categoria categoria) {
         //   Intent intent = new Intent(getContext(), EditarVolumeActivity.class);
         // intent.putExtra("numero", volume);
         // startActivity(intent);
