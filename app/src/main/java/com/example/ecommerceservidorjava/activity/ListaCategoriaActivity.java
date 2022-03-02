@@ -1,7 +1,6 @@
 package com.example.ecommerceservidorjava.activity;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -9,10 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,8 +34,6 @@ import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -75,10 +69,12 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
         binding = ActivityListaCategoriaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         configSearchView();
+        configRvProdutos(filtroCategoriaList);
         recuperaProdutos();
         //configRv();
         binding.floatingActionButton.setOnClickListener(view -> {
             DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
+            categoria = new Categoria();
             categoria.setId(databaseReference.push().getKey());
             showDialog(false);
         });
@@ -139,7 +135,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
     private void configRvProdutos(List<Categoria> categoriaList) {
         binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         binding.recycler.setHasFixedSize(true);
-       listaCategoriaAdapter = new ListaCategoriaAdapter(R.layout.item_lista_usuario, categoriaList, getApplicationContext(), true, this, this);
+        listaCategoriaAdapter = new ListaCategoriaAdapter(R.layout.item_lista_usuario, categoriaList, getApplicationContext(), true, this, this);
         binding.recycler.setAdapter(listaCategoriaAdapter);
         binding.recycler.setListener(new SwipeLeftRightCallback.Listener() {
             @Override
@@ -198,7 +194,6 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
         deleteBinding.btnFechar.setOnClickListener(v -> {
             dialog.dismiss();
             listaCategoriaAdapter.notifyDataSetChanged();
-            Toast.makeText(getApplicationContext(), "fechar", Toast.LENGTH_SHORT).show();
         });
 
         deleteBinding.textTitulo.setText("Deseja remover esta categoria ?");
@@ -212,7 +207,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
                 binding.textVazio.setText("");
             }
 
-            // categoria.delete();
+            deletarCategoria(categoria);
 
             listaCategoriaAdapter.notifyDataSetChanged();
 
@@ -225,6 +220,20 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
         dialog.show();
 
     }
+
+    private void deletarCategoria(Categoria categoria) {
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("categorias").child(categoria.getId());
+        databaseReference.removeValue();
+
+        StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("empresas")
+                .child(caminho).child("imagens").child("categorias").child(categoria.getId());
+        storageReferencere.delete();
+
+    }
+
     //---------------------------------------------------- DIALO DE ADICINAR -----------------------------------------------------------------
     private void showDialog(boolean editar) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ListaCategoriaActivity.this, R.style.CustomAlertDialog);
@@ -244,32 +253,29 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
         categoriaBinding.btnSalvar.setOnClickListener(v -> {
 
 
+            String nomeCategoria = categoriaBinding.edtCategoria.getText().toString().trim();
+            if (!nomeCategoria.isEmpty()) {
 
-                String nomeCategoria = categoriaBinding.edtCategoria.getText().toString().trim();
-                if (!nomeCategoria.isEmpty()) {
+                if (categoria == null) categoria = new Categoria();
 
-                    if (categoria == null) categoria = new Categoria();
+                categoria.setNome(nomeCategoria);
+                categoria.setTodas(categoriaBinding.cbTodos.isChecked());
+                ocultaTeclado();
+                categoriaBinding.progressBar.setVisibility(View.VISIBLE);
+                if (resultUri != null) {
+                    salvarImagemDados(categoria);
+                } else if (resultUri == null & categoria.getUrlImagem() != null) {
 
-                    categoria.setNome(nomeCategoria);
-                    categoria.setTodas(categoriaBinding.cbTodos.isChecked());
-                    ocultaTeclado();
-                    categoriaBinding.progressBar.setVisibility(View.VISIBLE);
-                    if (resultUri != null) {
-                        Toast.makeText(getApplicationContext(), "salvar Imagemdados", Toast.LENGTH_SHORT).show();
-                        salvarImagemDados(categoria);
-                    } else if (resultUri == null & categoria.getUrlImagem() != null){
-
-                            salvarDados(categoria);
-                        Toast.makeText(getApplicationContext(), "salvar dados", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        categoriaBinding.progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getApplicationContext(), "Escolha uma imagem para a categoria.", Toast.LENGTH_SHORT).show();
-                    }
-
+                    salvarDados(categoria);
+                    Toast.makeText(getApplicationContext(), "salvar dados", Toast.LENGTH_SHORT).show();
                 } else {
-                    categoriaBinding.edtCategoria.setError("Informação obrigatória.");
+                    categoriaBinding.progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getApplicationContext(), "Escolha uma imagem para a categoria.", Toast.LENGTH_SHORT).show();
                 }
+
+            } else {
+                categoriaBinding.edtCategoria.setError("Informação obrigatória.");
+            }
 
 
         });
@@ -356,7 +362,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
 
     }
 
-    private void salvarDados(Categoria categoria){
+    private void salvarDados(Categoria categoria) {
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
@@ -410,7 +416,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
     //---------------------------------------------------- INTERFACES DE CLICKS -----------------------------------------------------------------
     public void onClick(Categoria categoria) {
         this.categoria = categoria;
-      showDialog(true );
+        showDialog(true);
 
 
     }

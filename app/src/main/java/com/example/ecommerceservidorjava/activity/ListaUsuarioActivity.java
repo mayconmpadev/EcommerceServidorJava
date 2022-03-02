@@ -142,11 +142,11 @@ public class ListaUsuarioActivity extends AppCompatActivity implements ListaUsua
     }
 
 
-    public void onClick(Usuario produto) {
-        //  Intent intent = new Intent(getContext(), ExibirVolumeActivity.class);
-        //  intent.putExtra("numero", produto);
-        // startActivity(intent);
-        Toast.makeText(getApplicationContext(), produto.getNome(), Toast.LENGTH_SHORT).show();
+    public void onClick(Usuario usuario) {
+          Intent intent = new Intent(getApplicationContext(), CadastroUsuarioActivity.class);
+         intent.putExtra("usuarioSelecionado", usuario);
+         startActivity(intent);
+
 
 
     }
