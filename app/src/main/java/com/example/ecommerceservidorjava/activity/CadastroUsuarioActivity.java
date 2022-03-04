@@ -57,6 +57,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     private void recuperarIntent() {
         usuarioSelecionado = (Usuario) getIntent().getSerializableExtra("usuarioSelecionado");
         if (usuarioSelecionado != null) {
+            binding.btnCriarConta.setText("Editar conta");
             editar = true;
             binding.edtEmail.setVisibility(View.GONE);
             binding.linearSenha.setVisibility(View.GONE);
@@ -143,8 +144,8 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
     public void validaDadosEditar() {
         String nome = binding.edtNome.getText().toString().trim();
-
-        String telefone = binding.edtTelefone.getMasked();
+        String telefone = binding.edtTelefone.getText().toString();
+        Toast.makeText(getApplicationContext(), telefone, Toast.LENGTH_SHORT).show();
 
 
         if (!nome.isEmpty()) {
@@ -159,9 +160,9 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                     usuarioSelecionado.setTelefone(telefone);
                     usuarioSelecionado.setPerfil(binding.spinner.getSelectedItem().toString());
                     usuarioSelecionado.setStatus(binding.checkbox.isChecked());
-                    if (resultUri != null){
+                    if (resultUri != null) {
                         editarDadosImagem(usuarioSelecionado);
-                    }else {
+                    } else {
                         editarDados(usuarioSelecionado);
                     }
 
@@ -381,9 +382,9 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         binding.include.ibVoltar.setOnClickListener(view -> finish());
         binding.btnLogin.setOnClickListener(view -> finish());
         binding.btnCriarConta.setOnClickListener(view -> {
-            if (editar){
+            if (editar) {
                 validaDadosEditar();
-            }else {
+            } else {
                 validaDadosSalvar();
             }
 
