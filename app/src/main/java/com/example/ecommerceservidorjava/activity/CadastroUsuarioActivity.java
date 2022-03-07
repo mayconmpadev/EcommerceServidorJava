@@ -380,7 +380,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         binding.imgConfirmaSenha.setTag("imagem2");
         binding.cardFoto.setOnClickListener(view -> chamarImagens());
         binding.include.ibVoltar.setOnClickListener(view -> finish());
-        binding.btnLogin.setOnClickListener(view -> finish());
         binding.btnCriarConta.setOnClickListener(view -> {
             if (editar) {
                 validaDadosEditar();

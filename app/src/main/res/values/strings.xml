@@ -8,4 +8,17 @@
         <item>administrador</item>
     </string-array>
 
+    <string-array name="status_produto">
+        <item>em estoque</item>
+        <item>chegara em breve</item>
+        <item>sem previsão de chegada</item>
+    </string-array>
+
+    <string-array name="unidades">
+        <item>unidade (un)</item>
+        <item>quilo (kg)</item>
+        <item>litro (lt)</item>
+        <item>metro (mt)</item>
+    </string-array>
+
 </resources>

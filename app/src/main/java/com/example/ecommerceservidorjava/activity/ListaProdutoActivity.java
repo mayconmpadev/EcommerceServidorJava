@@ -11,13 +11,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ecommerceservidorjava.R;
+import com.example.ecommerceservidorjava.adapter.ListaProdutoAdapter;
 import com.example.ecommerceservidorjava.adapter.ListaUsuarioAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaProdutoBinding;
-import com.example.ecommerceservidorjava.model.Usuario;
+import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
@@ -30,10 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ListaProdutoActivity extends AppCompatActivity implements ListaUsuarioAdapter.OnClickLister, ListaUsuarioAdapter.OnLongClickLister {
+public class ListaProdutoActivity extends AppCompatActivity implements ListaProdutoAdapter.OnClickLister, ListaProdutoAdapter.OnLongClickLister {
     ActivityListaProdutoBinding binding;
-    private final List<Usuario> produtoList = new ArrayList<>();
-    List<Usuario> filtroProdutoNomeList = new ArrayList<>();
+    private final List<Produto> produtoList = new ArrayList<>();
+    List<Produto> filtroProdutoNomeList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,9 +93,9 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaUsua
     private void filtraProdutoNome(String pesquisa) {
 
 
-        for (Usuario usuario : produtoList) {
-            if (usuario.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
-                filtroProdutoNomeList.add(usuario);
+        for (Produto produto : produtoList) {
+            if (produto.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+                filtroProdutoNomeList.add(produto);
             }
         }
 
@@ -101,10 +103,10 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaUsua
         configRvProdutos(filtroProdutoNomeList);
     }
 
-    private void configRvProdutos(List<Usuario> usuarioList) {
-        binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+    private void configRvProdutos(List<Produto> usuarioList) {
+        binding.recycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
         binding.recycler.setHasFixedSize(true);
-        ListaUsuarioAdapter lojaProdutoAdapter = new ListaUsuarioAdapter(R.layout.item_lista_usuario, usuarioList, getApplicationContext(), true, this, this);
+        ListaProdutoAdapter lojaProdutoAdapter = new ListaProdutoAdapter(R.layout.item_produto_adapter, usuarioList, getApplicationContext(), true, this, this);
         binding.recycler.setAdapter(lojaProdutoAdapter);
     }
 
@@ -120,7 +122,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaUsua
                 produtoList.clear();
                 if (snapshot.exists()) {
                     for (DataSnapshot ds : snapshot.getChildren()) {
-                        Usuario produto = ds.getValue(Usuario.class);
+                        Produto produto = ds.getValue(Produto.class);
                         produtoList.add(produto);
                         binding.progressBar2.setVisibility(View.GONE);
                         binding.textVazio.setVisibility(View.GONE);
@@ -149,7 +151,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaUsua
     }
 
 
-    public void onClick(Usuario produto) {
+    public void onClick(Produto produto) {
         //  Intent intent = new Intent(getContext(), ExibirVolumeActivity.class);
         //  intent.putExtra("numero", produto);
         // startActivity(intent);
@@ -159,10 +161,8 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaUsua
     }
 
     @Override
-    public void onLongClick(Usuario volume) {
-        //   Intent intent = new Intent(getContext(), EditarVolumeActivity.class);
-        // intent.putExtra("numero", volume);
-        // startActivity(intent);
+    public void onLongClick(Produto usuario) {
+
     }
 
 

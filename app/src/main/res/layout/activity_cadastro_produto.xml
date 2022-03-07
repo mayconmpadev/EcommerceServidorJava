@@ -79,7 +79,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:padding="8dp"
-                            android:scaleType="centerCrop"/>
+                            android:scaleType="centerCrop" />
 
                         <ImageView
                             android:id="@+id/imageFake1"
@@ -103,7 +103,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:padding="8dp"
-                            android:scaleType="centerCrop"/>
+                            android:scaleType="centerCrop" />
 
                         <ImageView
                             android:id="@+id/imageFake2"
@@ -133,32 +133,32 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Tìtulo"/>
+                    android:text="Tìtulo" />
 
                 <EditText
-                    android:id="@+id/edtTitulo"
+                    android:id="@+id/editNome"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_edit_off"
+                    android:hint="Mochila Adidas"
                     android:inputType="text"
-                    android:padding="16dp"
-                    android:hint="Mochila Adidas" />
+                    android:padding="16dp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Descrição"/>
+                    android:text="Descrição" />
 
                 <EditText
-                    android:id="@+id/edtDescricao"
+                    android:id="@+id/editDescricao"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_edit_off"
-                    android:padding="16dp"
-                    android:hint="Mochila grande e muito confortável." />
+                    android:hint="Mochila grande e muito confortável."
+                    android:padding="16dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -177,10 +177,10 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Preço de compra"/>
+                            android:text="Preço de custo" />
 
                         <com.blackcat.currencyedittext.CurrencyEditText
-                            android:id="@+id/editCompra"
+                            android:id="@+id/editPrecoCusto"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
@@ -199,15 +199,15 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Lucro %"/>
+                            android:text="Lucro %" />
 
                         <EditText
                             android:id="@+id/editLucro"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:inputType="number"
                             android:background="@drawable/bg_edit_off"
+                            android:inputType="number"
                             android:padding="16dp" />
 
                     </LinearLayout>
@@ -222,19 +222,218 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Preço de venda"/>
+                            android:text="Preço de venda" />
 
                         <com.blackcat.currencyedittext.CurrencyEditText
-                            android:id="@+id/editVenda"
+                            android:id="@+id/editPrecoVenda"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:padding="16dp"
-                            android:background="@drawable/bg_edit_off"/>
+                            android:background="@drawable/bg_edit_off"
+                            android:padding="16dp" />
 
                     </LinearLayout>
 
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Desconto %" />
+
+                        <EditText
+                            android:id="@+id/editDesconto"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="0"
+                            android:background="@drawable/bg_edit_off"
+                            android:inputType="number"
+                            android:padding="16dp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=" Qtd. Estoque" />
+
+                        <EditText
+                            android:id="@+id/editQuantidadeEstoque"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:maxLength="4"
+                            android:text="1"
+                            android:background="@drawable/bg_edit_off"
+                            android:inputType="number"
+                            android:padding="16dp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Qdt. Minima" />
+
+                        <EditText
+                            android:id="@+id/editQuantidadeMinima"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:maxLength="4"
+                            android:text="1"
+                            android:background="@drawable/bg_edit_off"
+                            android:inputType="number"
+                            android:padding="16dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Unidade" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_edit_off"
+
+                            android:orientation="vertical">
+
+                            <androidx.appcompat.widget.AppCompatSpinner
+                                android:id="@+id/spinnerUnidade"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:entries="@array/unidades"
+                                android:padding="16dp"
+                                android:theme="@style/Spinner" />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Código" />
+
+                        <EditText
+                            android:id="@+id/editCodigo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_edit_off"
+                            android:inputType="number"
+                            android:padding="16dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Status" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_edit_off"
+
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatSpinner
+                            android:id="@+id/spinnerStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:entries="@array/status_produto"
+                            android:padding="16dp"
+                            android:theme="@style/Spinner" />
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Observação" />
+
+                <EditText
+                    android:id="@+id/editObservacao"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="top"
+                    android:background="@drawable/bg_edit_off"
+                    android:hint="Mochila Adidas"
+                    android:padding="16dp" />
+
 
                 <android.widget.Button
                     android:id="@+id/btnCategorias"
@@ -242,29 +441,34 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/bg_borda_laranja"
+                    android:text="Nenhuma categoria selecionada"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/darker_gray"
-                    android:text="Nenhuma categoria selecionada" />
+                    android:textColor="@android:color/darker_gray" />
 
                 <android.widget.Button
-                    android:id="@+id/btnLogin"
+                    android:id="@+id/btnSalvar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:layout_marginBottom="24dp"
                     android:background="@drawable/bg_btn"
                     android:text="Salvar"
-                    android:layout_marginBottom="24dp"
                     android:textAllCaps="false"
                     android:textColor="@color/branco"
-                    app:layout_constraintBottom_toTopOf="@+id/progressBar"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/edtSenha" />
+                    />
+
+                <ProgressBar
+                    android:id="@+id/progressBar3"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="match_parent"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
         </LinearLayout>
+
+
 
     </ScrollView>
 
