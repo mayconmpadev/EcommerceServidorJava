@@ -139,6 +139,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         });
 
         categoriaBinding.btnSalvar.setOnClickListener(v -> {
+            categoriasSelecionadas();
             dialog.dismiss();
         });
 
@@ -172,14 +173,12 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         Categoria categoria = ds.getValue(Categoria.class);
                         categoriaList.add(categoria);
-                        // binding.progressBar2.setVisibility(View.GONE);
-                        // binding.textVazio.setVisibility(View.GONE);
+
                     }
                 } else {
-                    // binding.progressBar2.setVisibility(View.GONE);
-                    //  binding.textVazio.setVisibility(View.VISIBLE);
+
                 }
-                //listaCategoriaAdapter.notifyDataSetChanged();
+
             }
 
             @Override
@@ -187,6 +186,24 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
             }
         });
+    }
+
+    private void categoriasSelecionadas() {
+        StringBuilder categorias = new StringBuilder();
+        for (int i = 0; i < categoriaSelecionadaList.size(); i++) {
+            if (i != categoriaSelecionadaList.size() - 1) {
+                categorias.append(categoriaSelecionadaList.get(i)).append(", ");
+            } else {
+                categorias.append(categoriaSelecionadaList.get(i));
+            }
+        }
+
+        if (!categoriaSelecionadaList.isEmpty()) {
+            binding.btnCategorias.setText(categorias);
+            binding.btnCategorias.setError(null);
+        } else {
+            binding.btnCategorias.setText("Nenhuma categoria selecionada");
+        }
     }
 
     public void validaDados() {
@@ -232,7 +249,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         } else if (quantidadeMinima.isEmpty()) {
             binding.editQuantidadeMinima.setError("preencha o campo");
             binding.editQuantidadeMinima.requestFocus();
-        } else if (categoriaList.size() != 0) {
+        } else if (categoriaSelecionadaList.size() == 0) {
             binding.btnCategorias.setError("preencha o campo");
             binding.btnCategorias.requestFocus();
         } else {
@@ -240,7 +257,6 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             if (editar) {
                 produto.setId(produtoSelecionado.getId());
             }
-            categoriaSelecionadaList.add("teste");
             resultUri.add(imagemUri0);
             resultUri.add(imagemUri1);
             resultUri.add(imagemUri2);
@@ -254,7 +270,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             produto.setStatus(binding.spinnerStatus.getSelectedItem().toString());
             produto.setUnidade(binding.spinnerUnidade.getSelectedItem().toString());
             produto.setObservacao(observação);
-            produto.setIdsCategorias(categoriaSelecionadaList);
+            produto.setIdsCategorias(idsCategoriasSelecionadas);
             salvarDadosImagem(produto, 0);
             salvarDadosImagem(produto, 1);
             salvarDadosImagem(produto, 2);
