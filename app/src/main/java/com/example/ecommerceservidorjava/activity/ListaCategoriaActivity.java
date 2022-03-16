@@ -219,7 +219,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
 
         dialog = builder.create();
         dialog.show();
-
+        dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
     }
 
     private void deletarCategoria(Categoria categoria) {
@@ -286,9 +286,9 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
         });
 
         builder.setView(categoriaBinding.getRoot());
-
         dialog = builder.create();
         dialog.show();
+        dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
 
     }
 

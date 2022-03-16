@@ -4,11 +4,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -25,7 +29,11 @@ import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -51,6 +59,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     private Uri imagemUri0, imagemUri1, imagemUri2;
     private Produto produto;
     private Produto produtoSelecionado;
+    private AlertDialog dialog;
     private boolean editar = false;
     private SPM spm = new SPM(this);
     String imagem = "";
@@ -65,6 +74,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         setContentView(binding.getRoot());
         clicks();
         recuperarIntent();
+        recuperaCategotia();
 
     }
 
@@ -109,6 +119,74 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             produto = new Produto();
             produto.setId(databaseReference.push().getKey());
         }
+    }
+
+    private void configRv() {
+        categoriaBinding.rvCategorias.setLayoutManager(new LinearLayoutManager(this));
+        categoriaBinding.rvCategorias.setHasFixedSize(true);
+        CategoriaDialogAdapter categoriaDialogAdapter = new CategoriaDialogAdapter(idsCategoriasSelecionadas, categoriaList, this, this);
+        categoriaBinding.rvCategorias.setAdapter(categoriaDialogAdapter);
+    }
+
+    public void showDialogCategorias(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog2);
+
+        categoriaBinding = DialogFormProdutoCategoriaBinding
+                .inflate(LayoutInflater.from(this));
+
+        categoriaBinding.btnFechar.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        categoriaBinding.btnSalvar.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        if (categoriaList.isEmpty()) {
+            categoriaBinding.textInfo.setText("Nenhuma categoria cadastrada.");
+        } else {
+            categoriaBinding.textInfo.setText("");
+        }
+        categoriaBinding.progressBar.setVisibility(View.GONE);
+
+        configRv();
+
+        builder.setView(categoriaBinding.getRoot());
+
+        dialog = builder.create();
+        dialog.show();
+    }
+
+
+    private void recuperaCategotia() {
+        SPM spm = new SPM(getApplicationContext());
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        Query produtoRef = FirebaseHelper.getDatabaseReference()
+                .child("empresas").child(caminho).child("categorias").orderByChild("nome");
+        produtoRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                categoriaList.clear();
+                if (snapshot.exists()) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        Categoria categoria = ds.getValue(Categoria.class);
+                        categoriaList.add(categoria);
+                        // binding.progressBar2.setVisibility(View.GONE);
+                        // binding.textVazio.setVisibility(View.GONE);
+                    }
+                } else {
+                    // binding.progressBar2.setVisibility(View.GONE);
+                    //  binding.textVazio.setVisibility(View.VISIBLE);
+                }
+                //listaCategoriaAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     public void validaDados() {
@@ -177,7 +255,6 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             produto.setUnidade(binding.spinnerUnidade.getSelectedItem().toString());
             produto.setObservacao(observação);
             produto.setIdsCategorias(categoriaSelecionadaList);
-            binding.progressBar3.setVisibility(View.VISIBLE);
             salvarDadosImagem(produto, 0);
             salvarDadosImagem(produto, 1);
             salvarDadosImagem(produto, 2);
@@ -187,7 +264,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
     //---------------------------------------------------- SALVAR IMAGEM E DADOS -----------------------------------------------------------------
     public void salvarDadosImagem(Produto produto, int index) {
-
+        binding.progressBar3.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("empresas")
                 .child(caminho).child("imagens").child("produtos").child(produto.getId()).child("imagem" + index);
@@ -275,6 +352,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         });
 
         binding.btnSalvar.setOnClickListener(view -> validaDados());
+        binding.btnCategorias.setOnClickListener(view -> showDialogCategorias(binding.btnCategorias));
     }
 
 

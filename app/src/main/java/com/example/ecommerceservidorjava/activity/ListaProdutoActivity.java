@@ -161,8 +161,8 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     }
 
     @Override
-    public void onLongClick(Produto usuario) {
-
+    public void onLongClick(Produto produto) {
+        Toast.makeText(getApplicationContext(), produto.getDescricao(), Toast.LENGTH_SHORT).show();
     }
 
 

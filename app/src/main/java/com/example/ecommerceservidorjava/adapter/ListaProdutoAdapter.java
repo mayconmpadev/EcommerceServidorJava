@@ -51,7 +51,7 @@ public class ListaProdutoAdapter extends RecyclerView.Adapter<ListaProdutoAdapte
         Produto produto = produtoList.get(position);
 
         holder.binding.txtNomeProduto.setText(produto.getNome().substring(0, 1).toUpperCase().concat(produto.getNome().substring(1)));
-        holder.binding.txtDescontoProduto.setText(produto.getDesconto());
+        holder.binding.txtDescontoProduto.setText("-"+ produto.getDesconto()+ "%");
         Glide.with(context).load(produto.getUrlImagem2()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imagemProduto);
 
 
