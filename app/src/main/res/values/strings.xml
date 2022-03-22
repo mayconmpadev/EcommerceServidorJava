@@ -12,6 +12,7 @@
         <item>em estoque</item>
         <item>chegara em breve</item>
         <item>sem previsão de chegada</item>
+        <item>rascunho</item>
     </string-array>
 
     <string-array name="unidades">

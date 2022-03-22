@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -139,11 +139,10 @@
                     android:id="@+id/editNome"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_edit_off"
+                   style="@style/EditText"
                     android:hint="Mochila Adidas"
                     android:inputType="text"
-                    android:padding="16dp" />
+                 />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -376,6 +375,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
+                            android:maxLength="5"
                             android:background="@drawable/bg_edit_off"
                             android:inputType="number"
                             android:padding="16dp" />

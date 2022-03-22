@@ -18,6 +18,8 @@ import android.text.style.UnderlineSpan;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.math.BigDecimal;
+
 /**
  * Created by mac on 09/05/2018.
  */
@@ -119,6 +121,23 @@ public class Util {
             }
         }
         return (Activity) context;
+    }
+
+
+    public static java.math.BigDecimal convertMoneEmBigDecimal(String monetaria) {
+        java.math.BigDecimal bigDecimal;
+        String vazia = "";
+        try {
+            vazia = monetaria.replace("R$", "");
+            vazia = vazia.replace("\u00A0", "");
+            vazia = vazia.replace(",", "");
+            vazia = vazia.replace(".", "");
+
+            bigDecimal = new java.math.BigDecimal(vazia);
+        } catch (Exception e) {
+            bigDecimal = new BigDecimal("0.00");
+        }
+        return bigDecimal;
     }
 
 }

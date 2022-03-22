@@ -50,8 +50,9 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityCadastroUsuarioBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        configClicks();
         recuperarIntent();
+        configClicks();
+
     }
 
     private void recuperarIntent() {
@@ -379,11 +380,19 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         binding.imgSenha.setTag("imagem");// tag para saber quem é o imageview
         binding.imgConfirmaSenha.setTag("imagem2");
         binding.cardFoto.setOnClickListener(view -> chamarImagens());
-        binding.include.ibVoltar.setOnClickListener(view -> finish());
+        binding.include.include.ibVoltar.setOnClickListener(view -> finish());
+        if (editar){
+            binding.include.textTitulo.setText("Editar");
+        }else {
+            binding.include.textTitulo.setText("Novo");
+        }
+
         binding.btnCriarConta.setOnClickListener(view -> {
             if (editar) {
+
                 validaDadosEditar();
             } else {
+
                 validaDadosSalvar();
             }
 

@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="220dp"
         android:layout_margin="8dp"
-        app:cardCornerRadius="5dp"
         android:elevation="5dp"
+        app:cardCornerRadius="5dp"
         app:cardElevation="5dp"
 
-        android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,14 +26,12 @@
 
             <ImageView
                 android:id="@+id/imagemProduto"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginVertical="8dp"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
                 app:layout_constraintBottom_toTopOf="@+id/txtNomeProduto"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
 
 
             <TextView
@@ -71,10 +70,10 @@
                     android:id="@+id/txtDescontoProduto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/bg_desconto"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="4dp"
                     android:textAlignment="textEnd"
-                    android:background="@drawable/bg_desconto"
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     tools:text="-10%" />

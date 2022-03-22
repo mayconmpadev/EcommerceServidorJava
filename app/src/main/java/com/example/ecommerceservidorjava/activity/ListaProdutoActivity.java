@@ -3,22 +3,26 @@ package com.example.ecommerceservidorjava.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.adapter.ListaProdutoAdapter;
 import com.example.ecommerceservidorjava.adapter.ListaUsuarioAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaProdutoBinding;
+import com.example.ecommerceservidorjava.databinding.DialogLojaProdutoBinding;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
@@ -36,7 +40,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     ActivityListaProdutoBinding binding;
     private final List<Produto> produtoList = new ArrayList<>();
     List<Produto> filtroProdutoNomeList = new ArrayList<>();
-
+    private AlertDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,6 +146,56 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         });
     }
 
+    private void showDialog(Produto produto) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
+
+        DialogLojaProdutoBinding dialogBinding = DialogLojaProdutoBinding
+                .inflate(LayoutInflater.from(this));
+        if (produto.getStatus().equals("rascunho")){
+            dialogBinding.cbRascunho.setChecked(true);
+        }else {
+            dialogBinding.cbRascunho.setChecked(false);
+        }
+
+
+
+
+        Glide.with(getApplicationContext())
+                .load(produto.getUrlImagem0())
+                .into(dialogBinding.imagemProduto);
+
+
+
+        dialogBinding.cbRascunho.setOnCheckedChangeListener((check, b) -> {
+            //  produto.setRascunho(check.isChecked());
+            // produto.salvar(false);
+        });
+
+        dialogBinding.btnEditar.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), CadastroProdutoActivity.class);
+            intent.putExtra("produtoSelecionado", produto);
+            startActivity(intent);
+            dialog.dismiss();
+        });
+
+        dialogBinding.btnRemover.setOnClickListener(v -> {
+            // produto.remover();
+            dialog.dismiss();
+            // Toast.makeText(requireContext(), "Produto removido com sucesso!", Toast.LENGTH_SHORT).show();
+
+            //  listEmpty();
+        });
+
+        dialogBinding.txtNomeProduto.setText(produto.getNome());
+
+        dialogBinding.btnFechar.setOnClickListener(v -> dialog.dismiss());
+
+        builder.setView(dialogBinding.getRoot());
+
+        dialog = builder.create();
+        dialog.show();
+    }
+
 
     // Oculta o teclado do dispotivo
     private void ocultaTeclado() {
@@ -152,17 +206,14 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
 
     public void onClick(Produto produto) {
-        //  Intent intent = new Intent(getContext(), ExibirVolumeActivity.class);
-        //  intent.putExtra("numero", produto);
-        // startActivity(intent);
-        Toast.makeText(getApplicationContext(), produto.getNome(), Toast.LENGTH_SHORT).show();
+        showDialog(produto);
 
 
     }
 
     @Override
     public void onLongClick(Produto produto) {
-        Toast.makeText(getApplicationContext(), produto.getDescricao(), Toast.LENGTH_SHORT).show();
+
     }
 
 

@@ -52,15 +52,13 @@ public class ListaProdutoAdapter extends RecyclerView.Adapter<ListaProdutoAdapte
 
         holder.binding.txtNomeProduto.setText(produto.getNome().substring(0, 1).toUpperCase().concat(produto.getNome().substring(1)));
         holder.binding.txtDescontoProduto.setText("-"+ produto.getDesconto()+ "%");
-        Glide.with(context).load(produto.getUrlImagem2()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imagemProduto);
+        holder.binding.txtValorProduto.setText(produto.getPrecoVenda());
+        Glide.with(context).load(produto.getUrlImagem0()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imagemProduto);
 
 
 
-        holder.binding.imagemProduto.setOnClickListener(v -> onClickLister.onClick(produto));
-        holder.itemView.setOnLongClickListener(v -> {
-            onLongClickLister.onLongClick(produto);
-            return true;
-        });
+        holder.itemView.setOnClickListener(v -> onClickLister.onClick(produto));
+
     }
 
     @Override
@@ -82,8 +80,6 @@ public class ListaProdutoAdapter extends RecyclerView.Adapter<ListaProdutoAdapte
 
     public interface OnClickLister {
         void onClick(Produto usuario);
-
-        void onLongClick(Produto usuario);
 
     }
 

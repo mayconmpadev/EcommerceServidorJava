@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
@@ -29,6 +31,7 @@ import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,7 +45,11 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -52,19 +59,19 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
     private final List<String> idsCategoriasSelecionadas = new ArrayList<>();
     private final List<String> caminhoImagens = new ArrayList<>();
+    private final List<String> codigoList = new ArrayList<>();
     private final List<String> categoriaSelecionadaList = new ArrayList<>();
     private final List<Categoria> categoriaList = new ArrayList<>();
-    private final List<Uri> resultUri = new ArrayList<>();
+    private final List<Produto> produtoList = new ArrayList<>();
     private int imagemSelecionada;
-    private Uri imagemUri0, imagemUri1, imagemUri2;
-    private Produto produto;
+    private Uri imagemUri_0, imagemUri_1, imagemUri_2;
+    private Produto produto = new Produto();
     private Produto produtoSelecionado;
     private AlertDialog dialog;
     private boolean editar = false;
     private SPM spm = new SPM(this);
-    String imagem = "";
-    int i = 3;
     private ActivityCadastroProdutoBinding binding;
+    private boolean bVenda, bLucro;
 
 
     @Override
@@ -72,10 +79,113 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         super.onCreate(savedInstanceState);
         binding = ActivityCadastroProdutoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        clicks();
         recuperarIntent();
-        recuperaCategotia();
+        clicks();
 
+        recuperaCategotia();
+        gerarCodigo();
+
+        binding.editLucro.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if (bLucro) {
+                    bVenda = false;
+                    porcentagem1(binding.editLucro.getText().toString());
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        binding.editPrecoCusto.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                bLucro = false;
+                bVenda = false;
+
+                porcentagem(binding.editLucro.getText().toString());
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        binding.editPrecoVenda.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if (bVenda) {
+                    bLucro = false;
+                    porcentagem2(binding.editPrecoVenda.getText().toString());
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+    }
+
+    private void porcentagem(String string) {
+        BigDecimal divisor = new BigDecimal("100");
+        BigDecimal a = Util.convertMoneEmBigDecimal(binding.editPrecoCusto.getText().toString());
+        BigDecimal b = Util.convertMoneEmBigDecimal(string);
+        a = a.divide(divisor);
+        BigDecimal c = a.multiply(b.divide(new BigDecimal("100")));
+        c = c.add(a);
+        binding.editPrecoVenda.setText(NumberFormat.getCurrencyInstance().format(c));
+        bLucro = true;
+        bVenda = true;
+    }
+
+    private void porcentagem1(String string) {
+        BigDecimal divisor = new BigDecimal("100");
+        BigDecimal a = Util.convertMoneEmBigDecimal(binding.editPrecoCusto.getText().toString());
+        BigDecimal b = Util.convertMoneEmBigDecimal(string).add(new BigDecimal("0"));
+        a = a.divide(divisor);
+        BigDecimal c = a.multiply(b.divide(new BigDecimal("100")));
+        c = c.add(a);
+        binding.editPrecoVenda.setText(NumberFormat.getCurrencyInstance().format(c));
+        bVenda = true;
+    }
+
+    private void porcentagem2(String string) {
+        BigDecimal divisor = new BigDecimal("100");
+        BigDecimal a = Util.convertMoneEmBigDecimal(binding.editPrecoCusto.getText().toString());
+        BigDecimal b = Util.convertMoneEmBigDecimal(string).add(new BigDecimal("0"));
+        BigDecimal d = b.subtract(a);
+        BigDecimal c = d;
+        c = c.divide(a, 2, RoundingMode.HALF_UP);
+        c = c.multiply(new BigDecimal("100"));
+        binding.editLucro.setText(String.valueOf(c.intValue()));
+        bLucro = true;
     }
 
     private void recuperarIntent() {
@@ -85,19 +195,33 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             editar = true;
             binding.editNome.setText(produtoSelecionado.getNome());
             binding.editDescricao.setText(produtoSelecionado.getDescricao());
-            binding.editNome.setText(produtoSelecionado.getNome());
-            binding.editNome.setText(produtoSelecionado.getNome());
+            binding.editCodigo.setText(produtoSelecionado.getCodigo());
             binding.editPrecoCusto.setText(produtoSelecionado.getPrecoCusto());
             binding.editPrecoVenda.setText(produtoSelecionado.getPrecoVenda());
+            binding.editLucro.setText(produtoSelecionado.getLucro());
+            binding.editDesconto.setText(produtoSelecionado.getDesconto());
+            binding.editQuantidadeEstoque.setText(produtoSelecionado.getQuantidadeEtoque());
+            binding.editQuantidadeMinima.setText(produtoSelecionado.getQuantidadeMinima());
+            binding.editObservacao.setText(produtoSelecionado.getObservacao());
+
+            recuperarCategotia(produtoSelecionado.getIdsCategorias());
             binding.imageFake0.setVisibility(View.GONE);
             binding.imageFake1.setVisibility(View.GONE);
             binding.imageFake2.setVisibility(View.GONE);
             Glide.with(this).load(produtoSelecionado.getUrlImagem0()).into(binding.imagemProduto0);
             Glide.with(this).load(produtoSelecionado.getUrlImagem1()).into(binding.imagemProduto1);
             Glide.with(this).load(produtoSelecionado.getUrlImagem2()).into(binding.imagemProduto2);
+            caminhoImagens.add(produtoSelecionado.getUrlImagem0());
+            caminhoImagens.add(produtoSelecionado.getUrlImagem1());
+            caminhoImagens.add(produtoSelecionado.getUrlImagem2());
 
             String sStatus = produtoSelecionado.getStatus();
 
+            for (int i = 0; i < produtoSelecionado.getIdsCategorias().size(); i++) {
+
+                idsCategoriasSelecionadas.add(produtoSelecionado.getIdsCategorias().get(i));
+
+            }
             String[] arrayStatus = getResources().getStringArray(R.array.perfil_usuario);
             for (int i = 0; i < arrayStatus.length; i++) {
                 if (arrayStatus[i].equals(sStatus)) {
@@ -118,6 +242,9 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
             produto = new Produto();
             produto.setId(databaseReference.push().getKey());
+            caminhoImagens.add("");
+            caminhoImagens.add("");
+            caminhoImagens.add("");
         }
     }
 
@@ -156,6 +283,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
         dialog = builder.create();
         dialog.show();
+        dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
     }
 
 
@@ -173,12 +301,8 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         Categoria categoria = ds.getValue(Categoria.class);
                         categoriaList.add(categoria);
-
                     }
-                } else {
-
                 }
-
             }
 
             @Override
@@ -222,11 +346,11 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             desconto = "0";
         }
 
-        if (imagemUri0 == null) {
+        if (imagemUri_0 == null & !editar) {
             Toast.makeText(getApplicationContext(), "Selecione todas as imagens", Toast.LENGTH_SHORT).show();
-        } else if (imagemUri1 == null) {
+        } else if (imagemUri_1 == null & !editar) {
             Toast.makeText(getApplicationContext(), "Selecione todas as imagens", Toast.LENGTH_SHORT).show();
-        } else if (imagemUri2 == null) {
+        } else if (imagemUri_2 == null & !editar) {
             Toast.makeText(getApplicationContext(), "Selecione todas as imagens", Toast.LENGTH_SHORT).show();
         } else if (nome.isEmpty()) {
             binding.editNome.setError("preencha o campo");
@@ -257,9 +381,9 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             if (editar) {
                 produto.setId(produtoSelecionado.getId());
             }
-            resultUri.add(imagemUri0);
-            resultUri.add(imagemUri1);
-            resultUri.add(imagemUri2);
+
+
+            binding.progressBar3.setVisibility(View.VISIBLE);
             produto.setNome(nome);
             produto.setDescricao(descricao);
             produto.setPrecoCusto(precoCusto);
@@ -267,26 +391,39 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             produto.setLucro(lucro);
             produto.setDesconto(desconto);
             produto.setCodigo(codigo);
+            produto.setQuantidadeEtoque(quantidadeEstoque);
+            produto.setQuantidadeMinima(quantidadeMinima);
             produto.setStatus(binding.spinnerStatus.getSelectedItem().toString());
             produto.setUnidade(binding.spinnerUnidade.getSelectedItem().toString());
             produto.setObservacao(observação);
             produto.setIdsCategorias(idsCategoriasSelecionadas);
-            salvarDadosImagem(produto, 0);
-            salvarDadosImagem(produto, 1);
-            salvarDadosImagem(produto, 2);
-
+            if (imagemUri_0 != null) {
+                caminhoImagens.set(0,"");
+                salvarDadosImagem(produto, imagemUri_0, 0);
+            }
+            if (imagemUri_1 != null) {
+                caminhoImagens.set(1,"");
+                salvarDadosImagem(produto, imagemUri_1, 1);
+            }
+            if (imagemUri_2 != null) {
+                caminhoImagens.set(2,"");
+                salvarDadosImagem(produto, imagemUri_2, 2);
+            }
+            if (imagemUri_0 == null & imagemUri_1 == null & imagemUri_2 == null) {
+                salvarDados();
+            }
         }
     }
 
     //---------------------------------------------------- SALVAR IMAGEM E DADOS -----------------------------------------------------------------
-    public void salvarDadosImagem(Produto produto, int index) {
+    public void salvarDadosImagem(Produto produto, Uri sUri, int index) {
         binding.progressBar3.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("empresas")
                 .child(caminho).child("imagens").child("produtos").child(produto.getId()).child("imagem" + index);
 
 
-        Glide.with(this).asBitmap().load(resultUri.get(index)).apply(new RequestOptions().override(1024, 768))
+        Glide.with(this).asBitmap().load(sUri).apply(new RequestOptions().override(1024, 768))
                 .listener(new RequestListener<Bitmap>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
@@ -312,8 +449,10 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
                             if (task.isSuccessful()) {
                                 Uri uri = task.getResult();
-                                caminhoImagens.add(uri.toString());
-                                if (caminhoImagens.size() == 3) {
+
+                                    caminhoImagens.set(index,uri.toString());
+
+                                if (!caminhoImagens.contains("")) {
                                     salvarDados();
                                 }
 
@@ -353,7 +492,75 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
     }
 
+    public void recuperarCategotia(List<String> list) {
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        for (int i = 0; i < list.size(); i++) {
+            DatabaseReference database = FirebaseHelper.getDatabaseReference()
+                    .child("empresas").child(caminho).child("categorias").child(list.get(i)).child("nome");
+            database.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        String categoria = snapshot.getValue().toString();
+                        categoriaSelecionadaList.add(categoria);
+                        categoriasSelecionadas();
+                    }
+
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+
+
+    }
+
+
+    public void gerarCodigo() {
+        Query produtoRef = FirebaseHelper.getDatabaseReference()
+                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""))).child("produtos").orderByChild("codigo");
+        produtoRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                produtoList.clear();
+                if (snapshot.exists()) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        Produto produto = ds.getValue(Produto.class);
+                        codigoList.add(produto.getCodigo());
+                    }
+
+                    if (!editar) {
+                        binding.editCodigo.setText(String.format("%05d", Integer.parseInt(Collections.max(codigoList)) + 1));
+                    }
+
+
+                } else {
+                    binding.editCodigo.setText(String.format("%05d", 1));
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+
     public void clicks() {
+        binding.include.include.ibVoltar.setOnClickListener(view -> finish());
+        if (editar) {
+            binding.include.textTitulo.setText("Editar");
+        } else {
+            binding.include.textTitulo.setText("Novo");
+        }
+
         binding.imagemProduto0.setOnClickListener(view -> {
             imagemSelecionada = 0;
             chamarImagens();
@@ -399,16 +606,16 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 if (imagemSelecionada == 0) {
-                    imagemUri0 = result.getUri();
-                    binding.imagemProduto0.setImageURI(imagemUri0);
+                    imagemUri_0 = result.getUri();
+                    binding.imagemProduto0.setImageURI(imagemUri_0);
                     binding.imageFake0.setVisibility(View.GONE);
                 } else if (imagemSelecionada == 1) {
-                    imagemUri1 = result.getUri();
-                    binding.imagemProduto1.setImageURI(imagemUri1);
+                    imagemUri_1 = result.getUri();
+                    binding.imagemProduto1.setImageURI(imagemUri_1);
                     binding.imageFake1.setVisibility(View.GONE);
                 } else {
-                    imagemUri2 = result.getUri();
-                    binding.imagemProduto2.setImageURI(imagemUri2);
+                    imagemUri_2 = result.getUri();
+                    binding.imagemProduto2.setImageURI(imagemUri_2);
                     binding.imageFake2.setVisibility(View.GONE);
                 }
 
