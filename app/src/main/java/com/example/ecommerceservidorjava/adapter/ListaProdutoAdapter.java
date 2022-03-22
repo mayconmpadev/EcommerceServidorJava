@@ -57,7 +57,7 @@ public class ListaProdutoAdapter extends RecyclerView.Adapter<ListaProdutoAdapte
 
 
 
-        holder.itemView.setOnClickListener(v -> onClickLister.onClick(produto));
+        holder.binding.cardView.setOnClickListener(v -> onClickLister.onClick(produto));
 
     }
 

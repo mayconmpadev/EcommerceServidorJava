@@ -137,12 +137,13 @@
 
                 <EditText
                     android:id="@+id/editNome"
+                    style="@style/EditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                   style="@style/EditText"
                     android:hint="Mochila Adidas"
-                    android:inputType="text"
-                 />
+                    android:inputType="textCapWords"
+
+                    />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -157,6 +158,7 @@
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_edit_off"
                     android:hint="Mochila grande e muito confortável."
+                    android:inputType="textCapSentences"
                     android:padding="16dp" />
 
                 <LinearLayout
@@ -259,10 +261,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="0"
                             android:background="@drawable/bg_edit_off"
                             android:inputType="number"
-                            android:padding="16dp" />
+                            android:padding="16dp"
+                            android:selectAllOnFocus="true"
+                            android:text="0" />
 
                     </LinearLayout>
 
@@ -283,11 +286,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:maxLength="4"
-                            android:text="1"
                             android:background="@drawable/bg_edit_off"
                             android:inputType="number"
-                            android:padding="16dp" />
+                            android:maxLength="4"
+                            android:padding="16dp"
+                            android:selectAllOnFocus="true"
+                            android:text="1" />
 
                     </LinearLayout>
 
@@ -308,11 +312,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:maxLength="4"
-                            android:text="1"
                             android:background="@drawable/bg_edit_off"
                             android:inputType="number"
-                            android:padding="16dp" />
+                            android:maxLength="4"
+                            android:padding="16dp"
+                            android:selectAllOnFocus="true"
+                            android:text="1" />
 
                     </LinearLayout>
 
@@ -375,9 +380,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:maxLength="5"
                             android:background="@drawable/bg_edit_off"
+                            android:enabled="false"
                             android:inputType="number"
+                            android:maxLength="5"
                             android:padding="16dp" />
 
                     </LinearLayout>
@@ -417,7 +423,6 @@
                 </LinearLayout>
 
 
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -429,9 +434,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
                     android:layout_marginTop="8dp"
-                    android:gravity="top"
                     android:background="@drawable/bg_edit_off"
+                    android:gravity="top"
                     android:hint="Mochila Adidas"
+                    android:inputType="textCapSentences"
                     android:padding="16dp" />
 
 
@@ -454,15 +460,12 @@
                     android:background="@drawable/bg_btn"
                     android:text="Salvar"
                     android:textAllCaps="false"
-                    android:textColor="@color/branco"
-                    />
-
+                    android:textColor="@color/branco" />
 
 
             </LinearLayout>
 
         </LinearLayout>
-
 
 
     </ScrollView>
