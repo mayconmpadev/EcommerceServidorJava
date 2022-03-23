@@ -29,8 +29,10 @@ import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     private final List<Produto> produtoList = new ArrayList<>();
     List<Produto> filtroProdutoNomeList = new ArrayList<>();
     private AlertDialog dialog;
+    private SPM spm = new SPM(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,6 +149,41 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         });
     }
 
+    public void excluir(Produto produto) {
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("produtos").child(produto.getId());
+        databaseReference.removeValue();
+
+        for (int i = 0; i < 3; i++) {
+            StorageReference storageReference = FirebaseHelper.getStorageReference()
+                    .child("empresas")
+                    .child(caminho)
+                    .child("imagens")
+                    .child("produtos")
+                    .child(produto.getId())
+                    .child("imagem" + i );
+            storageReference.delete();
+        }
+
+    }
+
+    public void alterarStatus(Produto produto, boolean tipo) {
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("produtos").child(produto.getId());
+        if (tipo){
+            databaseReference.child("status").setValue("rascunho");
+        }else {
+            databaseReference.child("status").setValue("em estoque");
+        }
+
+
+
+    }
+
     private void showDialog(Produto produto) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
@@ -181,19 +219,36 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         dialogBinding.btnRemover.setOnClickListener(v -> {
             // produto.remover();
             dialog.dismiss();
-            // Toast.makeText(requireContext(), "Produto removido com sucesso!", Toast.LENGTH_SHORT).show();
+            excluir(produto);
+             Toast.makeText(getApplicationContext(), "Produto removido com sucesso!", Toast.LENGTH_SHORT).show();
 
-            //  listEmpty();
+            listEmpty();
         });
 
         dialogBinding.txtNomeProduto.setText(produto.getNome());
 
-        dialogBinding.btnFechar.setOnClickListener(v -> dialog.dismiss());
+        dialogBinding.btnFechar.setOnClickListener(v ->{
+            if (dialogBinding.cbRascunho.isChecked()){
+                alterarStatus(produto, true);
+                dialog.dismiss();
+            }else {
+                alterarStatus(produto, false);
+                dialog.dismiss();
+            }
+            } );
 
         builder.setView(dialogBinding.getRoot());
 
         dialog = builder.create();
         dialog.show();
+    }
+
+    private void listEmpty() {
+        if(produtoList.isEmpty()){
+            binding.textVazio.setText("Nenhum produto cadastrado.");
+        }else {
+            binding.textVazio.setText("");
+        }
     }
 
 

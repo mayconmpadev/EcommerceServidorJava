@@ -398,15 +398,15 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             produto.setObservacao(observação);
             produto.setIdsCategorias(idsCategoriasSelecionadas);
             if (imagemUri_0 != null) {
-                caminhoImagens.set(0,"");
+                caminhoImagens.set(0, "");
                 salvarDadosImagem(produto, imagemUri_0, 0);
             }
             if (imagemUri_1 != null) {
-                caminhoImagens.set(1,"");
+                caminhoImagens.set(1, "");
                 salvarDadosImagem(produto, imagemUri_1, 1);
             }
             if (imagemUri_2 != null) {
-                caminhoImagens.set(2,"");
+                caminhoImagens.set(2, "");
                 salvarDadosImagem(produto, imagemUri_2, 2);
             }
             if (imagemUri_0 == null & imagemUri_1 == null & imagemUri_2 == null) {
@@ -450,7 +450,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                             if (task.isSuccessful()) {
                                 Uri uri = task.getResult();
 
-                                    caminhoImagens.set(index,uri.toString());
+                                caminhoImagens.set(index, uri.toString());
 
                                 if (!caminhoImagens.contains("")) {
                                     salvarDados();
@@ -491,6 +491,8 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         });
 
     }
+
+
 
     public void recuperarCategotia(List<String> list) {
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));

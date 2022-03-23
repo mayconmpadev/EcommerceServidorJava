@@ -47,6 +47,7 @@
                         android:layout_width="180dp"
                         android:layout_height="180dp"
                         android:layout_margin="8dp"
+
                         app:cardCornerRadius="10dp"
                         app:cardElevation="5dp">
 
@@ -54,6 +55,8 @@
                             android:id="@+id/imagemProduto0"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:clickable="true"
+                            android:foreground="?android:attr/selectableItemBackground"
                             android:padding="8dp"
                             android:scaleType="centerCrop" />
 
@@ -71,6 +74,7 @@
                         android:layout_width="180dp"
                         android:layout_height="180dp"
                         android:layout_margin="8dp"
+
                         app:cardCornerRadius="10dp"
                         app:cardElevation="5dp">
 
@@ -78,6 +82,8 @@
                             android:id="@+id/imagemProduto1"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:clickable="true"
+                            android:foreground="?android:attr/selectableItemBackground"
                             android:padding="8dp"
                             android:scaleType="centerCrop" />
 
@@ -95,6 +101,7 @@
                         android:layout_width="180dp"
                         android:layout_height="180dp"
                         android:layout_margin="8dp"
+
                         app:cardCornerRadius="10dp"
                         app:cardElevation="5dp">
 
@@ -102,6 +109,8 @@
                             android:id="@+id/imagemProduto2"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:clickable="true"
+                            android:foreground="?android:attr/selectableItemBackground"
                             android:padding="8dp"
                             android:scaleType="centerCrop" />
 

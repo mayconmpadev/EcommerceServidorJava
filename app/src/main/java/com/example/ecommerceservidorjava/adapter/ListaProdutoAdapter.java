@@ -2,6 +2,7 @@ package com.example.ecommerceservidorjava.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -51,7 +52,14 @@ public class ListaProdutoAdapter extends RecyclerView.Adapter<ListaProdutoAdapte
         Produto produto = produtoList.get(position);
 
         holder.binding.txtNomeProduto.setText(produto.getNome().substring(0, 1).toUpperCase().concat(produto.getNome().substring(1)));
-        holder.binding.txtDescontoProduto.setText("-"+ produto.getDesconto()+ "%");
+        if (produto.getDesconto().equals("0")){
+            holder.binding.txtDescontoProduto.setVisibility(View.INVISIBLE);
+        }else{
+            holder.binding.txtDescontoProduto.setText("-"+ produto.getDesconto()+ "%");
+        }
+        if (produto.getStatus().equals("rascunho")){
+            holder.binding.cardView.setBackgroundResource(R.drawable.bg_btn);
+        }
         holder.binding.txtValorProduto.setText(produto.getPrecoVenda());
         Glide.with(context).load(produto.getUrlImagem0()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imagemProduto);
 
