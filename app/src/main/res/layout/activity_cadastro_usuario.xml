@@ -85,7 +85,8 @@
                 android:layout_height="wrap_content"
                 android:hint="(21) 98888-7777"
                 android:inputType="number"
-
+                android:drawableStart="@drawable/phone_outline"
+                android:drawablePadding="16dp"
                 app:mask="(__) _____-____"
                 app:maskCharacter="_"
                 app:maskStyle="completable" />
