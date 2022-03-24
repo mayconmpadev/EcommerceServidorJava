@@ -164,11 +164,10 @@
                     android:id="@+id/editDescricao"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_edit_off"
+                 style="@style/EditText"
                     android:hint="Mochila grande e muito confortável."
                     android:inputType="textCapSentences"
-                    android:padding="16dp" />
+                     />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -454,7 +453,7 @@
                     android:id="@+id/btnCategorias"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/bg_borda_laranja"
                     android:text="Nenhuma categoria selecionada"
                     android:textAllCaps="false"

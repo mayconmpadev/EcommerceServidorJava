@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EcommerceServidorJava">
         <activity
+            android:name=".activity.ListaClienteActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.CadastroClienteActivity"
             android:exported="false" />
         <activity

@@ -8,6 +8,12 @@
         <item>administrador</item>
     </string-array>
 
+    <string-array name="perfil_cliente">
+        <item>bronze</item>
+        <item>prata</item>
+        <item>ouro</item>
+    </string-array>
+
     <string-array name="status_produto">
         <item>em estoque</item>
         <item>chegara em breve</item>

@@ -12,6 +12,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="preto">#FF000000</color>
     <color name="branco">#FFFFFFFF</color>
+    <color name="broze">#8C7853</color>
+    <color name="prata">#C0C0C0</color>
+    <color name="ouro">#ffd700</color>
     <color name="colorIconeOnBnv">#FC6E20</color>
     <color name="colorIconeOffBnv">#A59D98</color>
     <color name="color_delete">#F44336</color>
