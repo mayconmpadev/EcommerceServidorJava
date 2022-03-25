@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -47,6 +49,8 @@ public class CadastroClienteActivity extends AppCompatActivity {
     private Uri resultUri;
     private Cliente clienteSelecionado;
     private boolean editar = false;
+    private boolean mascara = true;
+    private boolean mascara2 = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -404,13 +408,48 @@ public class CadastroClienteActivity extends AppCompatActivity {
         });
         binding.imgSenha.setOnClickListener(view -> mostrarSenha(senha, binding.imgSenha, binding.edtSenha));
         binding.imgConfirmaSenha.setOnClickListener(view -> mostrarSenha(confirmaSenha, binding.imgConfirmaSenha, binding.edtConfirmaSenha));
+        binding.edtDocumento.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+if (binding.edtDocumento.getUnMasked().length() == 11 & mascara){
+    if (mascara2){
+        mascara = false;
+        mascaraCnpj();
+    }else {
+        mascara2 = true;
     }
 
-    private void mudarMascara(){
+}else if(binding.edtDocumento.getUnMasked().length() == 10 & !mascara){
+    mascara = true;
+    mascara2 = false;
+    mascaraCpf();
+}
+            }
 
-                    Mask mask = new Mask("+90 (___) ___ __ __", '_', MaskStyle.COMPLETABLE);
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+    }
+
+    private void mascaraCnpj(){
+
+                    Mask mask = new Mask("__.___.___/____-__", '_', MaskStyle.COMPLETABLE);
                     MaskChangedListener listener = new MaskChangedListener(mask);
                     binding.edtDocumento.addTextChangedListener(listener);
+    }
+
+    private void mascaraCpf(){
+
+        Mask mask = new Mask("___.___.___-__", '_', MaskStyle.COMPLETABLE);
+        MaskChangedListener listener = new MaskChangedListener(mask);
+        binding.edtDocumento.addTextChangedListener(listener);
     }
 
     //---------------------------------------------------- MOSTRAR SENHA -----------------------------------------------------------------
