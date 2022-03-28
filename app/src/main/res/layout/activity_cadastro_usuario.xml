@@ -185,6 +185,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
+                android:checked="true"
                 android:buttonTint="@color/color_verde"
                 android:text="Ativo"
                 android:textSize="18sp">

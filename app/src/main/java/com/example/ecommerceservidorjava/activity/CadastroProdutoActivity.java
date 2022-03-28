@@ -107,6 +107,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             }
         });
 
+
         binding.editPrecoCusto.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -271,7 +272,10 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         });
 
         if (categoriaList.isEmpty()) {
-            categoriaBinding.textInfo.setText("Nenhuma categoria cadastrada.");
+            categoriaBinding.textInfo.setText("");
+            Intent intent = new Intent(CadastroProdutoActivity.this, ListaCategoriaActivity.class);
+            intent.putExtra("tipo", "cadastro");
+            startActivity(intent);
         } else {
             categoriaBinding.textInfo.setText("");
         }
@@ -493,7 +497,6 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     }
 
 
-
     public void recuperarCategotia(List<String> list) {
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         for (int i = 0; i < list.size(); i++) {
@@ -625,5 +628,13 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                 Exception error = result.getError();
             }
         }
+    }
+
+
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        configRv();
     }
 }

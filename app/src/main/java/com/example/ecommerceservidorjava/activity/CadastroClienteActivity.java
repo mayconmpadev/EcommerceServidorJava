@@ -27,6 +27,7 @@ import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.example.ecommerceservidorjava.util.Validacao;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
@@ -48,6 +49,7 @@ public class CadastroClienteActivity extends AppCompatActivity {
     private SPM spm = new SPM(this);
     private Uri resultUri;
     private Cliente clienteSelecionado;
+    private Cliente cliente;
     private boolean editar = false;
     private boolean mascara = true;
     private boolean mascara2 = false;
@@ -61,25 +63,27 @@ public class CadastroClienteActivity extends AppCompatActivity {
         configClicks();
 
     }
-
+    //---------------------------------------------------- RECUPERAR OBJETO -----------------------------------------------------------------
     private void recuperarIntent() {
-        clienteSelecionado = (Cliente) getIntent().getSerializableExtra("usuarioSelecionado");
+        clienteSelecionado = (Cliente) getIntent().getSerializableExtra("clienteSelecionado");
         if (clienteSelecionado != null) {
             binding.btnCriarConta.setText("Editar conta");
             editar = true;
-            binding.edtEmail.setVisibility(View.GONE);
-            binding.linearSenha.setVisibility(View.GONE);
-            binding.linearConfirmaSenha.setVisibility(View.GONE);
+            binding.linearCamposNaoEditados.setVisibility(View.GONE);
+            binding.edtSenha.setText("123456");
+            binding.edtConfirmaSenha.setText("123456");
             binding.edtNome.setText(clienteSelecionado.getNome());
             binding.edtEmail.setText(clienteSelecionado.getEmail());
             binding.edtTelefone1.setText(clienteSelecionado.getTelefone1());
             binding.edtTelefone2.setText(clienteSelecionado.getTelefone2());
+            binding.edtDocumento.setText(clienteSelecionado.getDocumento());
+            binding.edtObservacao.setText(clienteSelecionado.getObservacao());
             binding.checkbox.setChecked(clienteSelecionado.isStatus());
             binding.imageFake.setVisibility(View.GONE);
             Glide.with(this).load(clienteSelecionado.getUrlImagem()).into(binding.imagemFoto);
 
             String sPerfil = clienteSelecionado.getPerfil();
-            String[] arrayPerfil = getResources().getStringArray(R.array.perfil_usuario);
+            String[] arrayPerfil = getResources().getStringArray(R.array.perfil_cliente);
             for (int i = 0; i < arrayPerfil.length; i++) {
                 if (arrayPerfil[i].equals(sPerfil)) {
                     binding.spinner.setSelection(i);
@@ -89,10 +93,13 @@ public class CadastroClienteActivity extends AppCompatActivity {
         }
     }
 
+    //---------------------------------------------------- VALIDAR DADOS -----------------------------------------------------------------
     public void validaDadosSalvar() {
         String nome = binding.edtNome.getText().toString().trim();
         String email = binding.edtEmail.getText().toString().trim();
-        String telefone = binding.edtTelefone1.getMasked();
+        String telefone = binding.edtTelefone1.getText().toString();
+        String telefone2 = binding.edtTelefone2.getText().toString();
+        String documento = binding.edtDocumento.getUnMasked();
         String senha = binding.edtSenha.getText().toString().trim();
         String confirmaSenha = binding.edtConfirmaSenha.getText().toString().trim();
 
@@ -102,25 +109,40 @@ public class CadastroClienteActivity extends AppCompatActivity {
                     if (telefone.length() == 15) {
                         if (!senha.isEmpty()) {
                             if (!confirmaSenha.isEmpty()) {
-                                if (senha.equals(confirmaSenha)) {
+                                if (!confirmaSenha.isEmpty()) {
+                                    if (verificarDocumento(documento)) {
 
-                                    binding.progressBar.setVisibility(View.VISIBLE);
+                                        binding.progressBar.setVisibility(View.VISIBLE);
 
-                                    Cliente cliente = new Cliente();
-                                    cliente.setNome(nome);
-                                    cliente.setEmail(email);
-                                    cliente.setTelefone1(telefone);
-                                    cliente.setSenha(senha);
-                                    cliente.setPerfil(binding.spinner.getSelectedItem().toString());
-                                    cliente.setStatus(binding.checkbox.isChecked());
-                                    if (editar) {
-                                        cliente.setId(clienteSelecionado.getId());
-                                        salvarDadosImagem(cliente);
+                                        cliente = new Cliente();
+                                        cliente.setNome(nome);
+                                        cliente.setEmail(email);
+                                        cliente.setTelefone1(telefone);
+                                        cliente.setTelefone2(telefone2);
+                                        cliente.setSenha(senha);
+                                        cliente.setDocumento(binding.edtDocumento.getMasked());
+                                        cliente.setObservacao(binding.edtObservacao.getText().toString());
+                                        cliente.setPerfil(binding.spinner.getSelectedItem().toString());
+                                        cliente.setStatus(binding.checkbox.isChecked());
+
+
+                                        if (editar) {
+                                            cliente.setUrlImagem(clienteSelecionado.getUrlImagem());
+                                            cliente.setId(clienteSelecionado.getId());
+                                            if (resultUri != null) {
+                                                editarDadosImagem(cliente);
+                                            } else {
+                                                editarDados(cliente);
+                                            }
+                                        } else {
+                                            criarConta(cliente);
+                                        }
+
+
                                     } else {
-                                        criarConta(cliente);
+                                        binding.edtConfirmaSenha.requestFocus();
+                                        binding.edtDocumento.setError("documento invalido");
                                     }
-
-
                                 } else {
                                     binding.edtConfirmaSenha.requestFocus();
                                     binding.edtConfirmaSenha.setError("Senha não confere.");
@@ -151,43 +173,6 @@ public class CadastroClienteActivity extends AppCompatActivity {
         }
     }
 
-    public void validaDadosEditar() {
-        String nome = binding.edtNome.getText().toString().trim();
-        String telefone = binding.edtTelefone1.getText().toString();
-        Toast.makeText(getApplicationContext(), telefone, Toast.LENGTH_SHORT).show();
-
-
-        if (!nome.isEmpty()) {
-
-            if (!telefone.isEmpty()) {
-                if (telefone.length() == 15) {
-
-                    binding.progressBar.setVisibility(View.VISIBLE);
-
-                    clienteSelecionado.setId(clienteSelecionado.getId());
-                    clienteSelecionado.setNome(nome);
-                    clienteSelecionado.setTelefone1(telefone);
-                    clienteSelecionado.setPerfil(binding.spinner.getSelectedItem().toString());
-                    clienteSelecionado.setStatus(binding.checkbox.isChecked());
-                    if (resultUri != null) {
-                        editarDadosImagem(clienteSelecionado);
-                    } else {
-                        editarDados(clienteSelecionado);
-                    }
-
-                } else {
-                    binding.edtTelefone1.requestFocus();
-                    binding.edtTelefone1.setError("Fomato do telefone inválido.");
-                }
-            } else {
-                binding.edtTelefone1.requestFocus();
-                binding.edtTelefone1.setError("Informe um número de telefone.");
-            }
-        } else {
-            binding.edtEmail.requestFocus();
-            binding.edtEmail.setError("Informe seu nome.");
-        }
-    }
 
     //---------------------------------------------------- CRIAR CONTA -----------------------------------------------------------------
     private void criarConta(Cliente cliente) {
@@ -211,6 +196,9 @@ public class CadastroClienteActivity extends AppCompatActivity {
 
     //---------------------------------------------------- SALVAR IMAGEM E DADOS -----------------------------------------------------------------
     public void salvarDadosImagem(Cliente cliente) {
+        if (resultUri == null){
+         resultUri = Uri.parse("android.resource://com.example.ecommerceservidorjava/drawable/user_123");
+        }
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("empresas")
                 .child(caminho).child("imagens").child("clientes").child(cliente.getId());
@@ -249,8 +237,7 @@ public class CadastroClienteActivity extends AppCompatActivity {
 
                                     if (task1.isSuccessful()) {
                                         binding.imagemFoto.setImageURI(resultUri);
-                                        FirebaseHelper.getAuth().signOut();
-                                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                        Intent intent = new Intent(getApplicationContext(), ListaClienteActivity.class);
                                         startActivity(intent);
                                         finish();
                                     } else {
@@ -273,12 +260,12 @@ public class CadastroClienteActivity extends AppCompatActivity {
 
 
     }
-
+    //---------------------------------------------------- EDITAR DADOS -----------------------------------------------------------------
     private void editarDados(Cliente cliente) {
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
-                .child("usuarios").child(cliente.getId());
+                .child("clientes").child(cliente.getId());
         databaseReference.setValue(cliente).addOnCompleteListener(task1 -> {
 
 
@@ -395,17 +382,7 @@ public class CadastroClienteActivity extends AppCompatActivity {
             binding.include.textTitulo.setText("Novo");
         }
 
-        binding.btnCriarConta.setOnClickListener(view -> {
-            if (editar) {
-
-                validaDadosEditar();
-            } else {
-
-                validaDadosSalvar();
-            }
-
-
-        });
+        binding.btnCriarConta.setOnClickListener(view -> validaDadosSalvar());
         binding.imgSenha.setOnClickListener(view -> mostrarSenha(senha, binding.imgSenha, binding.edtSenha));
         binding.imgConfirmaSenha.setOnClickListener(view -> mostrarSenha(confirmaSenha, binding.imgConfirmaSenha, binding.edtConfirmaSenha));
         binding.edtDocumento.addTextChangedListener(new TextWatcher() {
@@ -416,19 +393,19 @@ public class CadastroClienteActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-if (binding.edtDocumento.getUnMasked().length() == 11 & mascara){
-    if (mascara2){
-        mascara = false;
-        mascaraCnpj();
-    }else {
-        mascara2 = true;
-    }
+                if (binding.edtDocumento.getUnMasked().length() == 11 & mascara) {
+                    if (mascara2) {
+                        mascara = false;
+                        mascaraCnpj();
+                    } else {
+                        mascara2 = true;
+                    }
 
-}else if(binding.edtDocumento.getUnMasked().length() == 10 & !mascara){
-    mascara = true;
-    mascara2 = false;
-    mascaraCpf();
-}
+                } else if (binding.edtDocumento.getUnMasked().length() == 10 & !mascara) {
+                    mascara = true;
+                    mascara2 = false;
+                    mascaraCpf();
+                }
             }
 
             @Override
@@ -438,18 +415,30 @@ if (binding.edtDocumento.getUnMasked().length() == 11 & mascara){
         });
     }
 
-    private void mascaraCnpj(){
+    private void mascaraCnpj() {
 
-                    Mask mask = new Mask("__.___.___/____-__", '_', MaskStyle.COMPLETABLE);
-                    MaskChangedListener listener = new MaskChangedListener(mask);
-                    binding.edtDocumento.addTextChangedListener(listener);
+        Mask mask = new Mask("__.___.___/____-__", '_', MaskStyle.COMPLETABLE);
+        MaskChangedListener listener = new MaskChangedListener(mask);
+        binding.edtDocumento.addTextChangedListener(listener);
     }
 
-    private void mascaraCpf(){
+    private void mascaraCpf() {
 
         Mask mask = new Mask("___.___.___-__", '_', MaskStyle.COMPLETABLE);
         MaskChangedListener listener = new MaskChangedListener(mask);
         binding.edtDocumento.addTextChangedListener(listener);
+    }
+
+    private boolean verificarDocumento(String documento) {
+        boolean resultado = true;
+        if (!documento.isEmpty()) {
+            if (Validacao.validarCpf(documento) || Validacao.validarCnpj(documento)) {
+                resultado = true;
+            } else {
+                resultado = false;
+            }
+        }
+        return resultado;
     }
 
     //---------------------------------------------------- MOSTRAR SENHA -----------------------------------------------------------------

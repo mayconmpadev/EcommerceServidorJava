@@ -31,6 +31,7 @@ import com.example.ecommerceservidorjava.databinding.ActivityListaCategoriaBindi
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogFormCategoriaBinding;
 import com.example.ecommerceservidorjava.model.Categoria;
+import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
@@ -61,6 +62,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
     private DialogFormCategoriaBinding categoriaBinding;
     private AlertDialog dialog;
     private Categoria categoria;
+    String tipo = "";
     private Uri resultUri;
     private SPM spm = new SPM(this);
 
@@ -69,6 +71,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
         super.onCreate(savedInstanceState);
         binding = ActivityListaCategoriaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        recuperarIntent();
         configSearchView();
         configRvProdutos(filtroCategoriaList);
         recuperaProdutos();
@@ -90,6 +93,18 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
                 }
             }
         });
+    }
+
+    //---------------------------------------------------- RECUPERAR OBJETO -----------------------------------------------------------------
+    private void recuperarIntent() {
+        tipo = getIntent().getStringExtra("tipo");
+
+        if (tipo != null) {
+            DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
+            categoria = new Categoria();
+            categoria.setId(databaseReference.push().getKey());
+            showDialog(false);
+        }
     }
 
     private void configSearchView() {
@@ -339,6 +354,9 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
                                         categoriaBinding.imagemCategoria.setImageURI(resultUri);
                                         resultUri = null;
                                         dialog.dismiss();
+                                        if (tipo != null){
+                                            finish();
+                                        }
 
 
                                     } else {

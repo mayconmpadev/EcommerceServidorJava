@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 
@@ -29,6 +30,7 @@ public class CaminhoServidorActivity extends AppCompatActivity {
     }
 
     private void salvarCaminho(){
+        binding.progressBar.setVisibility(View.VISIBLE);
         DatabaseReference usuarioRef = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(Base64Custom.codificarBase64(binding.editCaminhoBanco.getText().toString().trim()));
         usuarioRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -39,11 +41,13 @@ public class CaminhoServidorActivity extends AppCompatActivity {
                     SPM spm = new SPM(getApplicationContext());
                     spm.setPreferencia("PREFERENCIAS","CAMINHO", caminho);
                     if (!spm.getPreferencia("PREFERENCIAS", "CAMINHO","").equals("")){
+                        binding.progressBar.setVisibility(View.GONE);
                         Intent intent =  new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(intent);
                         finish();
                     }
                 }else {
+                    binding.progressBar.setVisibility(View.GONE);
                     Toast.makeText(getBaseContext(), "Esse caminho não existe", Toast.LENGTH_SHORT).show();
                 }
             }

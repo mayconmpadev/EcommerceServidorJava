@@ -1,10 +1,13 @@
 package com.example.ecommerceservidorjava.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -44,16 +47,21 @@ public class ListaClienteAdapter extends RecyclerView.Adapter<ListaClienteAdapte
         );
     }
 
+    @SuppressLint("UseCompatTextViewDrawableApis")
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Cliente cliente = clienteList.get(position);
 
         holder.binding.textNome.setText(cliente.getNome().substring(0, 1).toUpperCase().concat(cliente.getNome().substring(1)));
         holder.binding.textEmeil.setText(cliente.getEmail());
-        if (cliente.getPerfil().equals("prata")){
-            holder.binding.textPerfil.setBackgroundResource(R.color.prata);
+        if (cliente.getPerfil().equals("bronze")){
+            holder.binding.textPerfil.setCompoundDrawableTintList(ColorStateList.valueOf( ContextCompat.getColor(context, R.color.broze)));
+        }else if (cliente.getPerfil().equals("prata")){
+            holder.binding.textPerfil.setCompoundDrawableTintList(ColorStateList.valueOf( ContextCompat.getColor(context, R.color.prata)));
+        }else {
+            holder.binding.textPerfil.setCompoundDrawableTintList(ColorStateList.valueOf( ContextCompat.getColor(context, R.color.ouro)));
         }
-        holder.binding.textPerfil.setText(cliente.getPerfil());
+
         Glide.with(context).load(cliente.getUrlImagem()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imgFoto);
         if (cliente.isStatus()) {
             holder.binding.textStatus.setText("Ativo");

@@ -35,9 +35,9 @@
                 android:layout_width="180dp"
                 android:layout_height="180dp"
                 android:layout_gravity="center"
+                android:layout_margin="8dp"
                 android:clickable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:layout_margin="8dp"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="5dp">
 
@@ -57,11 +57,13 @@
                     app:tint="@color/color_verde" />
 
             </androidx.cardview.widget.CardView>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Nome" />
+
             <EditText
                 android:id="@+id/edtNome"
                 style="@style/EditText"
@@ -69,162 +71,197 @@
                 android:layout_height="wrap_content"
 
                 android:hint="Nome"
-                android:inputType="textPersonName" />
+                android:inputType="textCapWords" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Email" />
-            <EditText
-                android:id="@+id/edtEmail"
-                style="@style/EditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:id="@+id/linearCamposNaoEditados"
+             android:orientation="vertical">
 
-                android:hint="Email"
-                android:inputType="textEmailAddress" />
+             <TextView
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_marginTop="16dp"
+                 android:text="Email" />
+
+             <EditText
+                 android:id="@+id/edtEmail"
+                 style="@style/EditText"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+
+                 android:hint="Email"
+                 android:inputType="textEmailAddress" />
+
+             <TextView
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_marginTop="16dp"
+                 android:text="Senha" />
+
+             <LinearLayout
+                 android:id="@+id/linearSenha"
+                 style="@style/EditText"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:gravity="center"
+                 android:orientation="horizontal">
+
+                 <EditText
+                     android:id="@+id/edtSenha"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_weight="1"
+                     android:background="@drawable/bg_edit_off"
+
+                     android:hint="Senha"
+                     android:inputType="textPassword"
+                     android:textColor="@color/preto"
+                     android:textColorHint="@color/color_cinza_escuro" />
+
+                 <ImageView
+                     android:id="@+id/imgSenha"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:src="@drawable/ic_action_nao_visivel">
+
+                 </ImageView>
+             </LinearLayout>
+
+             <TextView
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_marginTop="16dp"
+                 android:text="Confirmar" />
+
+             <LinearLayout
+                 android:id="@+id/linearConfirmaSenha"
+                 style="@style/EditText"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:gravity="center"
+                 android:orientation="horizontal">
+
+                 <EditText
+                     android:id="@+id/edtConfirmaSenha"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_weight="1"
+                     android:background="@drawable/bg_edit_off"
+                     android:hint="Confirmar senha"
+                     android:inputType="textPassword"
+                     android:textColor="@color/preto"
+                     android:textColorHint="@color/color_cinza_escuro" />
+
+                 <ImageView
+                     android:id="@+id/imgConfirmaSenha"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:src="@drawable/ic_action_nao_visivel">
+
+                 </ImageView>
+             </LinearLayout>
+
+         </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="CPF/CNPJ" />
+
             <com.santalu.maskara.widget.MaskEditText
                 android:id="@+id/edtDocumento"
                 style="@style/EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="CPF/CNPJ"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 app:mask="___.___.___-__"
                 app:maskCharacter="_"
                 app:maskStyle="completable" />
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginRight="8dp"
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Telefone" />
-        <com.santalu.maskara.widget.MaskEditText
-            android:id="@+id/edtTelefone1"
-            style="@style/EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="(21) 98888-7777"
-            android:inputType="number"
-            app:mask="(__) _____-____"
-            app:maskCharacter="_"
-            app:maskStyle="completable" />
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_weight="1"
-
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Telefone" />
-        <com.santalu.maskara.widget.MaskEditText
-            android:id="@+id/edtTelefone2"
-            style="@style/EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="(21) 98888-7777"
-            android:inputType="number"
-            app:mask="(__) _____-____"
-            app:maskCharacter="_"
-            app:maskStyle="completable" />
-    </LinearLayout>
-</LinearLayout>
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Senha" />
             <LinearLayout
-                android:id="@+id/linearSenha"
-                style="@style/EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:orientation="horizontal">
 
-                <EditText
-                    android:id="@+id/edtSenha"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_edit_off"
+                    android:orientation="vertical">
 
-                    android:hint="Senha"
-                    android:inputType="textPassword"
-                    android:textColor="@color/preto"
-                    android:textColorHint="@color/color_cinza_escuro" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Telefone" />
 
-                <ImageView
-                    android:id="@+id/imgSenha"
-                    android:layout_width="wrap_content"
+                    <com.santalu.maskara.widget.MaskEditText
+                        android:id="@+id/edtTelefone1"
+                        style="@style/EditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="(21) 98888-7777"
+                        android:inputType="numberDecimal"
+                        app:mask="(__) _____-____"
+                        app:maskCharacter="_"
+                        app:maskStyle="completable" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_action_nao_visivel">
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
 
-                </ImageView>
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Telefone" />
+
+                    <com.santalu.maskara.widget.MaskEditText
+                        android:id="@+id/edtTelefone2"
+                        style="@style/EditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="(21) 98888-7777"
+                        android:inputType="numberDecimal"
+                        app:mask="(__) _____-____"
+                        app:maskCharacter="_"
+                        app:maskStyle="completable" />
+                </LinearLayout>
             </LinearLayout>
+
+
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Confirmar" />
-            <LinearLayout
-                android:id="@+id/linearConfirmaSenha"
+                android:text="Observação" />
+
+            <EditText
+                android:id="@+id/edtObservacao"
                 style="@style/EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                >
 
-                <EditText
-                    android:id="@+id/edtConfirmaSenha"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_edit_off"
-                    android:hint="Confirmar senha"
-                    android:inputType="textPassword"
-                    android:textColor="@color/preto"
-                    android:textColorHint="@color/color_cinza_escuro" />
+                android:hint="Observação"
+                android:inputType="textPersonName" />
 
-                <ImageView
-                    android:id="@+id/imgConfirmaSenha"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_action_nao_visivel">
-
-                </ImageView>
-            </LinearLayout>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Perfil" />
+
             <LinearLayout
                 android:id="@+id/linearPerfil"
                 style="@style/EditText"
@@ -232,7 +269,6 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal">
-
 
 
                 <androidx.appcompat.widget.AppCompatSpinner
@@ -244,12 +280,13 @@
 
             </LinearLayout>
 
+
             <CheckBox
                 android:id="@+id/checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
                 android:buttonTint="@color/color_verde"
+                android:checked="true"
                 android:text="Ativo"
                 android:textSize="18sp">
 

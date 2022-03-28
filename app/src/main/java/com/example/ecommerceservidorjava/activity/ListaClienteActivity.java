@@ -14,9 +14,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.example.ecommerceservidorjava.R;
+import com.example.ecommerceservidorjava.adapter.ListaClienteAdapter;
 import com.example.ecommerceservidorjava.adapter.ListaUsuarioAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaClienteBinding;
-import com.example.ecommerceservidorjava.model.Usuario;
+import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
@@ -29,13 +30,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ListaClienteActivity extends AppCompatActivity implements ListaUsuarioAdapter.OnClickLister, ListaUsuarioAdapter.OnLongClickLister {
+public class ListaClienteActivity extends AppCompatActivity implements ListaClienteAdapter.OnClickLister, ListaClienteAdapter.OnLongClickLister {
     ActivityListaClienteBinding binding;
-    private final List<Usuario> usuarioList = new ArrayList<>();
-    List<Usuario> filtroProdutoNomeList = new ArrayList<>();
+    private final List<Cliente> clienteList = new ArrayList<>();
+    List<Cliente> filtroProdutoNomeList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         binding = ActivityListaClienteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -80,7 +82,7 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaUsua
             edtSerachView.clearFocus();
             ocultaTeclado();
             filtroProdutoNomeList.clear();
-            configRvProdutos(usuarioList);
+            configRvProdutos(clienteList);
         });
 
     }
@@ -89,9 +91,9 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaUsua
     private void filtraProdutoNome(String pesquisa) {
 
 
-        for (Usuario usuario : usuarioList) {
-            if (usuario.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
-                filtroProdutoNomeList.add(usuario);
+        for (Cliente cliente : clienteList) {
+            if (cliente.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+                filtroProdutoNomeList.add(cliente);
             }
         }
 
@@ -99,11 +101,11 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaUsua
         configRvProdutos(filtroProdutoNomeList);
     }
 
-    private void configRvProdutos(List<Usuario> usuarioList) {
+    private void configRvProdutos(List<Cliente> clienteList) {
         binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         binding.recycler.setHasFixedSize(true);
-        ListaUsuarioAdapter lojaProdutoAdapter = new ListaUsuarioAdapter(R.layout.item_lista_usuario, usuarioList, getApplicationContext(), true, this, this);
-        binding.recycler.setAdapter(lojaProdutoAdapter);
+        ListaClienteAdapter clienteAdapter = new ListaClienteAdapter(R.layout.item_lista_usuario, clienteList, getApplicationContext(), true, this, this);
+        binding.recycler.setAdapter(clienteAdapter);
     }
 
 
@@ -116,14 +118,14 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaUsua
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                usuarioList.clear();
+                clienteList.clear();
                 if (snapshot.exists()) {
                     for (DataSnapshot ds : snapshot.getChildren()) {
-                        Usuario produto = ds.getValue(Usuario.class);
-                        usuarioList.add(produto);
+                        Cliente cliente = ds.getValue(Cliente.class);
+                        clienteList.add(cliente);
                         binding.progressBar2.setVisibility(View.GONE);
                     }
-                    configRvProdutos(usuarioList);
+                    configRvProdutos(clienteList);
                 } else {
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
@@ -147,16 +149,16 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaUsua
     }
 
 
-    public void onClick(Usuario usuario) {
-        Intent intent = new Intent(getApplicationContext(), CadastroUsuarioActivity.class);
-        intent.putExtra("usuarioSelecionado", usuario);
+    public void onClick(Cliente cliente) {
+        Intent intent = new Intent(getApplicationContext(), CadastroClienteActivity.class);
+        intent.putExtra("clienteSelecionado", cliente);
         startActivity(intent);
 
 
     }
 
     @Override
-    public void onLongClick(Usuario volume) {
+    public void onLongClick(Cliente cliente) {
         //   Intent intent = new Intent(getContext(), EditarVolumeActivity.class);
         // intent.putExtra("numero", volume);
         // startActivity(intent);

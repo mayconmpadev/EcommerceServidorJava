@@ -22,7 +22,9 @@ import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.adapter.ListaProdutoAdapter;
 import com.example.ecommerceservidorjava.adapter.ListaUsuarioAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaProdutoBinding;
+import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogLojaProdutoBinding;
+import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
@@ -182,6 +184,30 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
 
 
+    }
+    //---------------------------------------------------- DIALOGO DE DELETAR -----------------------------------------------------------------
+    private void showDialogCategoria() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                ListaProdutoActivity.this, R.style.CustomAlertDialog2);
+
+        DialogDeleteBinding deleteBinding = DialogDeleteBinding
+                .inflate(LayoutInflater.from(ListaProdutoActivity.this));
+deleteBinding.textMsg.setText("Você ainda não adicionou nenhuma categoria");
+        deleteBinding.btnFechar.setOnClickListener(v -> {
+            dialog.dismiss();
+
+        });
+
+        deleteBinding.btnSim.setOnClickListener(v -> {
+
+            dialog.dismiss();
+        });
+
+        builder.setView(deleteBinding.getRoot());
+
+        dialog = builder.create();
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
     }
 
     private void showDialog(Produto produto) {

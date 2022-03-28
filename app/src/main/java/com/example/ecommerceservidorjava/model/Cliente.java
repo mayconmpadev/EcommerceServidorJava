@@ -12,13 +12,13 @@ public class Cliente implements Serializable {
     private String nome;
     private String email;
     private String urlImagem;
-    private String cpf;
-    private String cnpj;
+    private String documento;
     private String telefone1;
     private String telefone2;
     private String senha;
     private String nascimento;
     private String perfil;
+    private String observacao;
     private boolean status;
 
     public Cliente() {
@@ -56,20 +56,12 @@ public class Cliente implements Serializable {
         this.urlImagem = urlImagem;
     }
 
-    public String getCpf() {
-        return cpf;
+    public String getDocumento() {
+        return documento;
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
 
     public String getTelefone1() {
@@ -86,6 +78,14 @@ public class Cliente implements Serializable {
 
     public void setTelefone2(String telefone2) {
         this.telefone2 = telefone2;
+    }
+    @Exclude
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
     public String getNascimento() {
@@ -112,11 +112,11 @@ public class Cliente implements Serializable {
         this.status = status;
     }
 
-    public String getSenha() {
-        return senha;
+    public String getObservacao() {
+        return observacao;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 }

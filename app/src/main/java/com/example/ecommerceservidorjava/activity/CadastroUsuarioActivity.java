@@ -43,6 +43,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     private SPM spm = new SPM(this);
     private Uri resultUri;
     private Usuario usuarioSelecionado;
+    private Usuario usuario;
     private boolean editar = false;
 
     @Override
@@ -60,6 +61,8 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         if (usuarioSelecionado != null) {
             binding.btnCriarConta.setText("Editar conta");
             editar = true;
+            binding.edtSenha.setText("123456");
+            binding.edtConfirmaSenha.setText("123456");
             binding.edtEmail.setVisibility(View.GONE);
             binding.linearSenha.setVisibility(View.GONE);
             binding.linearConfirmaSenha.setVisibility(View.GONE);
@@ -84,7 +87,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     public void validaDadosSalvar() {
         String nome = binding.edtNome.getText().toString().trim();
         String email = binding.edtEmail.getText().toString().trim();
-        String telefone = binding.edtTelefone.getMasked();
+        String telefone = binding.edtTelefone.getText().toString();
         String senha = binding.edtSenha.getText().toString().trim();
         String confirmaSenha = binding.edtConfirmaSenha.getText().toString().trim();
 
@@ -98,16 +101,22 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
                                     binding.progressBar.setVisibility(View.VISIBLE);
 
-                                    Usuario usuario = new Usuario();
+                                    usuario = new Usuario();
                                     usuario.setNome(nome);
                                     usuario.setEmail(email);
                                     usuario.setTelefone(telefone);
                                     usuario.setSenha(senha);
                                     usuario.setPerfil(binding.spinner.getSelectedItem().toString());
                                     usuario.setStatus(binding.checkbox.isChecked());
+
                                     if (editar) {
                                         usuario.setId(usuarioSelecionado.getId());
-                                        salvarDadosImagem(usuario);
+                                        usuario.setUrlImagem(usuarioSelecionado.getUrlImagem());
+                                        if (resultUri != null) {
+                                            editarDadosImagem(usuario);
+                                        } else {
+                                            editarDados(usuario);
+                                        }
                                     } else {
                                         criarConta(usuario);
                                     }
@@ -143,43 +152,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         }
     }
 
-    public void validaDadosEditar() {
-        String nome = binding.edtNome.getText().toString().trim();
-        String telefone = binding.edtTelefone.getText().toString();
-        Toast.makeText(getApplicationContext(), telefone, Toast.LENGTH_SHORT).show();
 
-
-        if (!nome.isEmpty()) {
-
-            if (!telefone.isEmpty()) {
-                if (telefone.length() == 15) {
-
-                    binding.progressBar.setVisibility(View.VISIBLE);
-
-                    usuarioSelecionado.setId(usuarioSelecionado.getId());
-                    usuarioSelecionado.setNome(nome);
-                    usuarioSelecionado.setTelefone(telefone);
-                    usuarioSelecionado.setPerfil(binding.spinner.getSelectedItem().toString());
-                    usuarioSelecionado.setStatus(binding.checkbox.isChecked());
-                    if (resultUri != null) {
-                        editarDadosImagem(usuarioSelecionado);
-                    } else {
-                        editarDados(usuarioSelecionado);
-                    }
-
-                } else {
-                    binding.edtTelefone.requestFocus();
-                    binding.edtTelefone.setError("Fomato do telefone inválido.");
-                }
-            } else {
-                binding.edtTelefone.requestFocus();
-                binding.edtTelefone.setError("Informe um número de telefone.");
-            }
-        } else {
-            binding.edtEmail.requestFocus();
-            binding.edtEmail.setError("Informe seu nome.");
-        }
-    }
 
     //---------------------------------------------------- CRIAR CONTA -----------------------------------------------------------------
     private void criarConta(Usuario usuario) {
@@ -203,6 +176,9 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
     //---------------------------------------------------- SALVAR IMAGEM E DADOS -----------------------------------------------------------------
     public void salvarDadosImagem(Usuario usuario) {
+        if (resultUri == null){
+            resultUri = Uri.parse("android.resource://com.example.ecommerceservidorjava/drawable/user_123");
+        }
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("empresas")
                 .child(caminho).child("imagens").child("usuarios").child(usuario.getId());
@@ -387,16 +363,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
             binding.include.textTitulo.setText("Novo");
         }
 
-        binding.btnCriarConta.setOnClickListener(view -> {
-            if (editar) {
-
-                validaDadosEditar();
-            } else {
-
-                validaDadosSalvar();
-            }
-
-        });
+        binding.btnCriarConta.setOnClickListener(view -> validaDadosSalvar());
         binding.imgSenha.setOnClickListener(view -> mostrarSenha(senha, binding.imgSenha, binding.edtSenha));
         binding.imgConfirmaSenha.setOnClickListener(view -> mostrarSenha(confirmaSenha, binding.imgConfirmaSenha, binding.edtConfirmaSenha));
     }

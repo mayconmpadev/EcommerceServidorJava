@@ -269,6 +269,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
+                            android:maxLength="2"
                             android:background="@drawable/bg_edit_off"
                             android:inputType="number"
                             android:padding="16dp"
