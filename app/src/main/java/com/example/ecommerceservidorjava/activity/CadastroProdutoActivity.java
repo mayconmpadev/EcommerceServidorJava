@@ -72,6 +72,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     private SPM spm = new SPM(this);
     private ActivityCadastroProdutoBinding binding;
     private boolean bVenda, bLucro;
+    private boolean bCategoria = false;
 
 
     @Override
@@ -218,11 +219,6 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
             String sStatus = produtoSelecionado.getStatus();
 
-            for (int i = 0; i < produtoSelecionado.getIdsCategorias().size(); i++) {
-
-                idsCategoriasSelecionadas.add(produtoSelecionado.getIdsCategorias().get(i));
-
-            }
             String[] arrayStatus = getResources().getStringArray(R.array.perfil_usuario);
             for (int i = 0; i < arrayStatus.length; i++) {
                 if (arrayStatus[i].equals(sStatus)) {
@@ -257,6 +253,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     }
 
     public void showDialogCategorias(View view) {
+        bCategoria = true;
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog2);
 
         categoriaBinding = DialogFormProdutoCategoriaBinding
@@ -487,8 +484,6 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
             if (task1.isSuccessful()) {
                 binding.progressBar3.setVisibility(View.GONE);
-                Intent intent = new Intent(getApplicationContext(), ListaProdutoActivity.class);
-                startActivity(intent);
                 finish();
             }
 
@@ -502,12 +497,14 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         for (int i = 0; i < list.size(); i++) {
             DatabaseReference database = FirebaseHelper.getDatabaseReference()
                     .child("empresas").child(caminho).child("categorias").child(list.get(i)).child("nome");
+            int finalI = i;
             database.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
                         String categoria = snapshot.getValue().toString();
                         categoriaSelecionadaList.add(categoria);
+                        idsCategoriasSelecionadas.add(list.get(finalI));
                         categoriasSelecionadas();
                     }
 
@@ -539,8 +536,13 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                         codigoList.add(produto.getCodigo());
                     }
 
+                    int i = 1;
+                    String codigo = String.format("%05d", Integer.parseInt(Collections.max(codigoList)) + i);
+                    while (codigoList.contains(codigo)) {
+                        codigo = String.format("%05d", Integer.parseInt(Collections.max(codigoList)) + i++);
+                    }
                     if (!editar) {
-                        binding.editCodigo.setText(String.format("%05d", Integer.parseInt(Collections.max(codigoList)) + 1));
+                        binding.editCodigo.setText(codigo);
                     }
 
 
@@ -599,6 +601,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
     //---------------------------------------------------- RECORTE DE IMAGEM -----------------------------------------------------------------
     private void chamarImagens() {
+        bCategoria = false;
         CropImage.activity() // chama intenção de busca a imagem
                 .setAspectRatio(1, 1)
                 .setGuidelines(CropImageView.Guidelines.ON)
@@ -635,6 +638,9 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     @Override
     protected void onRestart() {
         super.onRestart();
-        configRv();
+        if (bCategoria){
+            configRv();
+        }
+
     }
 }
