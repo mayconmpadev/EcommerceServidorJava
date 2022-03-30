@@ -75,13 +75,64 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_btn"
-                    android:textSize="14dp"
                     android:padding="18sp"
                     android:text="Buscar"
                     android:textColor="@color/branco"
+                    android:textSize="14dp"
 
 
                     android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="UF" />
+
+                    <EditText
+                        android:id="@+id/edtUf"
+                        style="@style/EditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="ES"
+                        android:inputType="textPersonName"
+                        android:maxLength="2" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Numero" />
+
+                    <EditText
+                        android:id="@+id/edtNumero"
+                        style="@style/EditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="311"
+
+                        android:inputType="numberDecimal" />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -152,15 +203,13 @@
                 android:hint="Av. Princesa Isabel"
                 android:inputType="textPersonName" />
 
-            <TextView
+
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Perfil" />
+                android:layout_height="0dp"
+                android:layout_weight="1">
 
-
-
-
+            </View>
 
             <android.widget.Button
                 android:id="@+id/btnCriarConta"

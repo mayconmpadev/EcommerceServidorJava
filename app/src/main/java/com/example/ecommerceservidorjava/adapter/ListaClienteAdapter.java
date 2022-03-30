@@ -62,7 +62,7 @@ public class ListaClienteAdapter extends RecyclerView.Adapter<ListaClienteAdapte
             holder.binding.textPerfil.setCompoundDrawableTintList(ColorStateList.valueOf( ContextCompat.getColor(context, R.color.ouro)));
         }
 
-        Glide.with(context).load(cliente.getUrlImagem()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imgFoto);
+        Glide.with(context).load(cliente.getUrlImagem()).centerCrop().placeholder(R.drawable.user_123).into(holder.binding.imgFoto);
         if (cliente.isStatus()) {
             holder.binding.textStatus.setText("Ativo");
         } else {
