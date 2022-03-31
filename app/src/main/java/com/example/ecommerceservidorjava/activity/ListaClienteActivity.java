@@ -154,7 +154,6 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
                 .inflate(LayoutInflater.from(this));
 
 
-
         Glide.with(getApplicationContext())
                 .load(cliente.getUrlImagem())
                 .into(dialogBinding.imagemProduto);
@@ -165,7 +164,7 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
             intent.putExtra("clienteSelecionado", cliente);
             startActivity(intent);
             dialog.dismiss();
-
+            dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
         });
 
         dialogBinding.btnEditar.setOnClickListener(v -> {
@@ -178,13 +177,12 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
         dialogBinding.btnRemover.setOnClickListener(v -> {
             // produto.remover();
             dialog.dismiss();
-           // excluir(produto);
+            // excluir(produto);
             Toast.makeText(getApplicationContext(), "Produto removido com sucesso!", Toast.LENGTH_SHORT).show();
 
         });
 
         dialogBinding.txtNomeProduto.setText(cliente.getNome());
-
 
 
         builder.setView(dialogBinding.getRoot());

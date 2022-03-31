@@ -71,7 +71,8 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     private boolean editar = false;
     private SPM spm = new SPM(this);
     private ActivityCadastroProdutoBinding binding;
-    private boolean bVenda, bLucro;
+    private boolean bVenda = true;
+    private  boolean bLucro = true;
 
 
     @Override

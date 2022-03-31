@@ -267,6 +267,8 @@ deleteBinding.textMsg.setText("Você ainda não adicionou nenhuma categoria");
 
         dialog = builder.create();
         dialog.show();
+        dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
+
     }
 
     private void listEmpty() {

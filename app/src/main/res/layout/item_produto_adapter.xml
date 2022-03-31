@@ -14,6 +14,7 @@
         android:elevation="5dp"
         app:cardCornerRadius="5dp"
         app:cardElevation="5dp"
+
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,6 +30,7 @@
                 android:id="@+id/imagemProduto"
                 android:layout_width="130dp"
                 android:layout_height="130dp"
+                tools:src="@drawable/user_123"
                 app:layout_constraintBottom_toTopOf="@+id/txtNomeProduto"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

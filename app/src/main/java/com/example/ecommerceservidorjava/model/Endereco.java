@@ -12,6 +12,7 @@ public class Endereco implements Serializable {
     private String bairro;
     private String localidade;
     private String uf;
+    private String observacao;
 
     public Endereco() {
     }
@@ -78,5 +79,13 @@ public class Endereco implements Serializable {
 
     public void setUf(String uf) {
         this.uf = uf;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 }

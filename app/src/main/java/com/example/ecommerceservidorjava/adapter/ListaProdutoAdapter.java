@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -13,6 +14,7 @@ import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ItemListaUsuarioBinding;
 import com.example.ecommerceservidorjava.databinding.ItemProdutoAdapterBinding;
 import com.example.ecommerceservidorjava.model.Produto;
+import com.google.firebase.database.collection.LLRBNode;
 
 
 import java.util.List;
@@ -58,7 +60,7 @@ public class ListaProdutoAdapter extends RecyclerView.Adapter<ListaProdutoAdapte
             holder.binding.txtDescontoProduto.setText("-"+ produto.getDesconto()+ "%");
         }
         if (produto.getStatus().equals("rascunho")){
-            holder.binding.cardView.setBackgroundResource(R.drawable.bg_btn);
+            holder.binding.cardView.setForeground(ContextCompat.getDrawable(context,R.color.color_fundo));
         }
         holder.binding.txtValorProduto.setText(produto.getPrecoVenda());
         Glide.with(context).load(produto.getUrlImagem0()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imagemProduto);
