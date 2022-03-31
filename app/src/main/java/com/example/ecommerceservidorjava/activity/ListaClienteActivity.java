@@ -1,23 +1,29 @@
 package com.example.ecommerceservidorjava.activity;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-
+import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.adapter.ListaClienteAdapter;
-import com.example.ecommerceservidorjava.adapter.ListaUsuarioAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaClienteBinding;
+import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
+import com.example.ecommerceservidorjava.databinding.DialogLojaProdutoBinding;
 import com.example.ecommerceservidorjava.model.Cliente;
+import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
@@ -34,6 +40,7 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
     ActivityListaClienteBinding binding;
     private final List<Cliente> clienteList = new ArrayList<>();
     List<Cliente> filtroProdutoNomeList = new ArrayList<>();
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +147,52 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
         });
     }
 
+    private void showDialog(Cliente cliente) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
+
+        DialogClienteOpcoesBinding dialogBinding = DialogClienteOpcoesBinding
+                .inflate(LayoutInflater.from(this));
+
+
+
+        Glide.with(getApplicationContext())
+                .load(cliente.getUrlImagem())
+                .into(dialogBinding.imagemProduto);
+
+
+        dialogBinding.btnEndereco.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), ListaEnderecoActivity.class);
+            intent.putExtra("clienteSelecionado", cliente);
+            startActivity(intent);
+            dialog.dismiss();
+
+        });
+
+        dialogBinding.btnEditar.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), CadastroClienteActivity.class);
+            intent.putExtra("clienteSelecionado", cliente);
+            startActivity(intent);
+            dialog.dismiss();
+        });
+
+        dialogBinding.btnRemover.setOnClickListener(v -> {
+            // produto.remover();
+            dialog.dismiss();
+           // excluir(produto);
+            Toast.makeText(getApplicationContext(), "Produto removido com sucesso!", Toast.LENGTH_SHORT).show();
+
+        });
+
+        dialogBinding.txtNomeProduto.setText(cliente.getNome());
+
+
+
+        builder.setView(dialogBinding.getRoot());
+
+        dialog = builder.create();
+        dialog.show();
+    }
+
 
     // Oculta o teclado do dispotivo
     private void ocultaTeclado() {
@@ -150,9 +203,7 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
 
 
     public void onClick(Cliente cliente) {
-        Intent intent = new Intent(getApplicationContext(), CadastroClienteActivity.class);
-        intent.putExtra("clienteSelecionado", cliente);
-        startActivity(intent);
+        showDialog(cliente);
 
 
     }
