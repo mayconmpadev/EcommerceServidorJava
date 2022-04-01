@@ -7,7 +7,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.ecommerceservidorjava.databinding.ActivityCadastroEnderecoBinding;
+import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.model.Endereco;
+import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
@@ -18,6 +20,7 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
     private SPM spm = new SPM(this);
     private Endereco enderecoSelecionado;
     private Endereco endereco;
+    private Cliente clienteSelecionado;
     private boolean editar = false;
 
     @Override
@@ -32,6 +35,7 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
 
     private void recuperarIntent() {
         enderecoSelecionado = (Endereco) getIntent().getSerializableExtra("enderecoSelecionado");
+        clienteSelecionado = (Cliente) getIntent().getSerializableExtra("clienteSelecionado");
         if (enderecoSelecionado != null) {
             binding.btnCriarConta.setText("Editar conta");
             editar = true;
@@ -43,6 +47,16 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
             binding.edtMunicipio.setText(enderecoSelecionado.getLocalidade());
             binding.edtNumero.setText(enderecoSelecionado.getNumero());
             binding.edtLogradouro.setText(enderecoSelecionado.getLogradouro());
+            endereco.setId(enderecoSelecionado.getId());
+        }else {
+            DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
+            endereco = new Endereco();
+            endereco.setId(databaseReference.push().getKey());
+
+        }
+
+        if (clienteSelecionado != null){
+            editar = false;
         }
     }
 
@@ -58,15 +72,13 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
 
 
         if (!nome.isEmpty()) {
-            if (!cep.isEmpty() & cep.length() == 0) {
+            if (!cep.isEmpty() & cep.length() == 8) {
                 if (!uf.isEmpty() & uf.length() == 2) {
                     if (!bairro.isEmpty()) {
                         if (!municipio.isEmpty()) {
                             if (!logradouro.isEmpty()) {
 
                                 binding.progressBar.setVisibility(View.VISIBLE);
-
-                                endereco = new Endereco();
                                 endereco.setNomeEndereco(nome);
                                 endereco.setCep(cep);
                                 endereco.setUf(uf);
@@ -76,9 +88,9 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
                                 endereco.setLogradouro(logradouro);
                                 endereco.setObservacao(observacao);
 
-                                if (editar) {
-                                    endereco.setId(enderecoSelecionado.getId());
-                                }
+
+
+                                salvarDados(endereco);
                             } else {
                                 binding.edtLogradouro.requestFocus();
                                 binding.edtLogradouro.setError("Senha não confere.");
@@ -97,7 +109,7 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
                 }
             } else {
                 binding.edtCep.requestFocus();
-                binding.edtCep.setError("Informe um número de telefone.");
+                binding.edtCep.setError("CEP nao confere.");
             }
         } else {
             binding.edtNome.requestFocus();
@@ -105,11 +117,11 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
         }
     }
 
-    private void editarDados(Endereco endereco) {
+    private void salvarDados(Endereco endereco) {
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
-                .child("usuarios").child(endereco.getId());
+                .child("enderecos").child(clienteSelecionado.getId()).child(endereco.getId());
         databaseReference.setValue(endereco).addOnCompleteListener(task1 -> {
             if (task1.isSuccessful()) {
 

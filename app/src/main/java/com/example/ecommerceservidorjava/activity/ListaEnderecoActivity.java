@@ -46,6 +46,7 @@ public class ListaEnderecoActivity extends AppCompatActivity implements ListaEnd
         recuperaEndereco();
         binding.floatingActionButton.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CadastroEnderecoActivity.class);
+            intent.putExtra("clienteSelecionado", clienteSelecionado);
             startActivity(intent);
         });
         binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -83,7 +84,7 @@ public class ListaEnderecoActivity extends AppCompatActivity implements ListaEnd
         Query produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas")
                 .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                .child("enderecos").orderByChild(clienteSelecionado.getId());
+                .child("enderecos").child(clienteSelecionado.getId());
         produtoRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

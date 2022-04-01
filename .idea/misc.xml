@@ -7,6 +7,7 @@
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/drawable/ic_vendas.xml" value="0.1" />
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/activity_cadastro_endereco.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/activity_cadastro_produto.xml" value="0.16" />
+        <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/activity_lista_endereco.xml" value="0.22552083333333334" />
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/activity_login.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/activity_splash.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/activity_usuarios.xml" value="0.22447916666666667" />
@@ -14,6 +15,8 @@
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/fragment_geral.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/item_categoria_dialog.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/item_categoria_vertical.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/item_lista_cliente.xml" value="0.22552083333333334" />
+        <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/item_lista_endereco.xml" value="0.22552083333333334" />
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/item_produto_adapter.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable/bg_add.xml" value="0.403125" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable/bg_add_cicle.xml" value="0.403125" />

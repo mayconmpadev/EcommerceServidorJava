@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.ecommerceservidorjava.databinding.ItemListaClienteBinding;
+import com.example.ecommerceservidorjava.databinding.ItemListaEnderecoBinding;
 import com.example.ecommerceservidorjava.model.Endereco;
 
 
@@ -38,7 +39,7 @@ public class ListaEnderecoAdapter extends RecyclerView.Adapter<ListaEnderecoAdap
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         return new MyViewHolder(
-                ItemListaClienteBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
+                ItemListaEnderecoBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
         );
     }
 
@@ -48,7 +49,8 @@ public class ListaEnderecoAdapter extends RecyclerView.Adapter<ListaEnderecoAdap
         Endereco endereco = enderecoList.get(position);
 
         holder.binding.textNome.setText(endereco.getNomeEndereco().substring(0, 1).toUpperCase().concat(endereco.getNomeEndereco().substring(1)));
-        holder.binding.textEmeil.setText(endereco.getLocalidade());
+        holder.binding.textLogradouro.setText("Logradouro: " + endereco.getLocalidade());
+        holder.binding.textNumero.setText("N " + endereco.getNumero());
 
 
 
@@ -67,10 +69,10 @@ public class ListaEnderecoAdapter extends RecyclerView.Adapter<ListaEnderecoAdap
 
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        private ItemListaClienteBinding binding;
+        private ItemListaEnderecoBinding binding;
 
 
-        public MyViewHolder(ItemListaClienteBinding binding) {
+        public MyViewHolder(ItemListaEnderecoBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
