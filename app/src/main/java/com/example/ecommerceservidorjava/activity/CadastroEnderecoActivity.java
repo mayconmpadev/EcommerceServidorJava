@@ -4,24 +4,33 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.ecommerceservidorjava.api.CEPService;
 import com.example.ecommerceservidorjava.databinding.ActivityCadastroEnderecoBinding;
 import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.model.Endereco;
-import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.google.firebase.database.DatabaseReference;
+import com.santalu.maskara.Mask;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CadastroEnderecoActivity extends AppCompatActivity {
     private ActivityCadastroEnderecoBinding binding;
     private SPM spm = new SPM(this);
     private Endereco enderecoSelecionado;
-    private Endereco endereco;
+    private Endereco endereco = new Endereco();
     private Cliente clienteSelecionado;
     private boolean editar = false;
+    private Retrofit retrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,16 +39,15 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         recuperarIntent();
         configClicks();
-
+        iniciaRetrofit();
     }
 
     private void recuperarIntent() {
         enderecoSelecionado = (Endereco) getIntent().getSerializableExtra("enderecoSelecionado");
         clienteSelecionado = (Cliente) getIntent().getSerializableExtra("clienteSelecionado");
         if (enderecoSelecionado != null) {
-            binding.btnCriarConta.setText("Editar conta");
-            editar = true;
-
+            binding.btnCriarConta.setText("salvar");
+            binding.include.textTitulo.setText("Editar Endereço");
             binding.edtCep.setText(enderecoSelecionado.getCep());
             binding.edtNome.setText(enderecoSelecionado.getNomeEndereco());
             binding.edtBairro.setText(enderecoSelecionado.getBairro());
@@ -47,17 +55,21 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
             binding.edtMunicipio.setText(enderecoSelecionado.getLocalidade());
             binding.edtNumero.setText(enderecoSelecionado.getNumero());
             binding.edtLogradouro.setText(enderecoSelecionado.getLogradouro());
+            binding.edtObservacao.setText(enderecoSelecionado.getObservacao());
             endereco.setId(enderecoSelecionado.getId());
-        }else {
+        } else {
             DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
-            endereco = new Endereco();
             endereco.setId(databaseReference.push().getKey());
-
         }
 
-        if (clienteSelecionado != null){
-            editar = false;
-        }
+    }
+
+    private void iniciaRetrofit() {
+        retrofit = new Retrofit
+                .Builder()
+                .baseUrl("https://viacep.com.br/ws/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
     }
 
     public void validaDadosSalvar() {
@@ -80,14 +92,13 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
 
                                 binding.progressBar.setVisibility(View.VISIBLE);
                                 endereco.setNomeEndereco(nome);
-                                endereco.setCep(cep);
+                                endereco.setCep(binding.edtCep.getMasked());
                                 endereco.setUf(uf);
                                 endereco.setNumero(numero);
                                 endereco.setBairro(bairro);
                                 endereco.setLocalidade(municipio);
                                 endereco.setLogradouro(logradouro);
                                 endereco.setObservacao(observacao);
-
 
 
                                 salvarDados(endereco);
@@ -117,11 +128,65 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
         }
     }
 
+    private void buscarCEP() {
+        String cep = binding.edtCep.getText().toString().replace("-", "").replaceAll("_", "");
+        Toast.makeText(getApplicationContext(), cep, Toast.LENGTH_SHORT).show();
+
+        if (cep.length() == 8) {
+
+            //ocultaTeclado();
+
+            binding.progressBar.setVisibility(View.VISIBLE);
+
+            CEPService cepService = retrofit.create(CEPService.class);
+            Call<Endereco> call = cepService.recuperarCEP(cep);
+
+            call.enqueue(new Callback<Endereco>() {
+                @Override
+                public void onResponse(@NonNull Call<Endereco> call, @NonNull Response<Endereco> response) {
+                    if (response.isSuccessful()) {
+
+
+                     Endereco endereco = response.body();
+
+                        if (endereco != null) {
+                            if (endereco.getLocalidade() != null) {
+
+                                binding.edtBairro.setText(endereco.getBairro());
+                                binding.edtMunicipio.setText(endereco.getLocalidade());
+                                binding.edtUf.setText(endereco.getUf());
+                                binding.edtLogradouro.setText(endereco.getLogradouro());
+
+                            } else {
+                                Toast.makeText(getBaseContext(), "Não foi possível recuperar o endereço.", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(getBaseContext(), "Não foi possível recuperar o endereço.", Toast.LENGTH_SHORT).show();
+                        }
+
+                        binding.progressBar.setVisibility(View.GONE);
+
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<Endereco> call, @NonNull Throwable t) {
+                    Toast.makeText(getBaseContext(), "Não foi possível recuperar o endereço.", Toast.LENGTH_SHORT).show();
+                    binding.progressBar.setVisibility(View.GONE);
+                }
+            });
+
+        } else {
+            Toast.makeText(this, "Formato do CEP inválido.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void salvarDados(Endereco endereco) {
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
-                .child("enderecos").child(clienteSelecionado.getId()).child(endereco.getId());
+                .child("enderecos").child(clienteSelecionado.getId())
+                .child(endereco.getId());
         databaseReference.setValue(endereco).addOnCompleteListener(task1 -> {
             if (task1.isSuccessful()) {
 
@@ -136,8 +201,9 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
 
     //---------------------------------------------------- CLIQUES -----------------------------------------------------------------
     private void configClicks() {
-        binding.btnCep.setOnClickListener(view -> validaDadosSalvar());
+        binding.btnCep.setOnClickListener(view -> buscarCEP());
         binding.btnCriarConta.setOnClickListener(view -> validaDadosSalvar());
+        binding.include.include.ibVoltar.setOnClickListener(view -> finish());
     }
 
 

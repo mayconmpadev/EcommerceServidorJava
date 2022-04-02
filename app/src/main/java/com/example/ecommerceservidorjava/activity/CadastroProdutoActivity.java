@@ -25,6 +25,7 @@ import com.bumptech.glide.request.target.Target;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.adapter.CategoriaDialogAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityCadastroProdutoBinding;
+import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogFormProdutoCategoriaBinding;
 import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.model.Produto;
@@ -73,6 +74,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     private ActivityCadastroProdutoBinding binding;
     private boolean bVenda = true;
     private  boolean bLucro = true;
+    private  boolean bCategoria = false;
 
 
     @Override
@@ -258,6 +260,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     }
 
     public void showDialogCategorias(View view) {
+        bCategoria = true;
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog2);
 
         categoriaBinding = DialogFormProdutoCategoriaBinding
@@ -290,6 +293,9 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         dialog.show();
         dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
     }
+
+    //---------------------------------------------------- DIALOGO DE DELETAR -----------------------------------------------------------------
+
 
 
     private void recuperaCategotia() {
@@ -366,7 +372,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         } else if (precoCusto.equals("R$ 0,00")) {
             binding.editPrecoCusto.setError("preencha o campo");
             binding.editPrecoCusto.requestFocus();
-        } else if (precoVenda.contains("R$ 0,00")) {
+        } else if (precoVenda.equals("R$ 0,00")) {
             binding.editPrecoVenda.setError("preencha o campo");
             binding.editPrecoVenda.requestFocus();
         } else if (codigo.isEmpty()) {
@@ -487,9 +493,6 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         databaseReference.setValue(produto).addOnCompleteListener(task1 -> {
 
             if (task1.isSuccessful()) {
-                binding.progressBar3.setVisibility(View.GONE);
-                Intent intent = new Intent(getApplicationContext(), ListaProdutoActivity.class);
-                startActivity(intent);
                 finish();
             }
 
@@ -600,6 +603,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
     //---------------------------------------------------- RECORTE DE IMAGEM -----------------------------------------------------------------
     private void chamarImagens() {
+        bCategoria = false;
         CropImage.activity() // chama intenção de busca a imagem
                 .setAspectRatio(1, 1)
                 .setGuidelines(CropImageView.Guidelines.ON)
@@ -636,6 +640,9 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     @Override
     protected void onRestart() {
         super.onRestart();
-        configRv();
+        if (bCategoria){
+            configRv();
+        }
+
     }
 }

@@ -14,21 +14,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.adapter.ListaProdutoAdapter;
-import com.example.ecommerceservidorjava.adapter.ListaUsuarioAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaProdutoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogLojaProdutoBinding;
-import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,10 +40,12 @@ import java.util.Locale;
 
 public class ListaProdutoActivity extends AppCompatActivity implements ListaProdutoAdapter.OnClickLister, ListaProdutoAdapter.OnLongClickLister {
     ActivityListaProdutoBinding binding;
+    ListaProdutoAdapter produtoAdapter;
     private final List<Produto> produtoList = new ArrayList<>();
     List<Produto> filtroProdutoNomeList = new ArrayList<>();
     private AlertDialog dialog;
     private SPM spm = new SPM(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,8 +115,8 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     private void configRvProdutos(List<Produto> usuarioList) {
         binding.recycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
         binding.recycler.setHasFixedSize(true);
-        ListaProdutoAdapter lojaProdutoAdapter = new ListaProdutoAdapter(R.layout.item_produto_adapter, usuarioList, getApplicationContext(), true, this, this);
-        binding.recycler.setAdapter(lojaProdutoAdapter);
+        produtoAdapter = new ListaProdutoAdapter(R.layout.item_produto_adapter, usuarioList, getApplicationContext(), true, this, this);
+        binding.recycler.setAdapter(produtoAdapter);
     }
 
 
@@ -137,7 +137,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                         binding.textVazio.setVisibility(View.GONE);
                     }
                     configRvProdutos(produtoList);
-                }else {
+                } else {
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
                 }
@@ -151,56 +151,29 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         });
     }
 
-    public void excluir(Produto produto) {
-        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
-        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
-                .child(caminho)
-                .child("produtos").child(produto.getId());
-        databaseReference.removeValue();
-
-        for (int i = 0; i < 3; i++) {
-            StorageReference storageReference = FirebaseHelper.getStorageReference()
-                    .child("empresas")
-                    .child(caminho)
-                    .child("imagens")
-                    .child("produtos")
-                    .child(produto.getId())
-                    .child("imagem" + i );
-            storageReference.delete();
-        }
-
-    }
-
-    public void alterarStatus(Produto produto, boolean tipo) {
-        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
-        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
-                .child(caminho)
-                .child("produtos").child(produto.getId());
-        if (tipo){
-            databaseReference.child("status").setValue("rascunho");
-        }else {
-            databaseReference.child("status").setValue("em estoque");
-        }
-
-
-
-    }
-    //---------------------------------------------------- DIALOGO DE DELETAR -----------------------------------------------------------------
-    private void showDialogCategoria() {
+    private void showDialogDelete(Produto produto) {
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 ListaProdutoActivity.this, R.style.CustomAlertDialog2);
 
         DialogDeleteBinding deleteBinding = DialogDeleteBinding
                 .inflate(LayoutInflater.from(ListaProdutoActivity.this));
-deleteBinding.textMsg.setText("Você ainda não adicionou nenhuma categoria");
+        deleteBinding.textTitulo.setText("Deseja remover o produto " + produto.getNome() + "?");
         deleteBinding.btnFechar.setOnClickListener(v -> {
             dialog.dismiss();
-
+            produtoAdapter.notifyDataSetChanged();
         });
 
         deleteBinding.btnSim.setOnClickListener(v -> {
+            produtoList.remove(produto);
 
+            if (produtoList.isEmpty()) {
+                binding.textVazio.setText("Sua lista esta vazia.");
+            } else {
+                binding.textVazio.setText("");
+            }
             dialog.dismiss();
+            excluir(produto);
+
         });
 
         builder.setView(deleteBinding.getRoot());
@@ -210,26 +183,69 @@ deleteBinding.textMsg.setText("Você ainda não adicionou nenhuma categoria");
         dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
     }
 
+
+    public void excluir(Produto produto) {
+        binding.progressBar2.setVisibility(View.VISIBLE);
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("produtos").child(produto.getId());
+
+
+        for (int i = 0; i < 3; i++) {
+            StorageReference storageReference = FirebaseHelper.getStorageReference()
+                    .child("empresas")
+                    .child(caminho)
+                    .child("imagens")
+                    .child("produtos")
+                    .child(produto.getId())
+                    .child("imagem" + i);
+            int finalI = i;
+            storageReference.delete().addOnSuccessListener(unused -> {
+                if (finalI == 2) {
+                    binding.progressBar2.setVisibility(View.GONE);
+                    databaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            produtoAdapter.notifyDataSetChanged();
+                            Toast.makeText(getApplicationContext(), "Excluido com sucesso!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+        }
+
+    }
+
+    public void alterarStatus(Produto produto, boolean tipo) {
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("produtos").child(produto.getId());
+        if (tipo) {
+            databaseReference.child("status").setValue("rascunho");
+        } else {
+            databaseReference.child("status").setValue("em estoque");
+        }
+
+
+    }
+    //---------------------------------------------------- DIALOGO DE DELETAR -----------------------------------------------------------------
+
     private void showDialog(Produto produto) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogLojaProdutoBinding dialogBinding = DialogLojaProdutoBinding
                 .inflate(LayoutInflater.from(this));
-        if (produto.getStatus().equals("rascunho")){
+        if (produto.getStatus().equals("rascunho")) {
             dialogBinding.cbRascunho.setChecked(true);
-        }else {
+        } else {
             dialogBinding.cbRascunho.setChecked(false);
         }
-
-
-
 
         Glide.with(getApplicationContext())
                 .load(produto.getUrlImagem0())
                 .into(dialogBinding.imagemProduto);
-
-
-
         dialogBinding.cbRascunho.setOnCheckedChangeListener((check, b) -> {
             //  produto.setRascunho(check.isChecked());
             // produto.salvar(false);
@@ -243,25 +259,24 @@ deleteBinding.textMsg.setText("Você ainda não adicionou nenhuma categoria");
         });
 
         dialogBinding.btnRemover.setOnClickListener(v -> {
-            // produto.remover();
-            dialog.dismiss();
-            excluir(produto);
-             Toast.makeText(getApplicationContext(), "Produto removido com sucesso!", Toast.LENGTH_SHORT).show();
 
-            listEmpty();
+            dialog.dismiss();
+            showDialogDelete(produto);
+            listVazia();
+
         });
 
         dialogBinding.txtNomeProduto.setText(produto.getNome());
 
-        dialogBinding.btnFechar.setOnClickListener(v ->{
-            if (dialogBinding.cbRascunho.isChecked()){
+        dialogBinding.btnFechar.setOnClickListener(v -> {
+            if (dialogBinding.cbRascunho.isChecked()) {
                 alterarStatus(produto, true);
                 dialog.dismiss();
-            }else {
+            } else {
                 alterarStatus(produto, false);
                 dialog.dismiss();
             }
-            } );
+        });
 
         builder.setView(dialogBinding.getRoot());
 
@@ -271,10 +286,10 @@ deleteBinding.textMsg.setText("Você ainda não adicionou nenhuma categoria");
 
     }
 
-    private void listEmpty() {
-        if(produtoList.isEmpty()){
+    private void listVazia() {
+        if (produtoList.isEmpty()) {
             binding.textVazio.setText("Nenhum produto cadastrado.");
-        }else {
+        } else {
             binding.textVazio.setText("");
         }
     }
