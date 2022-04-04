@@ -1,0 +1,118 @@
+package com.example.ecommerceservidorjava.model;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class Orcamento implements Serializable {
+    private String id;
+    private String idUsuario;
+    private String idCliente;
+    private String idEndereco;
+    private String data;
+    private String dataStatusPedido;
+    private String status;
+    private String total;
+    private String tipoPagamento;
+    private String desconto;
+    private String acrescimo;
+    private List<ItemVenda> itens;
+
+    public Orcamento() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(String idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public String getIdCliente() {
+        return idCliente;
+    }
+
+    public void setIdCliente(String idCliente) {
+        this.idCliente = idCliente;
+    }
+
+    public String getIdEndereco() {
+        return idEndereco;
+    }
+
+    public void setIdEndereco(String idEndereco) {
+        this.idEndereco = idEndereco;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getDataStatusPedido() {
+        return dataStatusPedido;
+    }
+
+    public void setDataStatusPedido(String dataStatusPedido) {
+        this.dataStatusPedido = dataStatusPedido;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getTotal() {
+        return total;
+    }
+
+    public void setTotal(String total) {
+        this.total = total;
+    }
+
+    public String getTipoPagamento() {
+        return tipoPagamento;
+    }
+
+    public void setTipoPagamento(String tipoPagamento) {
+        this.tipoPagamento = tipoPagamento;
+    }
+
+    public String getDesconto() {
+        return desconto;
+    }
+
+    public void setDesconto(String desconto) {
+        this.desconto = desconto;
+    }
+
+    public String getAcrescimo() {
+        return acrescimo;
+    }
+
+    public void setAcrescimo(String acrescimo) {
+        this.acrescimo = acrescimo;
+    }
+
+    public List<ItemVenda> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemVenda> itens) {
+        this.itens = itens;
+    }
+}

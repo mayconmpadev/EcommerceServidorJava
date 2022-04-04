@@ -1,5 +1,6 @@
 package com.example.ecommerceservidorjava.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,16 +22,17 @@ import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.adapter.ListaClienteAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaClienteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
-import com.example.ecommerceservidorjava.databinding.DialogLojaProdutoBinding;
+import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.model.Cliente;
-import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +40,10 @@ import java.util.Locale;
 
 public class ListaClienteActivity extends AppCompatActivity implements ListaClienteAdapter.OnClickLister, ListaClienteAdapter.OnLongClickLister {
     ActivityListaClienteBinding binding;
+    ListaClienteAdapter clienteAdapter;
     private final List<Cliente> clienteList = new ArrayList<>();
-    List<Cliente> filtroProdutoNomeList = new ArrayList<>();
+    List<Cliente> filtroList = new ArrayList<>();
+    SPM spm = new SPM(this);
     private AlertDialog dialog;
 
     @Override
@@ -85,10 +89,11 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
 
         binding.searchView.findViewById(R.id.search_close_btn).setOnClickListener(v -> {
             EditText edtSerachView = binding.searchView.findViewById(R.id.search_src_text);
+            binding.textVazio.setVisibility(View.GONE);
             edtSerachView.setText("");
             edtSerachView.clearFocus();
             ocultaTeclado();
-            filtroProdutoNomeList.clear();
+            filtroList.clear();
             configRvProdutos(clienteList);
         });
 
@@ -100,18 +105,28 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
 
         for (Cliente cliente : clienteList) {
             if (cliente.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
-                filtroProdutoNomeList.add(cliente);
+                filtroList.add(cliente);
             }
         }
 
 
-        configRvProdutos(filtroProdutoNomeList);
+        configRvProdutos(filtroList);
+
+
+        configRvProdutos(filtroList);
+
+        if(filtroList.isEmpty()){
+            binding.textVazio.setVisibility(View.VISIBLE);
+            binding.textVazio.setText("Nenhum produto encontrado.");
+        }else {
+            binding.textVazio.setVisibility(View.GONE);
+        }
     }
 
     private void configRvProdutos(List<Cliente> clienteList) {
         binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         binding.recycler.setHasFixedSize(true);
-        ListaClienteAdapter clienteAdapter = new ListaClienteAdapter(R.layout.item_lista_usuario, clienteList, getApplicationContext(), true, this, this);
+        clienteAdapter = new ListaClienteAdapter(R.layout.item_lista_usuario, clienteList, getApplicationContext(), true, this, this);
         binding.recycler.setAdapter(clienteAdapter);
     }
 
@@ -175,10 +190,10 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
         });
 
         dialogBinding.btnRemover.setOnClickListener(v -> {
-            // produto.remover();
+
             dialog.dismiss();
-            // excluir(produto);
-            Toast.makeText(getApplicationContext(), "Produto removido com sucesso!", Toast.LENGTH_SHORT).show();
+            showDialogDelete(cliente);
+
 
         });
 
@@ -189,6 +204,68 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
 
         dialog = builder.create();
         dialog.show();
+    }
+
+    private void showDialogDelete(Cliente cliente) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                ListaClienteActivity.this, R.style.CustomAlertDialog2);
+
+        DialogDeleteBinding deleteBinding = DialogDeleteBinding
+                .inflate(LayoutInflater.from(ListaClienteActivity.this));
+        deleteBinding.textTitulo.setText("Deseja remover o produto " + cliente.getNome() + "?");
+        deleteBinding.btnFechar.setOnClickListener(v -> {
+            dialog.dismiss();
+            clienteAdapter.notifyDataSetChanged();
+        });
+
+        deleteBinding.btnSim.setOnClickListener(v -> {
+            clienteList.remove(cliente);
+
+            if (clienteList.isEmpty()) {
+                binding.textVazio.setText("Sua lista esta vazia.");
+            } else {
+                binding.textVazio.setText("");
+            }
+            dialog.dismiss();
+            excluir(cliente);
+
+        });
+
+        builder.setView(deleteBinding.getRoot());
+
+        dialog = builder.create();
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void excluir(Cliente cliente) {
+        binding.progressBar2.setVisibility(View.VISIBLE);
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho);
+
+
+        StorageReference storageReference = FirebaseHelper.getStorageReference()
+                .child("empresas")
+                .child(caminho)
+                .child("imagens")
+                .child("clientes")
+                .child(cliente.getId());
+
+        storageReference.delete().addOnSuccessListener(unused -> {
+
+            binding.progressBar2.setVisibility(View.GONE);
+            databaseReference.child("enderecos").child(cliente.getId()).removeValue().addOnSuccessListener(unused1 -> {
+
+                databaseReference.child("clientes").child(cliente.getId()).removeValue().addOnSuccessListener(unused2 -> {
+                    clienteAdapter.notifyDataSetChanged();
+                    Toast.makeText(getApplicationContext(), "Excluido com sucesso!", Toast.LENGTH_SHORT).show();
+                });
+            });
+
+        });
+
     }
 
 

@@ -14,14 +14,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
+import com.example.ecommerceservidorjava.adapter.CategoriaDialogAdapter;
+import com.example.ecommerceservidorjava.adapter.ListaCategoriaAdapter;
+import com.example.ecommerceservidorjava.adapter.ListaCategoriaHorizontalAdapter;
 import com.example.ecommerceservidorjava.adapter.ListaProdutoAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaProdutoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogLojaProdutoBinding;
+import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
@@ -38,21 +43,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ListaProdutoActivity extends AppCompatActivity implements ListaProdutoAdapter.OnClickLister, ListaProdutoAdapter.OnLongClickLister {
+public class ListaProdutoActivity extends AppCompatActivity implements ListaProdutoAdapter.OnClickLister, ListaProdutoAdapter.OnLongClickLister, ListaCategoriaHorizontalAdapter.OnClickLister {
     ActivityListaProdutoBinding binding;
     ListaProdutoAdapter produtoAdapter;
+
     private final List<Produto> produtoList = new ArrayList<>();
+    private final List<Categoria> categoriaList = new ArrayList<>();
+    private final List<Produto> filtroProdutoCategoriaList = new ArrayList<>();
     List<Produto> filtroProdutoNomeList = new ArrayList<>();
     private AlertDialog dialog;
     private SPM spm = new SPM(this);
-
+    private Categoria categoriaSelecionada;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityListaProdutoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         configSearchView();
-        recuperaProdutos();
+        recuperaProdutos("CFTV");
+        recuperaCategotia();
         binding.floatingActionButton.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CadastroProdutoActivity.class);
             startActivity(intent);
@@ -88,7 +97,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
         binding.searchView.findViewById(R.id.search_close_btn).setOnClickListener(v -> {
             EditText edtSerachView = binding.searchView.findViewById(R.id.search_src_text);
-            //binding.textInfo.setText("");
+            binding.textVazio.setVisibility(View.GONE);
             edtSerachView.setText("");
             edtSerachView.clearFocus();
             ocultaTeclado();
@@ -110,6 +119,13 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
 
         configRvProdutos(filtroProdutoNomeList);
+
+        if(filtroProdutoNomeList.isEmpty()){
+            binding.textVazio.setVisibility(View.VISIBLE);
+            binding.textVazio.setText("Nenhum produto encontrado.");
+        }else {
+            binding.textVazio.setVisibility(View.GONE);
+        }
     }
 
     private void configRvProdutos(List<Produto> usuarioList) {
@@ -119,11 +135,50 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         binding.recycler.setAdapter(produtoAdapter);
     }
 
+    private void configRvCategoria() {
+        binding.rvCategorias.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.rvCategorias.setHasFixedSize(true);
+        ListaCategoriaHorizontalAdapter listaCategoriaAdapter = new ListaCategoriaHorizontalAdapter(R.layout.item_lista_usuario, categoriaList, getApplicationContext(), true, this, true);
+        binding.rvCategorias.setAdapter(listaCategoriaAdapter);
+    }
 
-    private void recuperaProdutos() {
+
+    private void recuperaCategotia() {
+        SPM spm = new SPM(getApplicationContext());
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        Query produtoRef = FirebaseHelper.getDatabaseReference()
+                .child("empresas").child(caminho).child("categorias").orderByChild("nome");
+        produtoRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                categoriaList.clear();
+                if (snapshot.exists()) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        Categoria categoria = ds.getValue(Categoria.class);
+                        categoriaList.add(categoria);
+
+                        if(categoria.isTodas() && categoriaSelecionada == null){
+                            categoriaSelecionada = categoria;
+                        }
+                    }
+                    configRvCategoria();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+
+    private void recuperaProdutos(String nome) {
         SPM spm = new SPM(getApplicationContext());
         Query produtoRef = FirebaseHelper.getDatabaseReference()
-                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""))).child("produtos").orderByChild("nome");
+                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                .child("produtos").orderByChild("nome");
         produtoRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -132,7 +187,10 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                 if (snapshot.exists()) {
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         Produto produto = ds.getValue(Produto.class);
-                        produtoList.add(produto);
+
+                            produtoList.add(produto);
+
+
                         binding.progressBar2.setVisibility(View.GONE);
                         binding.textVazio.setVisibility(View.GONE);
                     }
@@ -150,6 +208,25 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
             }
         });
     }
+
+    private void filtraProdutoCategoria() {
+        if (!categoriaSelecionada.isTodas()) {
+            filtroProdutoCategoriaList.clear();
+            for (Produto produto : produtoList) {
+                if (produto.getIdsCategorias().contains(categoriaSelecionada.getId())) {
+                    if (!filtroProdutoCategoriaList.contains(produto)) {
+                        filtroProdutoCategoriaList.add(produto);
+                    }
+                }
+            }
+
+            configRvProdutos(filtroProdutoCategoriaList);
+        } else {
+            filtroProdutoCategoriaList.clear();
+            configRvProdutos(produtoList);
+        }
+    }
+
 
     private void showDialogDelete(Produto produto) {
         AlertDialog.Builder builder = new AlertDialog.Builder(
@@ -315,4 +392,15 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     }
 
 
+    @Override
+    public void onClick(Categoria categoria) {
+        this.categoriaSelecionada = categoria;
+        Toast.makeText(getApplicationContext(), categoria.getNome(), Toast.LENGTH_SHORT).show();
+        filtraProdutoCategoria();
+    }
+
+    @Override
+    public void onLongClick(Categoria categoria) {
+
+    }
 }

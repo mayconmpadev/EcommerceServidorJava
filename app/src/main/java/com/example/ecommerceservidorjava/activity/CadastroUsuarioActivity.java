@@ -59,7 +59,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     private void recuperarIntent() {
         usuarioSelecionado = (Usuario) getIntent().getSerializableExtra("usuarioSelecionado");
         if (usuarioSelecionado != null) {
-            binding.btnCriarConta.setText("Editar conta");
+            binding.btnCriarConta.setText("Salvar");
             editar = true;
             binding.edtSenha.setText("123456");
             binding.edtConfirmaSenha.setText("123456");

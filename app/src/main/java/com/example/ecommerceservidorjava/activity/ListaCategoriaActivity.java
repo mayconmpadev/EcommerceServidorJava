@@ -31,11 +31,9 @@ import com.example.ecommerceservidorjava.databinding.ActivityListaCategoriaBindi
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogFormCategoriaBinding;
 import com.example.ecommerceservidorjava.model.Categoria;
-import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
-import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,7 +56,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
     private ListaCategoriaAdapter listaCategoriaAdapter;
     private ActivityListaCategoriaBinding binding;
     private final List<Categoria> categoriaList = new ArrayList<>();
-    private List<Categoria> filtroCategoriaList = new ArrayList<>();
+    private List<Categoria> filtroList = new ArrayList<>();
     private DialogFormCategoriaBinding categoriaBinding;
     private AlertDialog dialog;
     private Categoria categoria;
@@ -73,7 +71,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
         setContentView(binding.getRoot());
         recuperarIntent();
         configSearchView();
-        configRvProdutos(filtroCategoriaList);
+        configRvProdutos(filtroList);
         recuperaProdutos();
         //configRv();
         binding.floatingActionButton.setOnClickListener(view -> {
@@ -125,10 +123,11 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
 
         binding.searchView.findViewById(R.id.search_close_btn).setOnClickListener(v -> {
             EditText edtSerachView = binding.searchView.findViewById(R.id.search_src_text);
+            binding.textVazio.setVisibility(View.GONE);
             edtSerachView.setText("");
             edtSerachView.clearFocus();
             ocultaTeclado();
-            filtroCategoriaList.clear();
+            filtroList.clear();
             configRvProdutos(categoriaList);
         });
 
@@ -140,12 +139,19 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
 
         for (Categoria categoria : categoriaList) {
             if (categoria.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
-                filtroCategoriaList.add(categoria);
+                filtroList.add(categoria);
             }
         }
 
 
-        configRvProdutos(filtroCategoriaList);
+        configRvProdutos(filtroList);
+
+        if(filtroList.isEmpty()){
+            binding.textVazio.setVisibility(View.VISIBLE);
+            binding.textVazio.setText("Nenhum categoria encontrada.");
+        }else {
+            binding.textVazio.setVisibility(View.GONE);
+        }
     }
 
     private void configRvProdutos(List<Categoria> categoriaList) {

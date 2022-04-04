@@ -14,11 +14,13 @@
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/item_categoria_dialog.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/item_categoria_vertical.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/item_produto_adapter.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable-xxhdpi/bg_categoria_home.xml" value="0.403125" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable/bg_add.xml" value="0.403125" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable/bg_add_cicle.xml" value="0.403125" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable/bg_borda_arredondada_laranja.xml" value="0.23489583333333333" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable/bg_borda_laranja.xml" value="0.403125" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable/bg_btn.xml" value="0.403125" />
+        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable/bg_categoria_home.xml" value="0.403125" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable/bg_dialog.xml" value="0.403125" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable/bg_edit_off.xml" value="0.1546875" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable/bg_edit_on.xml" value="0.23489583333333333" />
@@ -79,6 +81,7 @@
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/item_produto_adapter.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/toolbar_volta.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/toolbar_volta_add.xml" value="0.21875" />
+        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/toolbar_volta_pesquisa.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/toolbar_volta_salvar.xml" value="0.21875" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/menu/menu_usuario.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/app/src/main/res/drawable/bg_borda_cinza.xml" value="0.403125" />
