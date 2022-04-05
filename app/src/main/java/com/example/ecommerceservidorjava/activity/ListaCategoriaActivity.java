@@ -3,6 +3,7 @@ package com.example.ecommerceservidorjava.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -320,7 +321,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
                 .child(caminho)
                 .child("categorias").child(categoria.getId());
         StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("empresas")
-                .child(caminho).child("imagens").child("categorias").child(categoria.getId());
+                .child(caminho).child("imagens").child("categorias").child(categoria.getId() + ".png");
 
 
         Glide.with(this).asBitmap().load(resultUri).apply(new RequestOptions().override(1024, 768))
@@ -335,7 +336,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
 
                         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
-                        resource.compress(Bitmap.CompressFormat.JPEG, 70, bytes);
+                        resource.compress(Bitmap.CompressFormat.PNG, 70, bytes);
 
                         ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes.toByteArray());
 
@@ -414,6 +415,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
         CropImage.activity() // chama intenção de busca a imagem
                 .setAspectRatio(1, 1)
                 .setGuidelines(CropImageView.Guidelines.ON)
+                .setOutputCompressFormat(Bitmap.CompressFormat.PNG)
                 .start(this);
     }
 

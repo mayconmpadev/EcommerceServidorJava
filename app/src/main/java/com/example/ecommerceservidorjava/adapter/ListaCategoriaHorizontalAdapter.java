@@ -63,11 +63,11 @@ public class ListaCategoriaHorizontalAdapter extends RecyclerView.Adapter<ListaC
             if(row_index == holder.getAdapterPosition()){
                 holder.itemView.setBackgroundResource(R.drawable.bg_categoria_home);
                 holder.binding.nomeCategoria.setTextColor(Color.parseColor("#FFFFFF"));
-               // holder.binding.imagemCategoria.setColorFilter(Color.parseColor("#FFFFFF"), PorterDuff.Mode.SRC_IN);
+                holder.binding.imagemCategoria.setColorFilter(Color.parseColor("#FFFFFF"), PorterDuff.Mode.SRC_IN);
             }else {
                 holder.itemView.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 holder.binding.nomeCategoria.setTextColor(Color.parseColor("#808080"));
-               // holder.binding.imagemCategoria.setColorFilter(Color.parseColor("#000000"), PorterDuff.Mode.SRC_IN);
+               holder.binding.imagemCategoria.setColorFilter(Color.parseColor("#000000"), PorterDuff.Mode.SRC_IN);
             }
 
         } else {
