@@ -450,9 +450,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
 
     @Override
     public void onLongClick(Categoria categoria) {
-        //   Intent intent = new Intent(getContext(), EditarVolumeActivity.class);
-        // intent.putExtra("numero", volume);
-        // startActivity(intent);
+
     }
 
 

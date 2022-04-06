@@ -27,6 +27,21 @@
         app:queryBackground="@android:color/transparent"
         app:queryHint="Bermudas, camisas, sapatos e etc..." />
 
+    <TextView
+        android:id="@+id/textTitulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+
+        android:text="Categorias"
+        android:textColor="@color/color_laranja"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/cardView4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView4"
         android:layout_width="match_parent"
@@ -38,7 +53,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView">
+        app:layout_constraintTop_toBottomOf="@+id/textTitulo">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCategorias"

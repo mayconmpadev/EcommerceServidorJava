@@ -40,6 +40,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -147,7 +149,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         SPM spm = new SPM(getApplicationContext());
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         Query produtoRef = FirebaseHelper.getDatabaseReference()
-                .child("empresas").child(caminho).child("categorias").orderByChild("nome");
+                .child("empresas").child(caminho).child("categorias").orderByChild("todas");
         produtoRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -162,6 +164,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                             categoriaSelecionada = categoria;
                         }
                     }
+                    Collections.reverse(categoriaList);
                     configRvCategoria();
                 }
             }
