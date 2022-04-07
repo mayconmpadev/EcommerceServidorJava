@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
     android:clickable="true"
     android:orientation="vertical">
 
+<androidx.cardview.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/cardView"
+    android:layout_margin="4dp"
+    android:elevation="5dp"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="5dp">
 
     <LinearLayout
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+
         android:orientation="horizontal">
 
         <View
@@ -22,6 +31,7 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="vertical">
 
 
@@ -61,6 +71,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="6dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -111,16 +122,15 @@
         </RelativeLayout>
 
         <View
-            android:layout_width="15dp"
-            android:layout_height="0dp" />
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:background="@color/color_verde"/>
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:background="@color/color_cinza"
-        android:layout_height="1dp">
+</androidx.cardview.widget.CardView>
 
-    </View>
+
+
 
 </LinearLayout>
