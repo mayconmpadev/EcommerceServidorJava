@@ -18,6 +18,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EcommerceServidorJava">
         <activity
+            android:name=".activity.CadastroOrcamentoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.ListaOrcamentoActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.CadastroEnderecoActivity"
             android:exported="false" />
         <activity
