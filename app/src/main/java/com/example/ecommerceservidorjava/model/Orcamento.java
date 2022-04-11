@@ -5,9 +5,9 @@ import java.util.List;
 
 public class Orcamento implements Serializable {
     private String id;
-    private String idUsuario;
-    private String idCliente;
-    private String idEndereco;
+    private Usuario idUsuario;
+    private Cliente idCliente;
+    private Endereco idEndereco;
     private String data;
     private String dataStatusPedido;
     private String status;
@@ -28,27 +28,27 @@ public class Orcamento implements Serializable {
         this.id = id;
     }
 
-    public String getIdUsuario() {
+    public Usuario getIdUsuario() {
         return idUsuario;
     }
 
-    public void setIdUsuario(String idUsuario) {
+    public void setIdUsuario(Usuario idUsuario) {
         this.idUsuario = idUsuario;
     }
 
-    public String getIdCliente() {
+    public Cliente getIdCliente() {
         return idCliente;
     }
 
-    public void setIdCliente(String idCliente) {
+    public void setIdCliente(Cliente idCliente) {
         this.idCliente = idCliente;
     }
 
-    public String getIdEndereco() {
+    public Endereco getIdEndereco() {
         return idEndereco;
     }
 
-    public void setIdEndereco(String idEndereco) {
+    public void setIdEndereco(Endereco idEndereco) {
         this.idEndereco = idEndereco;
     }
 

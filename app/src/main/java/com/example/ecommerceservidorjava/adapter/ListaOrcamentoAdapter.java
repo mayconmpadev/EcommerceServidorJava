@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
-import com.example.ecommerceservidorjava.databinding.ItemListaClienteBinding;
+import com.example.ecommerceservidorjava.databinding.ItemListaOrcamentoBinding;
 import com.example.ecommerceservidorjava.model.Orcamento;
 
 
@@ -44,36 +44,32 @@ public class ListaOrcamentoAdapter extends RecyclerView.Adapter<ListaOrcamentoAd
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         return new MyViewHolder(
-                ItemListaClienteBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
+                ItemListaOrcamentoBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
         );
     }
 
     @SuppressLint("UseCompatTextViewDrawableApis")
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Orcamento cliente = clienteList.get(position);
+        Orcamento orcamento = clienteList.get(position);
 
-        holder.binding.textNome.setText(cliente.getNome().substring(0, 1).toUpperCase().concat(cliente.getNome().substring(1)));
-        holder.binding.textEmeil.setText(cliente.getEmail());
-        if (cliente.getPerfil().equals("bronze")){
-            holder.binding.textPerfil.setCompoundDrawableTintList(ColorStateList.valueOf( ContextCompat.getColor(context, R.color.broze)));
-        }else if (cliente.getPerfil().equals("prata")){
-            holder.binding.textPerfil.setCompoundDrawableTintList(ColorStateList.valueOf( ContextCompat.getColor(context, R.color.prata)));
+        holder.binding.textNome.setText(orcamento.getIdCliente().getNome().substring(0, 1).toUpperCase().concat(orcamento.getIdCliente().getNome().substring(1)));
+        holder.binding.textEmeil.setText(orcamento.getIdCliente().getEmail());
+        if (orcamento.getStatus().equals("bronze")){
+            holder.binding.viewStatus.setBackgroundResource(R.color.color_verde);
+        }else if (orcamento.getStatus().equals("prata")){
+            holder.binding.viewStatus.setBackgroundResource(R.color.color_verde);
         }else {
-            holder.binding.textPerfil.setCompoundDrawableTintList(ColorStateList.valueOf( ContextCompat.getColor(context, R.color.ouro)));
+            holder.binding.viewStatus.setBackgroundResource(R.color.color_verde);
         }
 
-        Glide.with(context).load(cliente.getUrlImagem()).centerCrop().placeholder(R.drawable.user_123).into(holder.binding.imgFoto);
-        if (cliente.isStatus()) {
-            holder.binding.textStatus.setText("Ativo");
-        } else {
-            holder.binding.textStatus.setText("Bloqueado");
-        }
+        Glide.with(context).load(orcamento.getIdCliente().getUrlImagem()).centerCrop().placeholder(R.drawable.user_123).into(holder.binding.imgFoto);
 
 
-        holder.binding.root.setOnClickListener(v -> onClickLister.onClick(cliente));
+
+        holder.binding.root.setOnClickListener(v -> onClickLister.onClick(orcamento));
         holder.itemView.setOnLongClickListener(v -> {
-            onLongClickLister.onLongClick(cliente);
+            onLongClickLister.onLongClick(orcamento);
             return true;
         });
     }
@@ -85,10 +81,10 @@ public class ListaOrcamentoAdapter extends RecyclerView.Adapter<ListaOrcamentoAd
 
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        private ItemListaClienteBinding binding;
+        private ItemListaOrcamentoBinding binding;
 
 
-        public MyViewHolder(ItemListaClienteBinding binding) {
+        public MyViewHolder(ItemListaOrcamentoBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }

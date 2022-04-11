@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.ecommerceservidorjava.activity.ListaCategoriaActivity;
 import com.example.ecommerceservidorjava.activity.ListaClienteActivity;
+import com.example.ecommerceservidorjava.activity.ListaOrcamentoActivity;
 import com.example.ecommerceservidorjava.activity.ListaUsuarioActivity;
 import com.example.ecommerceservidorjava.activity.ListaProdutoActivity;
 import com.example.ecommerceservidorjava.databinding.FragmentGeralBinding;
@@ -63,6 +64,12 @@ private FragmentGeralBinding binding;
 
         binding.cardClientes.setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), ListaClienteActivity.class);
+            startActivity(intent);
+
+        });
+
+        binding.cardOrcamento.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), ListaOrcamentoActivity.class);
             startActivity(intent);
 
         });

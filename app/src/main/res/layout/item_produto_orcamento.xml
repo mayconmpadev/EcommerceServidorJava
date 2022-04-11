@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lyt_parent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="H,3:5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+
+                        <ImageView
+                            android:id="@+id/imagemProduto"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/grey_10"
+                            android:scaleType="centerCrop" />
+
+                        <LinearLayout
+                            android:id="@+id/lytQuantidade"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/colorOverlayPrimary"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <TextView
+                                android:id="@+id/textQuantidade"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                                android:textColor="@android:color/white"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="no carrinho"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                                android:textColor="@android:color/white" />
+
+                        </LinearLayout>
+
+
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/grey_3" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="5dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="10dp">
+
+                        <TextView
+                            android:id="@+id/textNome"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="Product name"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                            android:textColor="@color/grey_80" />
+
+                        <TextView
+                            android:id="@+id/textDescricao"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:text="Product Brief"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                            android:textColor="@color/grey_40" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="5dp" />
+
+                        <TextView
+                            android:id="@+id/textValorAntigo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Rp 10000"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                            android:textColor="@color/grey_40" />
+
+                        <TextView
+                            android:id="@+id/textValorNovo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Rp 10000"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                            android:textColor="@color/colorPrice" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="5dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btn_comprar"
+                            style="@style/Widget.AppCompat.Button.Borderless"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:background="@drawable/button_buy_shape"
+                            android:text="BUY"
+                            android:textColor="@color/grey_80" />
+
+                        <LinearLayout
+                            android:id="@+id/lyt_plus_minus"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <ImageButton
+                                android:id="@+id/btnMenos"
+                                android:layout_width="0dp"
+                                android:layout_height="30dp"
+                                android:layout_weight="1"
+
+                                android:background="@drawable/button_plus_minus_shape"
+                                app:srcCompat="@drawable/ic_minus" />
+
+                            <View
+                                android:layout_width="15dp"
+                                android:layout_height="0dp" />
+
+                            <ImageButton
+                                android:id="@+id/btnMais"
+                                android:layout_width="0dp"
+                                android:layout_height="30dp"
+                                android:layout_weight="1"
+
+                                android:background="@drawable/button_plus_minus_shape"
+                                app:srcCompat="@drawable/ic_plus" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

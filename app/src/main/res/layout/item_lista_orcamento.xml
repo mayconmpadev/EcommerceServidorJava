@@ -133,6 +133,7 @@
         </RelativeLayout>
 
         <View
+            android:id="@+id/viewStatus"
             android:layout_width="8dp"
             android:layout_height="match_parent"
             android:background="@color/color_verde"/>

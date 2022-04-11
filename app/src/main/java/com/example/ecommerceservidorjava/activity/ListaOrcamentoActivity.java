@@ -19,12 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
-import com.example.ecommerceservidorjava.adapter.ListaClienteAdapter;
-import com.example.ecommerceservidorjava.databinding.ActivityListaClienteBinding;
+import com.example.ecommerceservidorjava.adapter.ListaOrcamentoAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaOrcamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
-import com.example.ecommerceservidorjava.model.Cliente;
+import com.example.ecommerceservidorjava.model.Orcamento;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
@@ -39,11 +38,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ListaOrcamentoActivity extends AppCompatActivity implements ListaClienteAdapter.OnClickLister, ListaClienteAdapter.OnLongClickLister {
+public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOrcamentoAdapter.OnClickLister, ListaOrcamentoAdapter.OnLongClickLister {
     ActivityListaOrcamentoBinding binding;
-    ListaClienteAdapter clienteAdapter;
-    private final List<Cliente> clienteList = new ArrayList<>();
-    List<Cliente> filtroList = new ArrayList<>();
+    ListaOrcamentoAdapter orcamentoAdapter;
+    private final List<Orcamento> orcamentoList = new ArrayList<>();
+    List<Orcamento> filtroList = new ArrayList<>();
     SPM spm = new SPM(this);
     private AlertDialog dialog;
 
@@ -95,7 +94,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaCl
             edtSerachView.clearFocus();
             ocultaTeclado();
             filtroList.clear();
-            configRvProdutos(clienteList);
+            configRvProdutos(orcamentoList);
         });
 
     }
@@ -104,9 +103,9 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaCl
     private void filtraProdutoNome(String pesquisa) {
 
 
-        for (Cliente cliente : clienteList) {
-            if (cliente.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
-                filtroList.add(cliente);
+        for (Orcamento orcamento : orcamentoList) {
+            if (orcamento.getIdCliente().getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+                filtroList.add(orcamento);
             }
         }
 
@@ -124,11 +123,11 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaCl
         }
     }
 
-    private void configRvProdutos(List<Cliente> clienteList) {
+    private void configRvProdutos(List<Orcamento> orcamentoList) {
         binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         binding.recycler.setHasFixedSize(true);
-        clienteAdapter = new ListaClienteAdapter(R.layout.item_lista_usuario, clienteList, getApplicationContext(), true, this, this);
-        binding.recycler.setAdapter(clienteAdapter);
+        orcamentoAdapter = new ListaOrcamentoAdapter(R.layout.item_lista_usuario, orcamentoList, getApplicationContext(), true, this, this);
+        binding.recycler.setAdapter(orcamentoAdapter);
     }
 
 
@@ -136,19 +135,19 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaCl
         SPM spm = new SPM(getApplicationContext());
         //String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
         Query produtoRef = FirebaseHelper.getDatabaseReference()
-                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""))).child("clientes").orderByChild("nome");
+                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""))).child("orcamentos").orderByChild("nome");
         produtoRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                clienteList.clear();
+                orcamentoList.clear();
                 if (snapshot.exists()) {
                     for (DataSnapshot ds : snapshot.getChildren()) {
-                        Cliente cliente = ds.getValue(Cliente.class);
-                        clienteList.add(cliente);
+                        Orcamento cliente = ds.getValue(Orcamento.class);
+                        orcamentoList.add(cliente);
                         binding.progressBar2.setVisibility(View.GONE);
                     }
-                    configRvProdutos(clienteList);
+                    configRvProdutos(orcamentoList);
                 } else {
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
@@ -163,7 +162,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaCl
         });
     }
 
-    private void showDialog(Cliente cliente) {
+    private void showDialog(Orcamento cliente) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogClienteOpcoesBinding dialogBinding = DialogClienteOpcoesBinding
@@ -171,7 +170,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaCl
 
 
         Glide.with(getApplicationContext())
-                .load(cliente.getUrlImagem())
+                .load(cliente.getIdCliente().getUrlImagem())
                 .into(dialogBinding.imagemProduto);
 
 
@@ -198,7 +197,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaCl
 
         });
 
-        dialogBinding.txtNomeProduto.setText(cliente.getNome());
+        dialogBinding.txtNomeProduto.setText(cliente.getIdCliente().getNome());
 
 
         builder.setView(dialogBinding.getRoot());
@@ -207,22 +206,22 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaCl
         dialog.show();
     }
 
-    private void showDialogDelete(Cliente cliente) {
+    private void showDialogDelete(Orcamento cliente) {
         AlertDialog.Builder builder = new AlertDialog.Builder(
-                ListaClienteActivity.this, R.style.CustomAlertDialog2);
+                ListaOrcamentoActivity.this, R.style.CustomAlertDialog2);
 
         DialogDeleteBinding deleteBinding = DialogDeleteBinding
-                .inflate(LayoutInflater.from(ListaClienteActivity.this));
-        deleteBinding.textTitulo.setText("Deseja remover o produto " + cliente.getNome() + "?");
+                .inflate(LayoutInflater.from(ListaOrcamentoActivity.this));
+        deleteBinding.textTitulo.setText("Deseja remover o produto " + cliente.getIdCliente().getNome() + "?");
         deleteBinding.btnFechar.setOnClickListener(v -> {
             dialog.dismiss();
-            clienteAdapter.notifyDataSetChanged();
+            orcamentoAdapter.notifyDataSetChanged();
         });
 
         deleteBinding.btnSim.setOnClickListener(v -> {
-            clienteList.remove(cliente);
+            orcamentoList.remove(cliente);
 
-            if (clienteList.isEmpty()) {
+            if (orcamentoList.isEmpty()) {
                 binding.textVazio.setText("Sua lista esta vazia.");
             } else {
                 binding.textVazio.setText("");
@@ -240,7 +239,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaCl
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void excluir(Cliente cliente) {
+    public void excluir(Orcamento cliente) {
         binding.progressBar2.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
@@ -260,7 +259,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaCl
             databaseReference.child("enderecos").child(cliente.getId()).removeValue().addOnSuccessListener(unused1 -> {
 
                 databaseReference.child("clientes").child(cliente.getId()).removeValue().addOnSuccessListener(unused2 -> {
-                    clienteAdapter.notifyDataSetChanged();
+                    orcamentoAdapter.notifyDataSetChanged();
                     Toast.makeText(getApplicationContext(), "Excluido com sucesso!", Toast.LENGTH_SHORT).show();
                 });
             });
@@ -278,17 +277,15 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaCl
     }
 
 
-    public void onClick(Cliente cliente) {
+    public void onClick(Orcamento cliente) {
         showDialog(cliente);
 
 
     }
 
     @Override
-    public void onLongClick(Cliente cliente) {
-        //   Intent intent = new Intent(getContext(), EditarVolumeActivity.class);
-        // intent.putExtra("numero", volume);
-        // startActivity(intent);
+    public void onLongClick(Orcamento cliente) {
+
     }
 
 
