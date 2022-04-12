@@ -71,10 +71,10 @@ public class CadastroOrcamentoAdapter extends RecyclerView.Adapter<CadastroOrcam
         holder.binding.textValorNovo.setText(produto.getPrecoVenda());
 
         Glide.with(context).load(produto.getUrlImagem0()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imagemProduto);
-        holder.binding.lytParent.setOnClickListener(v -> onClickLister.onClick(position, produto, "detalhe"));
-        holder.binding.btnComprar.setOnClickListener(v -> onClickLister.onClick(position, produto, "mais"));
-        holder.binding.btnMais.setOnClickListener(v -> onClickLister.onClick(position, produto, "mais"));
-        holder.binding.btnMenos.setOnClickListener(v -> onClickLister.onClick(position, produto, "menos"));
+        holder.binding.lytParent.setOnClickListener(v -> onClickLister.onClick(position, itemVenda, "detalhe"));
+        holder.binding.btnComprar.setOnClickListener(v -> onClickLister.onClick(position, itemVenda, "mais"));
+        holder.binding.btnMais.setOnClickListener(v -> onClickLister.onClick(position, itemVenda, "mais"));
+        holder.binding.btnMenos.setOnClickListener(v -> onClickLister.onClick(position, itemVenda, "menos"));
 
     }
 
@@ -96,7 +96,7 @@ public class CadastroOrcamentoAdapter extends RecyclerView.Adapter<CadastroOrcam
     }
 
     public interface OnClickLister {
-        void onClick(int position, Produto usuario, String operacao);
+        void onClick(int position, ItemVenda itemVenda, String operacao);
 
     }
 

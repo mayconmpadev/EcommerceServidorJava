@@ -56,6 +56,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
     private final List<Produto> filtroProdutoCategoriaList = new ArrayList<>();
     private List<Produto> filtroProdutoNomeList = new ArrayList<>();
     private List<ItemVenda> filtroItemVendaList = new ArrayList<>();
+    private List<ItemVenda> filtroItemVendaCategotia = new ArrayList<>();
 
     private AlertDialog dialog;
     private SPM spm = new SPM(this);
@@ -117,7 +118,6 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
 
             }
         }
-
 
 
         configRvProdutos(filtroProdutoNomeList, filtroItemVendaList);
@@ -194,6 +194,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
                         produtoList.add(produto);
                         ItemVenda itemVenda = new ItemVenda();
                         itemVenda.setIdProduto(produto.getId());
+                        itemVenda.setIdsCategorias(produto.getIdsCategorias());
                         itemVenda.setCodigo(produto.getCodigo());
                         itemVenda.setNome(produto.getNome());
                         itemVenda.setDescricao(produto.getDescricao());
@@ -222,6 +223,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
     private void filtraProdutoCategoria() {
         if (!categoriaSelecionada.isTodas()) {
             filtroProdutoCategoriaList.clear();
+            filtroItemVendaCategotia.clear();
             for (Produto produto : produtoList) {
                 if (produto.getIdsCategorias().contains(categoriaSelecionada.getId())) {
                     if (!filtroProdutoCategoriaList.contains(produto)) {
@@ -230,10 +232,18 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
                 }
             }
 
+            for (ItemVenda itemVenda : itemVendaList) {
+                if (itemVenda.getIdsCategorias().contains(categoriaSelecionada.getId())) {
+                    if (!filtroItemVendaCategotia.contains(itemVenda)) {
+                        filtroItemVendaCategotia.add(itemVenda);
+                    }
+                }
+            }
 
-            configRvProdutos(filtroProdutoCategoriaList, filtroItemVendaList);
+            configRvProdutos(filtroProdutoCategoriaList, filtroItemVendaCategotia);
         } else {
             filtroProdutoCategoriaList.clear();
+            filtroItemVendaCategotia.clear();
             configRvProdutos(produtoList, itemVendaList);
         }
     }
@@ -382,15 +392,15 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
         }
     }
 
-    private void somar(int position, Produto produto) {
+    private void somar(int position, ItemVenda itemVenda) {
 
-        itemVendaList.get(position).setQtd(itemVendaList.get(position).getQtd() + 1);
+        itemVenda.setQtd(itemVenda.getQtd() + 1);
 
         produtoAdapter.notifyItemChanged(position);
     }
 
-    private void subtrair(int position, Produto produto) {
-        itemVendaList.get(position).setQtd(itemVendaList.get(position).getQtd() - 1);
+    private void subtrair(int position, ItemVenda itemVenda) {
+        itemVenda.setQtd(itemVenda.getQtd() - 1);
 
         produtoAdapter.notifyItemChanged(position);
     }
@@ -407,7 +417,6 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
     @Override
     public void onClick(Categoria categoria) {
         this.categoriaSelecionada = categoria;
-        Toast.makeText(getApplicationContext(), categoria.getNome(), Toast.LENGTH_SHORT).show();
         filtraProdutoCategoria();
     }
 
@@ -417,13 +426,13 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
     }
 
     @Override
-    public void onClick(int position, Produto produto, String operacao) {
+    public void onClick(int position, ItemVenda itemVenda, String operacao) {
 
         if (operacao.equals("mais")) {
-            somar(position, produto);
+            somar(position, itemVenda);
         }
         if (operacao.equals("menos")) {
-            subtrair(position, produto);
+            subtrair(position, itemVenda);
         }
 
 

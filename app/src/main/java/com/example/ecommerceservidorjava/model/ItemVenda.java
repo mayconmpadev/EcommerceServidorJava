@@ -1,6 +1,8 @@
 package com.example.ecommerceservidorjava.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemVenda implements Serializable {
     private int id;
@@ -11,7 +13,7 @@ public class ItemVenda implements Serializable {
     private String foto;
     private String preco;
     private int qtd = 0;
-
+    private List<String> idsCategorias = new ArrayList<>();
     public ItemVenda() {
     }
 
@@ -77,5 +79,13 @@ public class ItemVenda implements Serializable {
 
     public void setQtd(int qtd) {
         this.qtd = qtd;
+    }
+
+    public List<String> getIdsCategorias() {
+        return idsCategorias;
+    }
+
+    public void setIdsCategorias(List<String> idsCategorias) {
+        this.idsCategorias = idsCategorias;
     }
 }
