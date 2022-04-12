@@ -50,9 +50,13 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
     private final List<Produto> produtoList = new ArrayList<>();
     private final List<Orcamento> orcamentoList = new ArrayList<>();
     private final List<ItemVenda> itemVendaList = new ArrayList<>();
+
     private final List<Categoria> categoriaList = new ArrayList<>();
+
     private final List<Produto> filtroProdutoCategoriaList = new ArrayList<>();
-    List<Produto> filtroProdutoNomeList = new ArrayList<>();
+    private List<Produto> filtroProdutoNomeList = new ArrayList<>();
+    private List<ItemVenda> filtroItemVendaList = new ArrayList<>();
+
     private AlertDialog dialog;
     private SPM spm = new SPM(this);
     private Categoria categoriaSelecionada;
@@ -91,7 +95,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
             edtSerachView.clearFocus();
             ocultaTeclado();
             filtroProdutoNomeList.clear();
-            configRvProdutos(produtoList);
+            configRvProdutos(produtoList, itemVendaList);
         });
 
     }
@@ -103,11 +107,20 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
         for (Produto produto : produtoList) {
             if (produto.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
                 filtroProdutoNomeList.add(produto);
+
+            }
+        }
+
+        for (ItemVenda itemVenda : itemVendaList) {
+            if (itemVenda.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+                filtroItemVendaList.add(itemVenda);
+
             }
         }
 
 
-        configRvProdutos(filtroProdutoNomeList);
+
+        configRvProdutos(filtroProdutoNomeList, filtroItemVendaList);
 
         if (filtroProdutoNomeList.isEmpty()) {
             binding.textVazio.setVisibility(View.VISIBLE);
@@ -117,7 +130,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
         }
     }
 
-    private void configRvProdutos(List<Produto> produtoList) {
+    private void configRvProdutos(List<Produto> produtoList, List<ItemVenda> itemVendaList) {
         binding.recycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
         binding.recycler.setHasFixedSize(true);
         produtoAdapter = new CadastroOrcamentoAdapter(produtoList, itemVendaList, getApplicationContext(), this);
@@ -191,7 +204,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
                         binding.progressBar2.setVisibility(View.GONE);
                         binding.textVazio.setVisibility(View.GONE);
                     }
-                    configRvProdutos(produtoList);
+                    configRvProdutos(produtoList, itemVendaList);
                 } else {
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
@@ -217,10 +230,11 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
                 }
             }
 
-            configRvProdutos(filtroProdutoCategoriaList);
+
+            configRvProdutos(filtroProdutoCategoriaList, filtroItemVendaList);
         } else {
             filtroProdutoCategoriaList.clear();
-            configRvProdutos(produtoList);
+            configRvProdutos(produtoList, itemVendaList);
         }
     }
 

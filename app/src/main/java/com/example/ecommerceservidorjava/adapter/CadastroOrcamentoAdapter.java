@@ -50,10 +50,11 @@ public class CadastroOrcamentoAdapter extends RecyclerView.Adapter<CadastroOrcam
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
         Produto produto = produtoList.get(position);
-        if (itemVendaList.get(position).getQtd() > 0) {
+        ItemVenda itemVenda = itemVendaList.get(position);
+        if (itemVenda.getQtd() > 0) {
             holder.binding.btnComprar.setVisibility(View.GONE);
             holder.binding.lytQuantidade.setVisibility(View.VISIBLE);
-            holder.binding.textQuantidade.setText(String.valueOf(itemVendaList.get(position).getQtd()));
+            holder.binding.textQuantidade.setText(String.valueOf(itemVenda.getQtd()));
             holder.binding.lytPlusMinus.setVisibility(View.VISIBLE);
 
 
