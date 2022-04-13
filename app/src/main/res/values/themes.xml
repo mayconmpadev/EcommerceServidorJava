@@ -41,6 +41,14 @@
 
     </style>
 
+    <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyleWrapper</item>
+    </style>
+
+    <style name="BottomSheetStyleWrapper" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
     <style name="Spinner" parent="@style/Theme.EcommerceServidorJava">
         <item name="android:textColor">@color/preto</item>
         <item name="android:textSize">18sp</item>

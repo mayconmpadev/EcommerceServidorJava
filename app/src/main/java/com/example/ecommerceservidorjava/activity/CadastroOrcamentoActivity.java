@@ -23,6 +23,7 @@ import com.example.ecommerceservidorjava.adapter.ListaCategoriaHorizontalAdapter
 import com.example.ecommerceservidorjava.databinding.ActivityCadastroOrcamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogLojaProdutoBinding;
+import com.example.ecommerceservidorjava.databinding.IncludeCartSheetBinding;
 import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.model.ItemVenda;
 import com.example.ecommerceservidorjava.model.Orcamento;
@@ -31,6 +32,7 @@ import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -61,6 +63,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
     private AlertDialog dialog;
     private SPM spm = new SPM(this);
     private Categoria categoriaSelecionada;
+    private int quantidade = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -395,14 +398,38 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
     private void somar(int position, ItemVenda itemVenda) {
 
         itemVenda.setQtd(itemVenda.getQtd() + 1);
+        quantidade = quantidade + 1;
+        binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
 
         produtoAdapter.notifyItemChanged(position);
+        binding.lytCartSheet.setVisibility(View.VISIBLE);
     }
 
     private void subtrair(int position, ItemVenda itemVenda) {
         itemVenda.setQtd(itemVenda.getQtd() - 1);
-
+        quantidade = quantidade -1;
+        binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
         produtoAdapter.notifyItemChanged(position);
+    }
+
+
+    private void showBottomSheet() {
+
+
+        IncludeCartSheetBinding sheetBinding =
+                IncludeCartSheetBinding.inflate(LayoutInflater.from(this));
+
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(
+                this, R.style.BottomSheetDialog);
+        bottomSheetDialog.setContentView(sheetBinding.getRoot());
+        bottomSheetDialog.show();
+
+        sheetBinding.btnContinue.setOnClickListener(v -> {
+
+            bottomSheetDialog.dismiss();
+        });
+
+
     }
 
 
