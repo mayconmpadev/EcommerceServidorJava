@@ -111,7 +111,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
             @Override
             public boolean onQueryTextSubmit(String pesquisa) {
                 ocultaTeclado();
-
+                filtroList.clear();
                 filtraProdutoNome(pesquisa);
                 return true;
             }

@@ -76,7 +76,7 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
             @Override
             public boolean onQueryTextSubmit(String pesquisa) {
                 ocultaTeclado();
-
+                filtroList.clear();
                 filtraProdutoNome(pesquisa);
                 return true;
             }

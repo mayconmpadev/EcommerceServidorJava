@@ -50,37 +50,39 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginRight="16dp"
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/name"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/textNome"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="2"
-                        android:text="Product name"
+                        android:text="Produto nome"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@color/grey_80" />
 
                     <TextView
-                        android:id="@+id/brief"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/textDescricao"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:singleLine="true"
-                        android:text="Product Brief"
+                        android:text="Descrição"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                         android:textColor="@color/grey_40" />
 
                     <TextView
-                        android:id="@+id/price_item"
+                        android:id="@+id/textPreco"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:singleLine="true"
-                        android:text="Rp 10000"
+                        android:text="R$ 0,00"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                         android:textColor="@color/grey_40" />
 
@@ -89,10 +91,10 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    />
 
                 <ImageView
-                    android:id="@+id/cart_delete"
+                    android:id="@+id/imageExcluir"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -111,14 +113,14 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/bt_cart_minus"
+                    android:id="@+id/btnMenos"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:background="@drawable/button_plus_minus_shape"
                     app:srcCompat="@drawable/ic_minus" />
 
                 <TextView
-                    android:id="@+id/item_amount"
+                    android:id="@+id/textQuantidade"
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_marginLeft="10dp"
@@ -133,7 +135,7 @@
                     android:textColor="@color/grey_60" />
 
                 <ImageButton
-                    android:id="@+id/bt_cart_plus"
+                    android:id="@+id/btnMais"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:background="@drawable/button_plus_minus_shape"
@@ -145,13 +147,13 @@
                     android:layout_weight="1" />
 
                 <TextView
-                    android:id="@+id/price_item_total"
+                    android:id="@+id/textValorTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:text="Rp 10000"
+                    android:text="R$ 0,00"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="@color/grey_80" />
 

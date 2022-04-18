@@ -3,43 +3,35 @@ package com.example.ecommerceservidorjava.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.adapter.CadastroOrcamentoAdapter;
 import com.example.ecommerceservidorjava.adapter.ListaCategoriaHorizontalAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityCadastroOrcamentoBinding;
-import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
-import com.example.ecommerceservidorjava.databinding.DialogLojaProdutoBinding;
-import com.example.ecommerceservidorjava.databinding.IncludeCartSheetBinding;
 import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.model.ItemVenda;
-import com.example.ecommerceservidorjava.model.Orcamento;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.StorageReference;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,20 +42,16 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
     CadastroOrcamentoAdapter produtoAdapter;
 
     private final List<Produto> produtoList = new ArrayList<>();
-    private final List<Orcamento> orcamentoList = new ArrayList<>();
     private final List<ItemVenda> itemVendaList = new ArrayList<>();
-
     private final List<Categoria> categoriaList = new ArrayList<>();
-
-    private final List<Produto> filtroProdutoCategoriaList = new ArrayList<>();
-    private List<Produto> filtroProdutoNomeList = new ArrayList<>();
-    private List<ItemVenda> filtroItemVendaList = new ArrayList<>();
+    private final List<Produto> filtroList = new ArrayList<>();
+    private final List<ItemVenda> filtroItemVendaList = new ArrayList<>();
     private List<ItemVenda> filtroItemVendaCategotia = new ArrayList<>();
+    private List<Produto> filtroProdutoCategoriaList = new ArrayList<>();
 
-    private AlertDialog dialog;
-    private SPM spm = new SPM(this);
     private Categoria categoriaSelecionada;
     private int quantidade = 0;
+    private String pesquisa = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,18 +59,25 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
         binding = ActivityCadastroOrcamentoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         configSearchView();
-        recuperaProdutos("CFTV");
+        recuperaProdutos();
         recuperaCategotia();
+
+        binding.includeSheet.btnContinue.setOnClickListener(view -> {
+            selecionarItems();
+
+        });
 
     }
 
     private void configSearchView() {
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String pesquisa) {
+            public boolean onQueryTextSubmit(String texto) {
+                pesquisa = texto;
                 ocultaTeclado();
-
-                filtraProdutoNome(pesquisa);
+                filtroList.clear();
+                filtroItemVendaList.clear();
+                filtraProdutoNome(texto);
                 return true;
             }
 
@@ -96,10 +91,11 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
             EditText edtSerachView = binding.searchView.findViewById(R.id.search_src_text);
             binding.textVazio.setVisibility(View.GONE);
             edtSerachView.setText("");
+            pesquisa = "";
             edtSerachView.clearFocus();
             ocultaTeclado();
-            filtroProdutoNomeList.clear();
-            configRvProdutos(produtoList, itemVendaList);
+
+            configRvProdutos(filtroProdutoCategoriaList, filtroItemVendaCategotia);
         });
 
     }
@@ -107,15 +103,15 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
 
     private void filtraProdutoNome(String pesquisa) {
 
-
-        for (Produto produto : produtoList) {
+        filtroList.clear();
+        for (Produto produto : filtroProdutoCategoriaList) {
             if (produto.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
-                filtroProdutoNomeList.add(produto);
+                filtroList.add(produto);
 
             }
         }
 
-        for (ItemVenda itemVenda : itemVendaList) {
+        for (ItemVenda itemVenda : filtroItemVendaCategotia) {
             if (itemVenda.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
                 filtroItemVendaList.add(itemVenda);
 
@@ -123,9 +119,10 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
         }
 
 
-        configRvProdutos(filtroProdutoNomeList, filtroItemVendaList);
+        configRvProdutos(filtroList, filtroItemVendaList);
 
-        if (filtroProdutoNomeList.isEmpty()) {
+
+        if (filtroList.isEmpty()) {
             binding.textVazio.setVisibility(View.VISIBLE);
             binding.textVazio.setText("Nenhum produto encontrado.");
         } else {
@@ -180,7 +177,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
     }
 
 
-    private void recuperaProdutos(String nome) {
+    private void recuperaProdutos() {
         SPM spm = new SPM(getApplicationContext());
         Query produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
@@ -195,14 +192,17 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
                         Produto produto = ds.getValue(Produto.class);
 
                         produtoList.add(produto);
+                        filtroProdutoCategoriaList.add(produto);
                         ItemVenda itemVenda = new ItemVenda();
                         itemVenda.setIdProduto(produto.getId());
                         itemVenda.setIdsCategorias(produto.getIdsCategorias());
                         itemVenda.setCodigo(produto.getCodigo());
                         itemVenda.setNome(produto.getNome());
+                        itemVenda.setPreco(produto.getPrecoVenda());
                         itemVenda.setDescricao(produto.getDescricao());
                         itemVenda.setFoto(produto.getUrlImagem0());
                         itemVendaList.add(itemVenda);
+                        filtroItemVendaCategotia.add(itemVenda);
 
 
                         binding.progressBar2.setVisibility(View.GONE);
@@ -235,6 +235,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
                 }
             }
 
+
             for (ItemVenda itemVenda : itemVendaList) {
                 if (itemVenda.getIdsCategorias().contains(categoriaSelecionada.getId())) {
                     if (!filtroItemVendaCategotia.contains(itemVenda)) {
@@ -243,148 +244,21 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
                 }
             }
 
-            configRvProdutos(filtroProdutoCategoriaList, filtroItemVendaCategotia);
-        } else {
-            filtroProdutoCategoriaList.clear();
-            filtroItemVendaCategotia.clear();
-            configRvProdutos(produtoList, itemVendaList);
-        }
-    }
-
-
-    private void showDialogDelete(Produto produto) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(
-                CadastroOrcamentoActivity.this, R.style.CustomAlertDialog2);
-
-        DialogDeleteBinding deleteBinding = DialogDeleteBinding
-                .inflate(LayoutInflater.from(CadastroOrcamentoActivity.this));
-        deleteBinding.textTitulo.setText("Deseja remover o produto " + produto.getNome() + "?");
-        deleteBinding.btnFechar.setOnClickListener(v -> {
-            dialog.dismiss();
-            produtoAdapter.notifyDataSetChanged();
-        });
-
-        deleteBinding.btnSim.setOnClickListener(v -> {
-            produtoList.remove(produto);
-
-            if (produtoList.isEmpty()) {
-                binding.textVazio.setText("Sua lista esta vazia.");
+            if (!pesquisa.equals("")) {
+                filtraProdutoNome(pesquisa);
             } else {
-                binding.textVazio.setText("");
+                configRvProdutos(filtroProdutoCategoriaList, filtroItemVendaCategotia);
             }
-            dialog.dismiss();
-            excluir(produto);
 
-        });
-
-        builder.setView(deleteBinding.getRoot());
-
-        dialog = builder.create();
-        dialog.show();
-        dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
-    }
-
-
-    public void excluir(Produto produto) {
-        binding.progressBar2.setVisibility(View.VISIBLE);
-        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
-        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
-                .child(caminho)
-                .child("produtos").child(produto.getId());
-
-
-        for (int i = 0; i < 3; i++) {
-            StorageReference storageReference = FirebaseHelper.getStorageReference()
-                    .child("empresas")
-                    .child(caminho)
-                    .child("imagens")
-                    .child("produtos")
-                    .child(produto.getId())
-                    .child("imagem" + i);
-            int finalI = i;
-            storageReference.delete().addOnSuccessListener(unused -> {
-                if (finalI == 2) {
-                    binding.progressBar2.setVisibility(View.GONE);
-                    databaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            produtoAdapter.notifyDataSetChanged();
-                            Toast.makeText(getApplicationContext(), "Excluido com sucesso!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            });
-        }
-
-    }
-
-    public void alterarStatus(Produto produto, boolean tipo) {
-        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
-        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
-                .child(caminho)
-                .child("produtos").child(produto.getId());
-        if (tipo) {
-            databaseReference.child("status").setValue("rascunho");
         } else {
-            databaseReference.child("status").setValue("em estoque");
-        }
-
-
-    }
-    //---------------------------------------------------- DIALOGO DE DELETAR -----------------------------------------------------------------
-
-    private void showDialog(Produto produto) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
-
-        DialogLojaProdutoBinding dialogBinding = DialogLojaProdutoBinding
-                .inflate(LayoutInflater.from(this));
-        if (produto.getStatus().equals("rascunho")) {
-            dialogBinding.cbRascunho.setChecked(true);
-        } else {
-            dialogBinding.cbRascunho.setChecked(false);
-        }
-
-        Glide.with(getApplicationContext())
-                .load(produto.getUrlImagem0())
-                .into(dialogBinding.imagemProduto);
-        dialogBinding.cbRascunho.setOnCheckedChangeListener((check, b) -> {
-            //  produto.setRascunho(check.isChecked());
-            // produto.salvar(false);
-        });
-
-        dialogBinding.btnEditar.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), CadastroProdutoActivity.class);
-            intent.putExtra("produtoSelecionado", produto);
-            startActivity(intent);
-            dialog.dismiss();
-        });
-
-        dialogBinding.btnRemover.setOnClickListener(v -> {
-
-            dialog.dismiss();
-            showDialogDelete(produto);
-            listVazia();
-
-        });
-
-        dialogBinding.txtNomeProduto.setText(produto.getNome());
-
-        dialogBinding.btnFechar.setOnClickListener(v -> {
-            if (dialogBinding.cbRascunho.isChecked()) {
-                alterarStatus(produto, true);
-                dialog.dismiss();
+            filtroProdutoCategoriaList = new ArrayList<>(produtoList);
+            filtroItemVendaCategotia = new ArrayList<>(itemVendaList);
+            if (!pesquisa.equals("")) {
+                filtraProdutoNome(pesquisa);
             } else {
-                alterarStatus(produto, false);
-                dialog.dismiss();
+                configRvProdutos(filtroProdutoCategoriaList, filtroItemVendaCategotia);
             }
-        });
-
-        builder.setView(dialogBinding.getRoot());
-
-        dialog = builder.create();
-        dialog.show();
-        dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
-
+        }
     }
 
     private void listVazia() {
@@ -403,35 +277,48 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
 
         produtoAdapter.notifyItemChanged(position);
         binding.lytCartSheet.setVisibility(View.VISIBLE);
+
+        binding.includeSheet.tvTotalCart.setText(total());
     }
 
     private void subtrair(int position, ItemVenda itemVenda) {
         itemVenda.setQtd(itemVenda.getQtd() - 1);
-        quantidade = quantidade -1;
+        quantidade = quantidade - 1;
         binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
         produtoAdapter.notifyItemChanged(position);
-    }
-
-
-    private void showBottomSheet() {
-
-
-        IncludeCartSheetBinding sheetBinding =
-                IncludeCartSheetBinding.inflate(LayoutInflater.from(this));
-
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(
-                this, R.style.BottomSheetDialog);
-        bottomSheetDialog.setContentView(sheetBinding.getRoot());
-        bottomSheetDialog.show();
-
-        sheetBinding.btnContinue.setOnClickListener(v -> {
-
-            bottomSheetDialog.dismiss();
-        });
-
+        binding.includeSheet.tvTotalCart.setText(total());
+        if (quantidade == 0) {
+            binding.lytCartSheet.setVisibility(View.GONE);
+        }
 
     }
 
+    private String total() {
+        BigDecimal total = new BigDecimal("0");
+
+        for (int i = 0; i < itemVendaList.size(); i++) {
+            if (itemVendaList.get(i).getQtd() != 0) {
+                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco());
+                preco = preco.divide(new BigDecimal("100"));
+                total = total.add(new BigDecimal(itemVendaList.get(i).getQtd()).multiply(preco));
+            }
+
+        }
+        return NumberFormat.getCurrencyInstance().format(total);
+    }
+
+    private void selecionarItems() {
+        ArrayList<ItemVenda> arrayList = new ArrayList<>();
+        for (int i = 0; i < itemVendaList.size(); i++) {
+            if (itemVendaList.get(i).getQtd() != 0) {
+                arrayList.add(itemVendaList.get(i));
+            }
+        }
+
+        Intent intent = new Intent(getApplicationContext(), CarrinhoActivity.class);
+        intent.putExtra("itemVenda", arrayList);
+        startActivity(intent);
+    }
 
     // Oculta o teclado do dispotivo
     private void ocultaTeclado() {
@@ -461,7 +348,6 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
         if (operacao.equals("menos")) {
             subtrair(position, itemVenda);
         }
-
 
     }
 }

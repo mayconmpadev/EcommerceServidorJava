@@ -76,7 +76,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
             @Override
             public boolean onQueryTextSubmit(String pesquisa) {
                 ocultaTeclado();
-
+                filtroList.clear();
                 filtraProdutoNome(pesquisa);
                 return true;
             }

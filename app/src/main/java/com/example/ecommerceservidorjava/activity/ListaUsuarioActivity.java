@@ -33,7 +33,7 @@ import java.util.Locale;
 public class ListaUsuarioActivity extends AppCompatActivity implements ListaUsuarioAdapter.OnClickLister, ListaUsuarioAdapter.OnLongClickLister {
     ActivityListaUsuarioBinding binding;
     private final List<Usuario> usuarioList = new ArrayList<>();
-    List<Usuario> filtroProdutoNomeList = new ArrayList<>();
+    List<Usuario> filtroList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +62,7 @@ public class ListaUsuarioActivity extends AppCompatActivity implements ListaUsua
             @Override
             public boolean onQueryTextSubmit(String pesquisa) {
                 ocultaTeclado();
-
+                filtroList.clear();
                 filtraProdutoNome(pesquisa);
                 return true;
             }
@@ -78,7 +78,7 @@ public class ListaUsuarioActivity extends AppCompatActivity implements ListaUsua
             edtSerachView.setText("");
             edtSerachView.clearFocus();
             ocultaTeclado();
-            filtroProdutoNomeList.clear();
+            filtroList.clear();
             configRvProdutos(usuarioList);
         });
 
@@ -90,12 +90,12 @@ public class ListaUsuarioActivity extends AppCompatActivity implements ListaUsua
 
         for (Usuario usuario : usuarioList) {
             if (usuario.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
-                filtroProdutoNomeList.add(usuario);
+                filtroList.add(usuario);
             }
         }
 
 
-        configRvProdutos(filtroProdutoNomeList);
+        configRvProdutos(filtroList);
     }
 
     private void configRvProdutos(List<Usuario> usuarioList) {

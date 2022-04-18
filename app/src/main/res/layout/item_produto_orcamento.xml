@@ -38,8 +38,9 @@
 
                         <ImageView
                             android:id="@+id/imagemProduto"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_width="130dp"
+                            android:layout_height="130dp"
+                            android:layout_centerInParent="true"
                             android:background="@color/grey_10"
                             android:scaleType="centerCrop" />
 
@@ -107,7 +108,7 @@
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:singleLine="true"
-                            android:text="Product Brief"
+                            android:text="Decrição"
                             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                             android:textColor="@color/grey_40" />
 
@@ -119,7 +120,7 @@
                             android:id="@+id/textValorAntigo"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Rp 10000"
+                            android:text="R$ 0,00"
                             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                             android:textColor="@color/grey_40" />
 
@@ -127,7 +128,7 @@
                             android:id="@+id/textValorNovo"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Rp 10000"
+                            android:text="R$ 10000"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                             android:textColor="@color/colorPrice" />
 
@@ -141,7 +142,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="30dp"
                             android:background="@drawable/button_buy_shape"
-                            android:text="BUY"
+                            android:text="COMPRAR"
                             android:textColor="@color/grey_80" />
 
                         <LinearLayout

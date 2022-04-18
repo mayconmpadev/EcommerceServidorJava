@@ -1,6 +1,7 @@
 package com.example.ecommerceservidorjava.adapter;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,10 @@ import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ItemProdutoOrcamentoBinding;
 import com.example.ecommerceservidorjava.model.ItemVenda;
 import com.example.ecommerceservidorjava.model.Produto;
+import com.example.ecommerceservidorjava.util.Util;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.List;
 
 
@@ -65,8 +69,21 @@ public class CadastroOrcamentoAdapter extends RecyclerView.Adapter<CadastroOrcam
         }
 
         holder.binding.textNome.setText(produto.getNome().substring(0, 1).toUpperCase().concat(produto.getNome().substring(1)));
+        holder.binding.textDescricao.setText(produto.getDescricao());
         if (produto.getDesconto().equals("0")) {
-            holder.binding.textValorAntigo.setVisibility(View.INVISIBLE);
+
+            holder.binding.textValorAntigo.setVisibility(View.GONE);
+        }else {
+            BigDecimal mult = new BigDecimal(100);
+            BigDecimal porcentagem = Util.convertMoneEmBigDecimal(produto.getDesconto());
+            BigDecimal preco = Util.convertMoneEmBigDecimal(produto.getPrecoVenda());
+            preco = preco.divide(new BigDecimal("100"));
+            BigDecimal desconto = porcentagem.divide(mult).multiply(preco);
+            preco = preco.add(desconto);
+
+            holder.binding.textValorAntigo.setText(NumberFormat.getCurrencyInstance().format(preco));
+            holder.binding.textValorAntigo.setPaintFlags(  holder.binding.textValorAntigo.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+
         }
         holder.binding.textValorNovo.setText(produto.getPrecoVenda());
 

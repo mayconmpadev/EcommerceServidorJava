@@ -18,7 +18,6 @@ import com.example.ecommerceservidorjava.adapter.ListaEnderecoAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaEnderecoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
-import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.model.Endereco;
 import com.example.ecommerceservidorjava.util.Base64Custom;

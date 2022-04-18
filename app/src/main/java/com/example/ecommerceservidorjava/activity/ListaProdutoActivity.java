@@ -19,8 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
-import com.example.ecommerceservidorjava.adapter.CategoriaDialogAdapter;
-import com.example.ecommerceservidorjava.adapter.ListaCategoriaAdapter;
 import com.example.ecommerceservidorjava.adapter.ListaCategoriaHorizontalAdapter;
 import com.example.ecommerceservidorjava.adapter.ListaProdutoAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaProdutoBinding;
@@ -40,7 +38,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -51,18 +48,20 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
     private final List<Produto> produtoList = new ArrayList<>();
     private final List<Categoria> categoriaList = new ArrayList<>();
-    private final List<Produto> filtroProdutoCategoriaList = new ArrayList<>();
+    private List<Produto> filtroProdutoCategoriaList = new ArrayList<>();
     List<Produto> filtroProdutoNomeList = new ArrayList<>();
     private AlertDialog dialog;
     private SPM spm = new SPM(this);
     private Categoria categoriaSelecionada;
+    private String pesquisa = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityListaProdutoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         configSearchView();
-        recuperaProdutos("CFTV");
+        recuperaProdutos();
         recuperaCategotia();
         binding.floatingActionButton.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CadastroProdutoActivity.class);
@@ -79,15 +78,16 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                 }
             }
         });
+
     }
 
     private void configSearchView() {
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String pesquisa) {
+            public boolean onQueryTextSubmit(String texto) {
                 ocultaTeclado();
-
-                filtraProdutoNome(pesquisa);
+                pesquisa = texto;
+                filtraProdutoNome(texto);
                 return true;
             }
 
@@ -101,10 +101,11 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
             EditText edtSerachView = binding.searchView.findViewById(R.id.search_src_text);
             binding.textVazio.setVisibility(View.GONE);
             edtSerachView.setText("");
+            pesquisa = "";
             edtSerachView.clearFocus();
             ocultaTeclado();
-            filtroProdutoNomeList.clear();
-            configRvProdutos(produtoList);
+
+            configRvProdutos(filtroProdutoCategoriaList);
         });
 
     }
@@ -112,8 +113,8 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
     private void filtraProdutoNome(String pesquisa) {
 
-
-        for (Produto produto : produtoList) {
+        filtroProdutoNomeList.clear();
+        for (Produto produto : filtroProdutoCategoriaList) {
             if (produto.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
                 filtroProdutoNomeList.add(produto);
             }
@@ -122,10 +123,10 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
         configRvProdutos(filtroProdutoNomeList);
 
-        if(filtroProdutoNomeList.isEmpty()){
+        if (filtroProdutoNomeList.isEmpty()) {
             binding.textVazio.setVisibility(View.VISIBLE);
             binding.textVazio.setText("Nenhum produto encontrado.");
-        }else {
+        } else {
             binding.textVazio.setVisibility(View.GONE);
         }
     }
@@ -160,7 +161,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                         Categoria categoria = ds.getValue(Categoria.class);
                         categoriaList.add(categoria);
 
-                        if(categoria.isTodas() && categoriaSelecionada == null){
+                        if (categoria.isTodas() && categoriaSelecionada == null) {
                             categoriaSelecionada = categoria;
                         }
                     }
@@ -177,7 +178,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     }
 
 
-    private void recuperaProdutos(String nome) {
+    private void recuperaProdutos() {
         SPM spm = new SPM(getApplicationContext());
         Query produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
@@ -191,7 +192,8 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         Produto produto = ds.getValue(Produto.class);
 
-                            produtoList.add(produto);
+                        produtoList.add(produto);
+                        filtroProdutoCategoriaList.add(produto);
 
 
                         binding.progressBar2.setVisibility(View.GONE);
@@ -222,11 +224,21 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                     }
                 }
             }
+            if (!pesquisa.equals("")) {
+                filtraProdutoNome(pesquisa);
+            } else {
+                configRvProdutos(filtroProdutoCategoriaList);
+            }
 
-            configRvProdutos(filtroProdutoCategoriaList);
+
         } else {
-            filtroProdutoCategoriaList.clear();
-            configRvProdutos(produtoList);
+            filtroProdutoCategoriaList = new ArrayList<>(produtoList);
+            if (!pesquisa.equals("")) {
+                filtraProdutoNome(pesquisa);
+            } else {
+                configRvProdutos(filtroProdutoCategoriaList);
+            }
+
         }
     }
 
@@ -398,7 +410,6 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     @Override
     public void onClick(Categoria categoria) {
         this.categoriaSelecionada = categoria;
-        Toast.makeText(getApplicationContext(), categoria.getNome(), Toast.LENGTH_SHORT).show();
         filtraProdutoCategoria();
     }
 
