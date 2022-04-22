@@ -1,5 +1,6 @@
 package com.example.ecommerceservidorjava.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -30,6 +31,10 @@ public class CarrinhoActivity extends AppCompatActivity implements CarrinhoAdapt
         recuperarIntent();
         configRvProdutos(itemVendaList);
         binding.include.textTitulo.setText("Carrinho");
+        binding.includeSheet.btnContinue.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(),CheckoutActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void recuperarIntent() {

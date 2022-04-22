@@ -194,9 +194,13 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
             dialog.dismiss();
             showDialogDelete(cliente);
 
-
         });
 
+        dialogBinding.btnFechar.setOnClickListener(v -> {
+
+            dialog.dismiss();
+
+        });
         dialogBinding.txtNomeProduto.setText(cliente.getNome());
 
 

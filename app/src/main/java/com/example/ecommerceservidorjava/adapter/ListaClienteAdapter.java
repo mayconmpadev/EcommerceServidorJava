@@ -53,7 +53,7 @@ public class ListaClienteAdapter extends RecyclerView.Adapter<ListaClienteAdapte
         Cliente cliente = clienteList.get(position);
 
         holder.binding.textNome.setText(cliente.getNome().substring(0, 1).toUpperCase().concat(cliente.getNome().substring(1)));
-        holder.binding.textEmeil.setText(cliente.getEmail());
+        holder.binding.textEmeil.setText(cliente.getTelefone1());
         if (cliente.getPerfil().equals("bronze")){
             holder.binding.textPerfil.setCompoundDrawableTintList(ColorStateList.valueOf( ContextCompat.getColor(context, R.color.broze)));
         }else if (cliente.getPerfil().equals("prata")){
