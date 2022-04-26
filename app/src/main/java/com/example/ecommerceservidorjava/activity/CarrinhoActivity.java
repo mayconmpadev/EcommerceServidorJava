@@ -33,6 +33,7 @@ public class CarrinhoActivity extends AppCompatActivity implements CarrinhoAdapt
         binding.include.textTitulo.setText("Carrinho");
         binding.includeSheet.btnContinue.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(),CheckoutActivity.class);
+            intent.putExtra("itemVenda", itemVendaList);
             startActivity(intent);
         });
     }

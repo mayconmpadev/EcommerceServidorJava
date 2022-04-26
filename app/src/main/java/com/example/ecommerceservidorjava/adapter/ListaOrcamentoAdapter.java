@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ItemListaOrcamentoBinding;
 import com.example.ecommerceservidorjava.model.Orcamento;
+import com.example.ecommerceservidorjava.util.Timestamp;
 
 
 import java.util.List;
@@ -54,14 +55,11 @@ public class ListaOrcamentoAdapter extends RecyclerView.Adapter<ListaOrcamentoAd
         Orcamento orcamento = clienteList.get(position);
 
         holder.binding.textNome.setText(orcamento.getIdCliente().getNome().substring(0, 1).toUpperCase().concat(orcamento.getIdCliente().getNome().substring(1)));
-        holder.binding.textEmeil.setText(orcamento.getIdCliente().getEmail());
-        if (orcamento.getStatus().equals("bronze")){
-            holder.binding.viewStatus.setBackgroundResource(R.color.color_verde);
-        }else if (orcamento.getStatus().equals("prata")){
-            holder.binding.viewStatus.setBackgroundResource(R.color.color_verde);
-        }else {
-            holder.binding.viewStatus.setBackgroundResource(R.color.color_verde);
-        }
+        holder.binding.textEmeil.setText(orcamento.getIdCliente().getTelefone1());
+        holder.binding.textTotal.setText(orcamento.getTotal());
+        holder.binding.textData.setText(Timestamp.getFormatedDateTime(Long.parseLong(orcamento.getData()),"dd/MM/yyyy - HH:mm"));
+
+
 
         Glide.with(context).load(orcamento.getIdCliente().getUrlImagem()).centerCrop().placeholder(R.drawable.user_123).into(holder.binding.imgFoto);
 

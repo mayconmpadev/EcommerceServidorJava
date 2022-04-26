@@ -12,7 +12,7 @@ public class Endereco implements Serializable {
     private String bairro;
     private String localidade;
     private String uf;
-    private String observacao;
+    private String complemento;
 
     public Endereco() {
     }
@@ -81,11 +81,11 @@ public class Endereco implements Serializable {
         this.uf = uf;
     }
 
-    public String getObservacao() {
-        return observacao;
+    public String getComplemento() {
+        return complemento;
     }
 
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
     }
 }

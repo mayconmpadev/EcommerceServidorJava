@@ -140,7 +140,7 @@ public class CadastroClienteActivity extends AppCompatActivity {
 
 
                                     } else {
-                                        binding.edtConfirmaSenha.requestFocus();
+                                        binding.edtDocumento.requestFocus();
                                         binding.edtDocumento.setError("documento invalido");
                                     }
                                 } else {

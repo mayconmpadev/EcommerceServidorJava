@@ -15,7 +15,6 @@ import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.google.firebase.database.DatabaseReference;
-import com.santalu.maskara.Mask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -55,7 +54,7 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
             binding.edtMunicipio.setText(enderecoSelecionado.getLocalidade());
             binding.edtNumero.setText(enderecoSelecionado.getNumero());
             binding.edtLogradouro.setText(enderecoSelecionado.getLogradouro());
-            binding.edtObservacao.setText(enderecoSelecionado.getObservacao());
+            binding.edtObservacao.setText(enderecoSelecionado.getComplemento());
             endereco.setId(enderecoSelecionado.getId());
         } else {
             DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
@@ -98,7 +97,7 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
                                 endereco.setBairro(bairro);
                                 endereco.setLocalidade(municipio);
                                 endereco.setLogradouro(logradouro);
-                                endereco.setObservacao(observacao);
+                                endereco.setComplemento(observacao);
 
 
                                 salvarDados(endereco);

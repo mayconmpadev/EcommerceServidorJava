@@ -18,6 +18,7 @@ import com.example.ecommerceservidorjava.activity.ListaClienteActivity;
 import com.example.ecommerceservidorjava.activity.ListaOrcamentoActivity;
 import com.example.ecommerceservidorjava.activity.ListaUsuarioActivity;
 import com.example.ecommerceservidorjava.activity.ListaProdutoActivity;
+import com.example.ecommerceservidorjava.activity.PerfilEmpresaActivity;
 import com.example.ecommerceservidorjava.databinding.FragmentGeralBinding;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 
@@ -70,6 +71,12 @@ private FragmentGeralBinding binding;
 
         binding.cardOrcamento.setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), ListaOrcamentoActivity.class);
+            startActivity(intent);
+
+        });
+
+        binding.perfilEmpresa.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), PerfilEmpresaActivity.class);
             startActivity(intent);
 
         });

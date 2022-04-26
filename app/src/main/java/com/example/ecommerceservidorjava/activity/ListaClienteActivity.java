@@ -45,6 +45,7 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
     List<Cliente> filtroList = new ArrayList<>();
     SPM spm = new SPM(this);
     private AlertDialog dialog;
+    boolean bCheckout = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
         super.onCreate(savedInstanceState);
         binding = ActivityListaClienteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        recuperarIntent();
         configSearchView();
         recuperaProdutos();
         binding.floatingActionButton.setOnClickListener(view -> {
@@ -69,6 +71,13 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
                 }
             }
         });
+    }
+
+    private void recuperarIntent() {
+
+        bCheckout = getIntent().getBooleanExtra("checkout", false);
+
+
     }
 
     private void configSearchView() {
@@ -115,10 +124,10 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
 
         configRvProdutos(filtroList);
 
-        if(filtroList.isEmpty()){
+        if (filtroList.isEmpty()) {
             binding.textVazio.setVisibility(View.VISIBLE);
             binding.textVazio.setText("Nenhum produto encontrado.");
-        }else {
+        } else {
             binding.textVazio.setVisibility(View.GONE);
         }
     }
@@ -282,7 +291,14 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
 
 
     public void onClick(Cliente cliente) {
-        showDialog(cliente);
+        if (bCheckout) {
+            Intent intent = new Intent();
+            intent.putExtra("cliente", cliente);
+            setResult(RESULT_OK, intent);
+            finish();
+        } else {
+            showDialog(cliente);
+        }
 
 
     }

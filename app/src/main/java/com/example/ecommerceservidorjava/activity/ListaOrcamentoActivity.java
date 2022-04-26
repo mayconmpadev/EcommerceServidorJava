@@ -133,9 +133,9 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
     private void recuperaProdutos() {
         SPM spm = new SPM(getApplicationContext());
-        //String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
+        String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
         Query produtoRef = FirebaseHelper.getDatabaseReference()
-                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""))).child("orcamentos").orderByChild("nome");
+                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""))).child("orcamentos").child(user).orderByChild("nome");
         produtoRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
