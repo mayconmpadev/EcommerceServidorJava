@@ -125,7 +125,9 @@ public class CheckoutActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     perfilEmpresa = snapshot.getValue(PerfilEmpresa.class);
-                    binding.progressBar.setVisibility(View.VISIBLE);
+                    binding.progressBar.setVisibility(View.GONE);
+                }else{
+                    binding.progressBar.setVisibility(View.GONE);
                 }
             }
 
@@ -444,7 +446,7 @@ public class CheckoutActivity extends AppCompatActivity {
         }
 
 
-        myFile = new File(pdfFolder + File.separator + orcamento.getId() + ".pdf");
+        myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
 
 
         OutputStream output = new FileOutputStream(myFile);
@@ -502,7 +504,7 @@ public class CheckoutActivity extends AppCompatActivity {
         Paragraph p12 = new Paragraph(25, "Valido por", paragraphFont3);
         Paragraph p13 = new Paragraph(10, "30 dias", paragraphFont4);
         Paragraph p14 = new Paragraph(23, "Orçamento id:", paragraphFont3);
-        Paragraph p15 = new Paragraph(10, "1234567890", paragraphFont4);
+        Paragraph p15 = new Paragraph(10, orcamento.getData(), paragraphFont4);
 
         p5.setAlignment(Element.ALIGN_CENTER);
         p6.setAlignment(Element.ALIGN_CENTER);
