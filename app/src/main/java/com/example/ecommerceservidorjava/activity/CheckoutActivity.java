@@ -125,6 +125,7 @@ public class CheckoutActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     perfilEmpresa = snapshot.getValue(PerfilEmpresa.class);
+                    binding.progressBar.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -179,6 +180,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private void recuperarUsuario() {
         SPM spm = new SPM(getApplicationContext());
         String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
+        Toast.makeText(getApplicationContext(), user, Toast.LENGTH_SHORT).show();
         Query produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas")
                 .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
@@ -186,7 +188,13 @@ public class CheckoutActivity extends AppCompatActivity {
         produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                usuario = snapshot.getValue(Usuario.class);
+                if (snapshot.exists()){
+                    usuario = snapshot.getValue(Usuario.class);
+                }else {
+                    Toast.makeText(getApplicationContext(), "usuario não exixte", Toast.LENGTH_SHORT).show();
+                }
+
+
             }
 
             @Override
@@ -416,7 +424,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
         }).addOnFailureListener(exception -> {
             // Handle any errors
-            Toast.makeText(getApplicationContext(), "erro", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "erro: " + exception.getMessage(), Toast.LENGTH_LONG).show();
         });
     }
 
@@ -494,7 +502,7 @@ public class CheckoutActivity extends AppCompatActivity {
         Paragraph p12 = new Paragraph(25, "Valido por", paragraphFont3);
         Paragraph p13 = new Paragraph(10, "30 dias", paragraphFont4);
         Paragraph p14 = new Paragraph(23, "Orçamento id:", paragraphFont3);
-        Paragraph p15 = new Paragraph(10, orcamento.getId(), paragraphFont4);
+        Paragraph p15 = new Paragraph(10, "1234567890", paragraphFont4);
 
         p5.setAlignment(Element.ALIGN_CENTER);
         p6.setAlignment(Element.ALIGN_CENTER);
@@ -540,7 +548,7 @@ public class CheckoutActivity extends AppCompatActivity {
         Paragraph p16 = new Paragraph(10, "Cliente:", paragraphFont2);
         Paragraph p17 = new Paragraph(10, orcamento.getIdCliente().getNome(), paragraphFont);
         Paragraph p18 = new Paragraph(10, "Vendedor:", paragraphFont2);
-        Paragraph p19 = new Paragraph(10, "orcamento.getIdUsuario().getNome()", paragraphFont);
+        Paragraph p19 = new Paragraph(10, usuario.getNome(), paragraphFont);
 
         c4.addElement(p16);
         c4.addElement(p17);
