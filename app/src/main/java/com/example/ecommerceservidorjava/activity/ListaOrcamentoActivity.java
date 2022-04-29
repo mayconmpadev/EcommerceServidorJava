@@ -2,11 +2,21 @@ package com.example.ecommerceservidorjava.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.telephony.PhoneNumberUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.DownloadListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -14,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +45,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -45,6 +57,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     List<Orcamento> filtroList = new ArrayList<>();
     SPM spm = new SPM(this);
     private AlertDialog dialog;
+   private Orcamento orcamento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -268,6 +281,127 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
     }
 
+    //---------------------------------------------------- VISUALIZAR PDF -----------------------------------------------------------------
+    private void exibirPDF(final int tipo) {
+binding.progressBar2.setVisibility(View.VISIBLE);
+
+        File pdfFolder = new File(getExternalFilesDir(null)
+                + File.separator
+                + "ecommercempa/orcamentos"
+                + File.separator);
+        if (!pdfFolder.exists()) {
+            pdfFolder.mkdirs();
+        }
+        File myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
+        String telefone = "55" + orcamento.getIdCliente().getTelefone1().replaceAll("\\D", "");
+        Intent sendIntent = new Intent("android.intent.action.SEND");
+        Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
+        sendIntent.setPackage("com.whatsapp");
+        sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        sendIntent.setType("application/pdf");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "sample text you want to send along with the image");
+        sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        sendIntent.putExtra("jid", PhoneNumberUtils.stripSeparators(telefone) + "@s.whatsapp.net");
+
+        startActivity(sendIntent);
+        binding.progressBar2.setVisibility(View.GONE);
+
+
+
+    }
+
+    BroadcastReceiver onCompleteVisualizar = new BroadcastReceiver() {
+        public void onReceive(Context ctxt, Intent intent) {
+
+            File pdfFolder = new File(getExternalFilesDir(null)
+                    + File.separator
+                    + "ecommercempa/orcamentos"
+                    + File.separator);
+            if (!pdfFolder.exists()) {
+                pdfFolder.mkdirs();
+            }
+            File myFile = new File(pdfFolder + File.separator + "orcamento"+ ".pdf");
+            Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, "application/pdf");
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            startActivity(intent);
+            binding.progressBar2.setVisibility(View.GONE);
+        }
+    };
+
+    BroadcastReceiver onCompleteWhatsApp = new BroadcastReceiver() {
+        public void onReceive(Context ctxt, Intent intent) {
+
+            File pdfFolder = new File(getExternalFilesDir(null)
+                    + File.separator
+                    + "ecommercempa/orcamentos"
+                    + File.separator);
+            if (!pdfFolder.exists()) {
+                pdfFolder.mkdirs();
+            }
+            File myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
+            String telefone = "55" + orcamento.getIdCliente().getTelefone1().replaceAll("\\D", "");
+            Intent sendIntent = new Intent("android.intent.action.SEND");
+            Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
+            sendIntent.setComponent(new ComponentName("com.whatsapp", "com.whatsapp.ContactPicker"));
+            sendIntent.setType("application/pdf");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "sample text you want to send along with the image");
+            sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            sendIntent.putExtra("jid", PhoneNumberUtils.stripSeparators(telefone) + "@s.whatsapp.net");
+
+            startActivity(sendIntent);
+           binding.progressBar2.setVisibility(View.GONE);
+        }
+    };
+
+    BroadcastReceiver onCompleteEmail = new BroadcastReceiver() {
+        public void onReceive(Context ctxt, Intent intent) {
+            try {
+
+                File pdfFolder = new File(getExternalFilesDir(null)
+                        + File.separator
+                        + "mpasistema/orcamentos"
+                        + File.separator);
+                if (!pdfFolder.exists()) {
+                    pdfFolder.mkdirs();
+                }
+                File myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
+                Intent email = new Intent(Intent.ACTION_SENDTO);
+                email.setType("message/rfc822");
+                email.putExtra(Intent.EXTRA_SUBJECT, "Orcamento em anexo");
+                email.putExtra(Intent.EXTRA_TEXT, "obrigado pela preferencia");
+                email.putExtra(Intent.EXTRA_EMAIL, new String[]{orcamento.getIdCliente().getEmail()});
+
+                Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
+                email.putExtra(Intent.EXTRA_STREAM, uri);
+                email.setData(Uri.parse("mailto:")); // only email apps should handle this
+
+
+                List<ResolveInfo> resInfoList = getApplication().getPackageManager().queryIntentActivities(email, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    String packageName = resolveInfo.activityInfo.packageName;
+                    getApplication().grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+                email.addFlags(Intent.FLAG_ACTIVITY_MATCH_EXTERNAL);
+                email.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                email.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                email.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+
+                email.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(email);
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            binding.progressBar2.setVisibility(View.GONE);
+
+        }
+    };
+
 
     // Oculta o teclado do dispotivo
     private void ocultaTeclado() {
@@ -278,13 +412,18 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
 
     public void onClick(Orcamento cliente) {
-        showDialog(cliente);
+      //  showDialog(cliente);
+        orcamento = cliente;
+
+        exibirPDF(2);
 
 
     }
 
     @Override
     public void onLongClick(Orcamento cliente) {
+
+
 
     }
 
