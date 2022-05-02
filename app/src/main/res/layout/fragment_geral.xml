@@ -189,7 +189,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:text="Categoria"
+                    android:text="Categorias"
                     android:textStyle="bold">
 
                 </TextView>
@@ -232,7 +232,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:text="Orçamento"
+                    android:text="Orçamentos"
                     android:textStyle="bold">
 
                 </TextView>
@@ -332,7 +332,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/teste1"
+            android:id="@+id/ajustes"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginLeft="16dp"
@@ -357,7 +357,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:src="@drawable/ic_orcamento"
+                    android:src="@drawable/ic_config"
                     app:tint="@color/color_verde" />
 
                 <TextView
@@ -366,7 +366,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:text="teste 1"
+                    android:text="Ajustes"
                     android:textStyle="bold">
 
                 </TextView>

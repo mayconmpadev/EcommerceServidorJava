@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 
+import com.example.ecommerceservidorjava.activity.ConfiguracaoActivity;
 import com.example.ecommerceservidorjava.activity.ListaCategoriaActivity;
 import com.example.ecommerceservidorjava.activity.ListaClienteActivity;
 import com.example.ecommerceservidorjava.activity.ListaOrcamentoActivity;
@@ -20,6 +21,7 @@ import com.example.ecommerceservidorjava.activity.ListaUsuarioActivity;
 import com.example.ecommerceservidorjava.activity.ListaProdutoActivity;
 import com.example.ecommerceservidorjava.activity.PerfilEmpresaActivity;
 import com.example.ecommerceservidorjava.databinding.FragmentGeralBinding;
+import com.example.ecommerceservidorjava.model.Configuracao;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 
 
@@ -77,6 +79,12 @@ private FragmentGeralBinding binding;
 
         binding.perfilEmpresa.setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), PerfilEmpresaActivity.class);
+            startActivity(intent);
+
+        });
+
+        binding.ajustes.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), ConfiguracaoActivity.class);
             startActivity(intent);
 
         });

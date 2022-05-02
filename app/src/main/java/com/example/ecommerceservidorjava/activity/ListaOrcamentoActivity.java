@@ -2,12 +2,10 @@ package com.example.ecommerceservidorjava.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
@@ -16,7 +14,6 @@ import android.telephony.PhoneNumberUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.DownloadListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -34,9 +31,12 @@ import com.example.ecommerceservidorjava.adapter.ListaOrcamentoAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaOrcamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
+import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrcamentoBinding;
 import com.example.ecommerceservidorjava.model.Orcamento;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
+import com.example.ecommerceservidorjava.util.GerarPDF;
+import com.example.ecommerceservidorjava.util.Parametro;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -57,7 +57,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     List<Orcamento> filtroList = new ArrayList<>();
     SPM spm = new SPM(this);
     private AlertDialog dialog;
-   private Orcamento orcamento;
+    private Orcamento orcamento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,10 +128,10 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
         configRvProdutos(filtroList);
 
-        if(filtroList.isEmpty()){
+        if (filtroList.isEmpty()) {
             binding.textVazio.setVisibility(View.VISIBLE);
             binding.textVazio.setText("Nenhum produto encontrado.");
-        }else {
+        } else {
             binding.textVazio.setVisibility(View.GONE);
         }
     }
@@ -282,8 +282,8 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     }
 
     //---------------------------------------------------- VISUALIZAR PDF -----------------------------------------------------------------
-    private void exibirPDF(final int tipo) {
-binding.progressBar2.setVisibility(View.VISIBLE);
+    private void enviarPDFWhatsapp() {
+        binding.progressBar2.setVisibility(View.VISIBLE);
 
         File pdfFolder = new File(getExternalFilesDir(null)
                 + File.separator
@@ -296,7 +296,8 @@ binding.progressBar2.setVisibility(View.VISIBLE);
         String telefone = "55" + orcamento.getIdCliente().getTelefone1().replaceAll("\\D", "");
         Intent sendIntent = new Intent("android.intent.action.SEND");
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
-        sendIntent.setPackage("com.whatsapp");
+        sendIntent.setPackage(
+                "com.whatsapp");
         sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sendIntent.setType("application/pdf");
         sendIntent.putExtra(Intent.EXTRA_TEXT, "sample text you want to send along with the image");
@@ -308,27 +309,31 @@ binding.progressBar2.setVisibility(View.VISIBLE);
         binding.progressBar2.setVisibility(View.GONE);
 
 
+    }
 
+    private void exibirPDF() {
+
+        File pdfFolder = new File(getExternalFilesDir(null)
+                + File.separator
+                + "ecommercempa/orcamentos"
+                + File.separator);
+        if (!pdfFolder.exists()) {
+            pdfFolder.mkdirs();
+        }
+        File myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
+        Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
+       Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(uri, "application/pdf");
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        startActivity(intent);
+        binding.progressBar2.setVisibility(View.GONE);
     }
 
     BroadcastReceiver onCompleteVisualizar = new BroadcastReceiver() {
         public void onReceive(Context ctxt, Intent intent) {
 
-            File pdfFolder = new File(getExternalFilesDir(null)
-                    + File.separator
-                    + "ecommercempa/orcamentos"
-                    + File.separator);
-            if (!pdfFolder.exists()) {
-                pdfFolder.mkdirs();
-            }
-            File myFile = new File(pdfFolder + File.separator + "orcamento"+ ".pdf");
-            Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
-            intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(uri, "application/pdf");
-            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            startActivity(intent);
-            binding.progressBar2.setVisibility(View.GONE);
         }
     };
 
@@ -354,7 +359,7 @@ binding.progressBar2.setVisibility(View.VISIBLE);
             sendIntent.putExtra("jid", PhoneNumberUtils.stripSeparators(telefone) + "@s.whatsapp.net");
 
             startActivity(sendIntent);
-           binding.progressBar2.setVisibility(View.GONE);
+            binding.progressBar2.setVisibility(View.GONE);
         }
     };
 
@@ -402,6 +407,51 @@ binding.progressBar2.setVisibility(View.VISIBLE);
         }
     };
 
+    private void showDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
+
+        DialogOpcaoOrcamentoBinding dialogBinding = DialogOpcaoOrcamentoBinding
+                .inflate(LayoutInflater.from(this));
+
+
+        dialogBinding.llEnviar.setOnClickListener(view -> {
+            enviarPDFWhatsapp();
+
+        });
+
+        dialogBinding.llEditar.setOnClickListener(view -> {
+
+
+        });
+
+        dialogBinding.llClonar.setOnClickListener(view -> {
+
+
+        });
+
+        dialogBinding.llStatus.setOnClickListener(view -> {
+            GerarPDF gerarPDF = new GerarPDF(orcamento, this);
+            while (Parametro.bPdf){
+                Toast.makeText(getApplicationContext(), "teste", Toast.LENGTH_SHORT).show();
+                break;
+            }
+
+
+        });
+
+        dialogBinding.llPdf.setOnClickListener(view -> {
+            exibirPDF();
+
+        });
+
+
+        builder.setView(dialogBinding.getRoot());
+        dialog = builder.create();
+        dialog.show();
+    }
+
+
+
 
     // Oculta o teclado do dispotivo
     private void ocultaTeclado() {
@@ -412,17 +462,16 @@ binding.progressBar2.setVisibility(View.VISIBLE);
 
 
     public void onClick(Orcamento cliente) {
-      //  showDialog(cliente);
+
         orcamento = cliente;
 
-        exibirPDF(2);
+       showDialog();
 
 
     }
 
     @Override
     public void onLongClick(Orcamento cliente) {
-
 
 
     }

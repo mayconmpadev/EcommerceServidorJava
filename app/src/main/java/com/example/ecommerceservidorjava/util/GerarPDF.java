@@ -1,43 +1,27 @@
-package com.example.ecommerceservidorjava.activity;
+package com.example.ecommerceservidorjava.util;
 
 import static com.itextpdf.text.Rectangle.NO_BORDER;
 
-import android.content.Intent;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import com.example.ecommerceservidorjava.R;
-import com.example.ecommerceservidorjava.databinding.ActivityCheckoutBinding;
-import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.model.Configuracao;
 import com.example.ecommerceservidorjava.model.Endereco;
 import com.example.ecommerceservidorjava.model.ItemVenda;
 import com.example.ecommerceservidorjava.model.Orcamento;
 import com.example.ecommerceservidorjava.model.PerfilEmpresa;
-import com.example.ecommerceservidorjava.model.Usuario;
-import com.example.ecommerceservidorjava.util.Base64Custom;
-import com.example.ecommerceservidorjava.util.FirebaseHelper;
-import com.example.ecommerceservidorjava.util.SPM;
-import com.example.ecommerceservidorjava.util.Timestamp;
-import com.example.ecommerceservidorjava.util.Util;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.itextpdf.text.BaseColor;
@@ -66,58 +50,28 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-public class CheckoutActivity extends AppCompatActivity {
-    private ActivityCheckoutBinding binding;
+public class GerarPDF extends AppCompatActivity {
+
     private Orcamento orcamento;
     private PerfilEmpresa perfilEmpresa;
     private Configuracao configuracao;
-    private Usuario usuario;
-    private SPM spm = new SPM(this);
-    private ArrayList<ItemVenda> itemVendaList;
-    private ArrayList<Endereco> enderecoList = new ArrayList<>();
-    private int quantidade;
-    private int end = 0;
-    private String pagamento = "credito";
+    Context context;
+    private SPM spm;
     private String subTotal = "";
-    private int desconto = 0;
-    private Cliente clienteSelecionado;
+
 
     Document document = new Document();
     File myFile;
 
-
-    private ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK) {
-                    clienteSelecionado = (Cliente) result.getData().getSerializableExtra("cliente");
-
-                    binding.edtNome.setText(clienteSelecionado.getNome());
-                    binding.edtTelefone.setText(clienteSelecionado.getTelefone1());
-                    recuperaEndereco(0);
-                }
-            }
-
-    );
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityCheckoutBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        binding.includeSheet.btnContinue.setText("finalizar");
-        binding.include.textTitulo.setText("Checkout");
-        recuperarUsuario();
+    public GerarPDF(Orcamento orcamento, Context context) {
+        this.orcamento = orcamento;
+        this.context = context;
+        spm = new SPM(context);
         recuperarPerfil();
-        recuperarIntent();
-        recuperarConfiguracao();
-        configClicks();
-
     }
 
-    private void recuperarPerfil(){
-        binding.progressBar.setVisibility(View.VISIBLE);
+    private void recuperarPerfil() {
+
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
 
 
@@ -127,52 +81,9 @@ public class CheckoutActivity extends AppCompatActivity {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    perfilEmpresa = snapshot.getValue(PerfilEmpresa.class);
-                    binding.progressBar.setVisibility(View.GONE);
-                }else{
-                    binding.progressBar.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        }
-
-    private void recuperaEndereco(final int iEndereco) {
-        SPM spm = new SPM(getApplicationContext());
-        //String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
-        Query produtoRef = FirebaseHelper.getDatabaseReference()
-                .child("empresas")
-                .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                .child("enderecos").child(clienteSelecionado.getId());
-        produtoRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                enderecoList.clear();
                 if (snapshot.exists()) {
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        Endereco endereco = ds.getValue(Endereco.class);
-                        enderecoList.add(endereco);
-                        binding.progressBar.setVisibility(View.GONE);
-
-
-                    }
-
-                    binding.edtLogradouro.setText(enderecoList.get(iEndereco).getLogradouro());
-                    binding.edtNumero.setText(enderecoList.get(iEndereco).getNumero());
-                    binding.edtBairro.setText(enderecoList.get(iEndereco).getBairro());
-                    binding.edtMunicipio.setText(enderecoList.get(iEndereco).getLocalidade());
-                    binding.edtEstado.setText(enderecoList.get(iEndereco).getUf());
-                    binding.edtComplemento.setText(enderecoList.get(iEndereco).getComplemento());
-
-                } else {
-                    binding.progressBar.setVisibility(View.GONE);
-
+                    perfilEmpresa = snapshot.getValue(PerfilEmpresa.class);
+                    recuperarConfiguracao();
                 }
             }
 
@@ -182,36 +93,9 @@ public class CheckoutActivity extends AppCompatActivity {
             }
         });
     }
-
-    private void recuperarUsuario() {
-        SPM spm = new SPM(getApplicationContext());
-        String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
-        Query produtoRef = FirebaseHelper.getDatabaseReference()
-                .child("empresas")
-                .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                .child("usuarios").child(user);
-        produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    usuario = snapshot.getValue(Usuario.class);
-                }else {
-                    Toast.makeText(getApplicationContext(), "usuario não exixte", Toast.LENGTH_SHORT).show();
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
 
     private void recuperarConfiguracao() {
-        binding.progressBar.setVisibility(View.VISIBLE);
+
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
 
 
@@ -222,14 +106,8 @@ public class CheckoutActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    binding.progressBar.setVisibility(View.GONE);
                     configuracao = snapshot.getValue(Configuracao.class);
-
-
-
-                } else {
-
-                    binding.progressBar.setVisibility(View.GONE);
+                    finalizar();
                 }
             }
 
@@ -240,92 +118,17 @@ public class CheckoutActivity extends AppCompatActivity {
         });
     }
 
-    private void trocarEndereco() {
-        end++;
-        if (end == enderecoList.size()) {
-            end = 0;
-        }
-        recuperaEndereco(end);
-    }
-
-    private void formaDePagamento(View view) {
-        Util.vibrar(this, 25);
-        switch (view.getId()) {
-            case R.id.ib_dinheiro: {
-                dinheiro();
-                break;
-            }
-            case R.id.ib_debito: {
-                debito();
-                break;
-            }
-            case R.id.ib_credito: {
-                credito();
-                break;
-            }
-        }
-    }
-
-    private void dinheiro() {
-        binding.ibDinheiro.setBackgroundResource(R.drawable.borda_2);
-        binding.ibDebito.setBackgroundResource(R.drawable.borda);
-        binding.ibCredito.setBackgroundResource(R.drawable.borda);
-        binding.textDinheiro.setTextColor(getResources().getColor(R.color.preto));
-        //binding.textDinheiro.setTypeface(Typeface.DEFAULT_BOLD);
-        binding.textDebito.setTextColor(getResources().getColor(R.color.grey_40));
-        binding.textCredito.setTextColor(getResources().getColor(R.color.grey_40));
-        pagamento = "dinheiro";
-        binding.includeSheet.tvTotalCart.setText(total(pagamento, 5));
-        desconto = configuracao.getDesconto_dinheiro();
-    }
-
-    private void debito() {
-        binding.ibDinheiro.setBackgroundResource(R.drawable.borda);
-        binding.ibDebito.setBackgroundResource(R.drawable.borda_2);
-        binding.ibCredito.setBackgroundResource(R.drawable.borda);
-        binding.textDinheiro.setTextColor(getResources().getColor(R.color.grey_40));
-        binding.textDebito.setTextColor(getResources().getColor(R.color.preto));
-        binding.textCredito.setTextColor(getResources().getColor(R.color.grey_40));
-        pagamento = "debito";
-        binding.includeSheet.tvTotalCart.setText(total(pagamento, 3));
-        desconto = configuracao.getDesconto_debito();
-    }
-
-    private void credito() {
-        binding.ibDinheiro.setBackgroundResource(R.drawable.borda);
-        binding.ibDebito.setBackgroundResource(R.drawable.borda);
-        binding.ibCredito.setBackgroundResource(R.drawable.borda_2);
-        binding.textDinheiro.setTextColor(getResources().getColor(R.color.grey_40));
-        binding.textDebito.setTextColor(getResources().getColor(R.color.grey_40));
-        binding.textCredito.setTextColor(getResources().getColor(R.color.preto));
-        pagamento = "credito";
-        binding.includeSheet.tvTotalCart.setText(total(pagamento, 0));
-        desconto = 0;
-    }
-
-    private void recuperarIntent() {
-
-        itemVendaList = (ArrayList<ItemVenda>) getIntent().getSerializableExtra("itemVenda");
-        binding.includeSheet.tvTotalCart.setText(total("credito", 0));
-        subTotal = total("credito", 0);
-        for (int i = 0; i < itemVendaList.size(); i++) {
-            quantidade = quantidade + itemVendaList.get(i).getQtd();
-
-        }
-        binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
-
-    }
 
     private String total(String tipo, int valor) {
         BigDecimal total = new BigDecimal("0");
         BigDecimal desconto = new BigDecimal("0");
 
-        for (int i = 0; i < itemVendaList.size(); i++) {
-            if (itemVendaList.get(i).getQtd() != 0) {
-                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco());
+        for (int i = 0; i < orcamento.getItens().size(); i++) {
+            if (orcamento.getItens().get(i).getQtd() != 0) {
+                BigDecimal preco = Util.convertMoneEmBigDecimal(orcamento.getItens().get(i).getPreco());
                 preco = preco.divide(new BigDecimal("100"));
 
-                total = total.add(new BigDecimal(itemVendaList.get(i).getQtd()).multiply(preco));
+                total = total.add(new BigDecimal(orcamento.getItens().get(i).getQtd()).multiply(preco));
 
             }
 
@@ -338,47 +141,11 @@ public class CheckoutActivity extends AppCompatActivity {
         return NumberFormat.getCurrencyInstance().format(total);
     }
 
-    private void configClicks() {
-        binding.fbtPesquisa.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), ListaClienteActivity.class);
-            intent.putExtra("checkout", true);
-            resultLauncher.launch(intent);
-        });
-        binding.imageEndereco.setOnClickListener(view -> trocarEndereco());
-
-        binding.ibDinheiro.setOnClickListener(view -> formaDePagamento(view));
-        binding.ibDebito.setOnClickListener(view -> formaDePagamento(view));
-        binding.ibCredito.setOnClickListener(view -> formaDePagamento(view));
-        binding.includeSheet.btnContinue.setOnClickListener(view -> finalizar());
-    }
 
     private void finalizar() {
-        orcamento = new Orcamento();
-        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
-        orcamento.setId(databaseReference.push().getKey());
-        orcamento.setIdCliente(clienteSelecionado);
-        orcamento.setIdEndereco(enderecoList.get(end));
-        orcamento.setIdUsuario(usuario);
-        orcamento.setData(String.valueOf(Timestamp.getUnixTimestamp()));
-        orcamento.setItens(itemVendaList);
-        orcamento.setStatus("Em analise");
-        orcamento.setDesconto(String.valueOf(desconto));
-        orcamento.setTipoPagamento(pagamento);
-        orcamento.setTotal(binding.includeSheet.tvTotalCart.getText().toString());
 
-        SPM spm = new SPM(getApplicationContext());
-        String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
-        DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
-                .child("empresas")
-                .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                .child("orcamentos").child(user).child(orcamento.getId());
-        produtoRef.setValue(orcamento).addOnSuccessListener(unused -> {
-            Intent intent = new Intent(getApplicationContext(), ListaOrcamentoActivity.class);
-            startActivity(intent);
-            finish();
-        });
         try {
-            File perfil = new File(this.getExternalFilesDir(null)
+            File perfil = new File(context.getExternalFilesDir(null)
                     + File.separator
                     + "ecommercempa/foto perfil"
                     + File.separator);
@@ -399,7 +166,7 @@ public class CheckoutActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (DocumentException e) {
-            Toast.makeText(this, " erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, " erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -412,7 +179,7 @@ public class CheckoutActivity extends AppCompatActivity {
         // Store image to default external storage directory
         Uri bmpUri = null;
         try {
-            File file = new File(this.getExternalFilesDir(null) + File.separator + "ecommercempa/foto perfil" + File.separator);
+            File file = new File(context.getExternalFilesDir(null) + File.separator + "ecommercempa/foto perfil" + File.separator);
 
             if (!file.exists()) {
                 file.mkdirs();
@@ -437,11 +204,11 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private void baixarFoto() {
-      binding.progressBar.setVisibility(View.VISIBLE);
+
 
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
         StorageReference storageReference = firebaseStorage.getReferenceFromUrl(perfilEmpresa.getUrlImagem());
-        File pdfFolder = new File(this.getExternalFilesDir(null)
+        File pdfFolder = new File(context.getExternalFilesDir(null)
                 + File.separator
                 + "ecommercempa/foto perfil"
                 + File.separator);
@@ -451,7 +218,7 @@ public class CheckoutActivity extends AppCompatActivity {
         final File myFile2 = new File(pdfFolder + File.separator + "perfil" + ".png");
 
         storageReference.getFile(myFile2).addOnSuccessListener(taskSnapshot -> {
-            binding.progressBar.setVisibility(View.GONE);
+
             Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile2);
             try {
                 createPdf(orcamento, perfilEmpresa);
@@ -474,7 +241,7 @@ public class CheckoutActivity extends AppCompatActivity {
         LineSeparator lineSeparator = new LineSeparator();
         lineSeparator.setLineColor(new BaseColor(0, 0, 0, 68));
 
-        File pdfFolder = new File(this.getExternalFilesDir(null)
+        File pdfFolder = new File(context.getExternalFilesDir(null)
                 + File.separator
                 + "ecommercempa/orcamentos"
                 + File.separator);
@@ -512,7 +279,7 @@ public class CheckoutActivity extends AppCompatActivity {
         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
         //String url;
         // String url = "/data/data/" + this.getPackageName() + "/mpasistema/foto perfil/" + "perfil" + ".png";
-        File baseDir = this.getExternalFilesDir(null);
+        File baseDir = context.getExternalFilesDir(null);
         String url = baseDir.getAbsolutePath() + File.separator + "ecommercempa/foto perfil/" + "perfil" + ".png";
         Image img = Image.getInstance(url);
         img.scaleAbsoluteWidth(100f);
@@ -531,10 +298,10 @@ public class CheckoutActivity extends AppCompatActivity {
 
         Paragraph p5 = new Paragraph("Tel.: " + perfilEmpresa.getTelefone1(), paragraphFont2);
         Paragraph p6 = new Paragraph("WhatsApp.: " + perfilEmpresa.getTelefone2(), paragraphFont2);
-        Paragraph p7 = new Paragraph("Rua: " + perfilEmpresa.getEndereco().getLogradouro() + " - " + "N.: " + perfilEmpresa.getEndereco().getNumero(),paragraphFont2);
-        Paragraph p8 = new Paragraph(perfilEmpresa.getEndereco().getBairro() + " - " + perfilEmpresa.getEndereco().getLocalidade() + " - " + perfilEmpresa.getEndereco().getUf(),paragraphFont2);
-        Paragraph p9 = new Paragraph("CEP: " + perfilEmpresa.getEndereco().getCep(),paragraphFont2);
-        Paragraph pDez = new Paragraph( perfilEmpresa.getNome(),paragraphFont2);
+        Paragraph p7 = new Paragraph("Rua: " + perfilEmpresa.getEndereco().getLogradouro() + " - " + "N.: " + perfilEmpresa.getEndereco().getNumero(), paragraphFont2);
+        Paragraph p8 = new Paragraph(perfilEmpresa.getEndereco().getBairro() + " - " + perfilEmpresa.getEndereco().getLocalidade() + " - " + perfilEmpresa.getEndereco().getUf(), paragraphFont2);
+        Paragraph p9 = new Paragraph("CEP: " + perfilEmpresa.getEndereco().getCep(), paragraphFont2);
+        Paragraph pDez = new Paragraph(perfilEmpresa.getNome(), paragraphFont2);
 
         Paragraph p10 = new Paragraph(10, "Criado em", paragraphFont3);
         Paragraph p11 = new Paragraph(10, Timestamp.getFormatedDateTime(Long.parseLong(orcamento.getData()), "dd/MM/yy"), paragraphFont4);
@@ -587,7 +354,7 @@ public class CheckoutActivity extends AppCompatActivity {
         Paragraph p16 = new Paragraph(10, "Cliente:", paragraphFont2);
         Paragraph p17 = new Paragraph(10, orcamento.getIdCliente().getNome(), paragraphFont);
         Paragraph p18 = new Paragraph(10, "Vendedor:", paragraphFont2);
-        Paragraph p19 = new Paragraph(10, usuario.getNome(), paragraphFont);
+        Paragraph p19 = new Paragraph(10, orcamento.getIdUsuario().getNome(), paragraphFont);
 
         c4.addElement(p16);
         c4.addElement(p17);
@@ -694,8 +461,6 @@ public class CheckoutActivity extends AppCompatActivity {
         }
 
 
-
-
         Chunk glue = new Chunk(new VerticalPositionMark());
         Paragraph p = new Paragraph("Total", paragraphFont);
         p.add(new Chunk(glue));
@@ -715,7 +480,6 @@ public class CheckoutActivity extends AppCompatActivity {
         document.add(new Paragraph("\n", paragraphRodaPe));
 
 
-
         Paragraph rodape2 = new Paragraph(perfilEmpresa.getNome(), paragraphRodaPe);
         rodape2.setAlignment(Element.ALIGN_CENTER);
         document.add(rodape2);
@@ -725,7 +489,7 @@ public class CheckoutActivity extends AppCompatActivity {
         document.add(rodape3);
 
         document.close();
-
+        Parametro.bPdf = true;
 
 
     }
@@ -787,6 +551,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
         document.add(table);
     }
+
     private BigDecimal somatoriaDosProdutosIguais(String sPreco, String sQtd) {
         BigDecimal total = new BigDecimal("0");
 
