@@ -281,7 +281,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
     }
 
-    //---------------------------------------------------- VISUALIZAR PDF -----------------------------------------------------------------
+    //---------------------------------------------------- ENVIAR PDF WHATSAPP-----------------------------------------------------------------
     private void enviarPDFWhatsapp() {
         binding.progressBar2.setVisibility(View.VISIBLE);
 
@@ -309,6 +309,45 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         binding.progressBar2.setVisibility(View.GONE);
 
 
+    }
+    private void enviarPDFEmeail(){
+        try {
+        File pdfFolder = new File(getExternalFilesDir(null)
+                + File.separator
+                + "ecommercempa/orcamentos"
+                + File.separator);
+        if (!pdfFolder.exists()) {
+            pdfFolder.mkdirs();
+        }
+        File myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
+        Intent email = new Intent(Intent.ACTION_SENDTO);
+        email.setType("message/rfc822");
+        email.putExtra(Intent.EXTRA_SUBJECT, "Orcamento em anexo");
+        email.putExtra(Intent.EXTRA_TEXT, "obrigado pela preferencia");
+        email.putExtra(Intent.EXTRA_EMAIL, new String[]{orcamento.getIdCliente().getEmail()});
+
+        Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
+        email.putExtra(Intent.EXTRA_STREAM, uri);
+        email.setData(Uri.parse("mailto:")); // only email apps should handle this
+
+
+        List<ResolveInfo> resInfoList = getApplication().getPackageManager().queryIntentActivities(email, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo resolveInfo : resInfoList) {
+            String packageName = resolveInfo.activityInfo.packageName;
+            getApplication().grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+        email.addFlags(Intent.FLAG_ACTIVITY_MATCH_EXTERNAL);
+        email.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        email.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        email.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+
+        email.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(email);
+    } catch (Exception e) {
+        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+    }
+            binding.progressBar2.setVisibility(View.GONE);
     }
 
     private void exibirPDF() {
@@ -421,6 +460,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         });
 
         dialogBinding.llEditar.setOnClickListener(view -> {
+            enviarPDFEmeail();
             dialog.dismiss();
 
         });
