@@ -416,31 +416,29 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
         dialogBinding.llEnviar.setOnClickListener(view -> {
             enviarPDFWhatsapp();
+            dialog.dismiss();
 
         });
 
         dialogBinding.llEditar.setOnClickListener(view -> {
-
+            dialog.dismiss();
 
         });
 
         dialogBinding.llClonar.setOnClickListener(view -> {
-
+            dialog.dismiss();
 
         });
 
         dialogBinding.llStatus.setOnClickListener(view -> {
-            GerarPDF gerarPDF = new GerarPDF(orcamento, this);
-            while (Parametro.bPdf){
-                Toast.makeText(getApplicationContext(), "teste", Toast.LENGTH_SHORT).show();
-                break;
-            }
 
+            dialog.dismiss();
 
         });
 
         dialogBinding.llPdf.setOnClickListener(view -> {
             exibirPDF();
+            dialog.dismiss();
 
         });
 
@@ -466,6 +464,11 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         orcamento = cliente;
 
        showDialog();
+        GerarPDF gerarPDF = new GerarPDF(orcamento, this);
+       // while (Parametro.bPdf){
+           // Toast.makeText(getApplicationContext(), "teste", Toast.LENGTH_SHORT).show();
+           // break;
+     //   }
 
 
     }

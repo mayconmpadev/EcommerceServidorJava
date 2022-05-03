@@ -448,7 +448,7 @@ public class GerarPDF extends AppCompatActivity {
         Chunk glue1 = new Chunk(new VerticalPositionMark());
         Paragraph p1 = new Paragraph("Subtotal", paragraphFont3);
         p1.add(new Chunk(glue1));
-        p1.add(subTotal);
+        p1.add(orcamento.getSubTotal());
         document.add(p1);
 
         if (Integer.parseInt(orcamento.getDesconto()) > 0) {
@@ -563,4 +563,6 @@ public class GerarPDF extends AppCompatActivity {
 
         return total;
     }
+
+
 }

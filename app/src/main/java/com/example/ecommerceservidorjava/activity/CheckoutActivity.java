@@ -365,6 +365,7 @@ public class CheckoutActivity extends AppCompatActivity {
         orcamento.setDesconto(String.valueOf(desconto));
         orcamento.setTipoPagamento(pagamento);
         orcamento.setTotal(binding.includeSheet.tvTotalCart.getText().toString());
+        orcamento.setSubTotal(subTotal);
 
         SPM spm = new SPM(getApplicationContext());
         String user = FirebaseHelper.getAuth().getCurrentUser().getUid();

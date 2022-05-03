@@ -12,6 +12,7 @@ public class Orcamento implements Serializable {
     private String dataStatusPedido;
     private String status;
     private String total;
+    private String subTotal;
     private String tipoPagamento;
     private String desconto;
     private String acrescimo;
@@ -82,6 +83,14 @@ public class Orcamento implements Serializable {
 
     public void setTotal(String total) {
         this.total = total;
+    }
+
+    public String getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(String subTotal) {
+        this.subTotal = subTotal;
     }
 
     public String getTipoPagamento() {
