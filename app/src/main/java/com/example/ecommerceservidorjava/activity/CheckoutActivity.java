@@ -357,7 +357,10 @@ public class CheckoutActivity extends AppCompatActivity {
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
         orcamento.setId(databaseReference.push().getKey());
         orcamento.setIdCliente(clienteSelecionado);
-        orcamento.setIdEndereco(enderecoList.get(end));
+        if(enderecoList.size() > 0){
+            orcamento.setIdEndereco(enderecoList.get(end));
+        }
+
         orcamento.setIdUsuario(usuario);
         orcamento.setData(String.valueOf(Timestamp.getUnixTimestamp()));
         orcamento.setItens(itemVendaList);

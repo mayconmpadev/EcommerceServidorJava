@@ -9,6 +9,7 @@ public class Configuracao implements Serializable {
     private int desconto_dinheiro;
     private int desconto_debito;
     private int qtd_parcelas;
+    private int lucro;
     // impressão
     private String rodape;
 
@@ -54,5 +55,13 @@ public class Configuracao implements Serializable {
 
     public void setRodape(String rodape) {
         this.rodape = rodape;
+    }
+
+    public int getLucro() {
+        return lucro;
+    }
+
+    public void setLucro(int lucro) {
+        this.lucro = lucro;
     }
 }

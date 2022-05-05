@@ -56,6 +56,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
                     binding.edtDescontoDebito.setText(String.valueOf(configuracao.getDesconto_debito()));
                     binding.edtParcelas.setText(String.valueOf(configuracao.getQtd_parcelas()));
                     binding.edtRodape.setText(configuracao.getRodape());
+                    binding.edtLucro.setText(String.valueOf(configuracao.getLucro()));
 
 
                 } else {
@@ -80,6 +81,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         configuracao.setDesconto_debito(Integer.parseInt(binding.edtDescontoDebito.getText().toString()));
         configuracao.setQtd_parcelas(Integer.parseInt(binding.edtParcelas.getText().toString()));
         configuracao.setRodape(binding.edtRodape.getText().toString());
+        configuracao.setLucro(Integer.parseInt(binding.edtLucro.getText().toString()));
         configuracao.setId("configuracao");
 
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
@@ -87,7 +89,8 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
                 .child(configuracao.getId());
-        databaseReference.setValue(configuracao).addOnSuccessListener(unused -> binding.progressBar.setVisibility(View.GONE))
+        databaseReference.setValue(configuracao).addOnSuccessListener(unused -> {binding.progressBar.setVisibility(View.GONE);
+        finish();})
                 .addOnFailureListener(e -> {
                     binding.progressBar.setVisibility(View.GONE);
                     Toast.makeText(getApplicationContext(), "Erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -101,6 +104,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         binding.edtDescontoDinheiro.setTransformationMethod(null);
         binding.edtDescontoDebito.setTransformationMethod(null);
         binding.edtParcelas.setTransformationMethod(null);
+        binding.edtLucro.setTransformationMethod(null);
         binding.include.include.ibVoltar.setOnClickListener(view -> finish());
         binding.btnCriarConta.setOnClickListener(view -> salvar());
 

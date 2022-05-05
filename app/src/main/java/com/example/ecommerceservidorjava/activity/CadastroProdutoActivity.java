@@ -28,6 +28,7 @@ import com.example.ecommerceservidorjava.databinding.ActivityCadastroProdutoBind
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogFormProdutoCategoriaBinding;
 import com.example.ecommerceservidorjava.model.Categoria;
+import com.example.ecommerceservidorjava.model.Configuracao;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
@@ -68,13 +69,14 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     private Uri imagemUri_0, imagemUri_1, imagemUri_2;
     private Produto produto = new Produto();
     private Produto produtoSelecionado;
+    private Configuracao configuracao;
     private AlertDialog dialog;
     private boolean editar = false;
     private SPM spm = new SPM(this);
     private ActivityCadastroProdutoBinding binding;
     private boolean bVenda = true;
-    private  boolean bLucro = true;
-    private  boolean bCategoria = false;
+    private boolean bLucro = true;
+    private boolean bCategoria = false;
 
 
     @Override
@@ -82,9 +84,8 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         super.onCreate(savedInstanceState);
         binding = ActivityCadastroProdutoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        recuperarIntent();
+        recuperarConfiguracao();
         clicks();
-
         recuperaCategotia();
         gerarCodigo();
 
@@ -246,6 +247,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
             produto = new Produto();
             produto.setId(databaseReference.push().getKey());
+            binding.editLucro.setText(String.valueOf(configuracao.getLucro()));
             caminhoImagens.add("");
             caminhoImagens.add("");
             caminhoImagens.add("");
@@ -295,7 +297,6 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     }
 
     //---------------------------------------------------- DIALOGO DE DELETAR -----------------------------------------------------------------
-
 
 
     private void recuperaCategotia() {
@@ -587,6 +588,34 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         binding.btnCategorias.setOnClickListener(view -> showDialogCategorias(binding.btnCategorias));
     }
 
+    private void recuperarConfiguracao() {
+
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+
+
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("configuracao");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    configuracao = snapshot.getValue(Configuracao.class);
+                    recuperarIntent();
+
+                }else {
+                    recuperarIntent();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+
 
     @Override
     public void onClickListener(Categoria categoria) {
@@ -636,11 +665,10 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     }
 
 
-
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (bCategoria){
+        if (bCategoria) {
             configRv();
         }
 
