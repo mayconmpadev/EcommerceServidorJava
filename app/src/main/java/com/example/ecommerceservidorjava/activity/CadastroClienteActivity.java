@@ -77,6 +77,8 @@ public class CadastroClienteActivity extends AppCompatActivity {
             binding.edtTelefone1.setText(clienteSelecionado.getTelefone1());
             binding.edtTelefone2.setText(clienteSelecionado.getTelefone2());
             binding.edtDocumento.setText(clienteSelecionado.getDocumento());
+            tipodocumento();
+            binding.edtDocumento.setText(clienteSelecionado.getDocumento());
             binding.edtObservacao.setText(clienteSelecionado.getObservacao());
             binding.checkbox.setChecked(clienteSelecionado.isStatus());
             binding.imageFake.setVisibility(View.GONE);
@@ -395,19 +397,7 @@ public class CadastroClienteActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (binding.edtDocumento.getUnMasked().length() == 11 & mascara) {
-                    if (mascara2) {
-                        mascara = false;
-                        mascaraCnpj();
-                    } else {
-                        mascara2 = true;
-                    }
-
-                } else if (binding.edtDocumento.getUnMasked().length() == 10 & !mascara) {
-                    mascara = true;
-                    mascara2 = false;
-                    mascaraCpf();
-                }
+               tipodocumento();
             }
 
             @Override
@@ -415,6 +405,22 @@ public class CadastroClienteActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void tipodocumento() {
+        if (binding.edtDocumento.getUnMasked().length() == 11 & mascara) {
+            if (mascara2) {
+                mascara = false;
+                mascaraCnpj();
+            } else {
+                mascara2 = true;
+            }
+
+        } else if (binding.edtDocumento.getUnMasked().length() == 10 & !mascara) {
+            mascara = true;
+            mascara2 = false;
+            mascaraCpf();
+        }
     }
 
     private void mascaraCnpj() {

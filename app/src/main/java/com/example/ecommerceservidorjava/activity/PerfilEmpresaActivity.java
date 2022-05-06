@@ -21,6 +21,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.example.ecommerceservidorjava.api.CEPService;
 import com.example.ecommerceservidorjava.databinding.ActivityPerfilEmpresaBinding;
+import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.model.Endereco;
 import com.example.ecommerceservidorjava.model.PerfilEmpresa;
 import com.example.ecommerceservidorjava.util.Base64Custom;
@@ -99,20 +100,8 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                     binding.edtEmail.setText(perfilEmpresa.getEmail());
                     binding.edtTelefone1.setText(perfilEmpresa.getTelefone1());
                     binding.edtTelefone2.setText(perfilEmpresa.getTelefone2());
-                    binding.edtDocumento.setText(perfilEmpresa.getDocumento());
-                    if (binding.edtDocumento.getUnMasked().length() == 11 & mascara) {
-                        if (mascara2) {
-                            mascara = false;
-                            mascaraCnpj();
-                        } else {
-                            mascara2 = true;
-                        }
-
-                    } else if (binding.edtDocumento.getUnMasked().length() == 10 & !mascara) {
-                        mascara = true;
-                        mascara2 = false;
-                        mascaraCpf();
-                    }
+                     binding.edtDocumento.setText(perfilEmpresa.getDocumento());
+             tipodocumento();
                     binding.edtDocumento.setText(perfilEmpresa.getDocumento());
 
                     binding.edtCep.setText(perfilEmpresa.getEndereco().getCep());
@@ -124,7 +113,9 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                     binding.edtObservacao.setText(perfilEmpresa.getEndereco().getComplemento());
 
                 }else {
+                    resultUri = Uri.parse("android.resource://com.example.ecommerceservidorjava/drawable/user_123");
                     binding.progressBar.setVisibility(View.GONE);
+                    perfilEmpresa = new PerfilEmpresa();
                 }
             }
 
@@ -134,6 +125,18 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void tipodocumento() {
+        if (binding.edtDocumento.getUnMasked().length() == 14 & mascara) {
+            Toast.makeText(this, String.valueOf(binding.edtDocumento.getUnMasked().length()), Toast.LENGTH_SHORT).show();
+                mascaraCnpj();
+
+        } else {
+            Toast.makeText(this, String.valueOf(binding.edtDocumento.getUnMasked().length()), Toast.LENGTH_SHORT).show();
+            mascaraCpf();
+        }
+    }
+
     //---------------------------------------------------- VALIDAR DADOS -----------------------------------------------------------------
     public void validaDadosSalvar() {
         String nome = binding.edtNome.getText().toString().trim();
@@ -164,7 +167,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
 
                                                     binding.progressBar.setVisibility(View.VISIBLE);
 
-                                                    perfilEmpresa = new PerfilEmpresa();
+
 
                                                     perfilEmpresa.setId("perfil_empresa");
                                                     perfilEmpresa.setNome(nome);
@@ -182,7 +185,12 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                                                     endereco.setLogradouro(binding.edtLogradouro.getText().toString());
                                                     endereco.setComplemento(binding.edtObservacao.getText().toString());
                                                     perfilEmpresa.setEndereco(endereco);
-                                                    salvarDadosImagem(perfilEmpresa);
+                                                    if (resultUri != null) {
+                                                        salvarDadosImagem(perfilEmpresa);
+                                                    } else {
+                                                        editarDados(perfilEmpresa);
+                                                    }
+
 
 
                                                 } else {
@@ -226,16 +234,14 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
 
     //---------------------------------------------------- SALVAR IMAGEM E DADOS -----------------------------------------------------------------
     public void salvarDadosImagem(PerfilEmpresa objeto) {
-        if (resultUri == null) {
-            resultUri = Uri.parse("android.resource://com.example.ecommerceservidorjava/drawable/user_123");
-        }
+
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("empresas")
                 .child(caminho).child("imagens").child("perfil_empresa").child(objeto.getId());
 
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
-                .child(objeto.getId());
+                .child("perfil_empresa");
 
         Glide.with(this).asBitmap().load(resultUri).apply(new RequestOptions().override(1024, 768))
                 .listener(new RequestListener<Bitmap>() {
@@ -266,6 +272,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                                 databaseReference.setValue(objeto).addOnCompleteListener(task1 -> {
 
                                     if (task1.isSuccessful()) {
+                                        binding.imageFake.setVisibility(View.GONE);
                                         binding.imagemFoto.setImageURI(resultUri);
                                         Toast.makeText(getApplicationContext(), "Salvo com sucesso", Toast.LENGTH_SHORT).show();
                                     } else {
@@ -287,6 +294,30 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                 }).submit();
 
 
+    }
+
+    //---------------------------------------------------- EDITAR DADOS -----------------------------------------------------------------
+    private void editarDados(PerfilEmpresa perfilEmpresa) {
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("perfil_empresa");
+        databaseReference.setValue(perfilEmpresa).addOnCompleteListener(task1 -> {
+
+
+            if (task1.isSuccessful()) {
+
+                binding.imagemFoto.setImageURI(resultUri);
+                finish();
+
+
+            } else {
+
+                Toast.makeText(getApplicationContext(), "Erro ao cadastrar", Toast.LENGTH_SHORT).show();
+
+            }
+            binding.progressBar.setVisibility(View.GONE);
+        });
     }
 
     private void buscarCEP() {
