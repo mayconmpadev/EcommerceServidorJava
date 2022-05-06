@@ -216,11 +216,14 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                                 databaseReference.setValue(usuario).addOnCompleteListener(task1 -> {
 
                                     if (task1.isSuccessful()) {
+                                        binding.imageFake.setVisibility(View.GONE);
                                         binding.imagemFoto.setImageURI(resultUri);
                                         FirebaseHelper.getAuth().signOut();
+                                        finishAffinity();
                                         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         startActivity(intent);
-                                        finish();
+
                                     } else {
                                         storageReferencere.delete(); //apaga a imagem previamente salva no banco
                                         Toast.makeText(CadastroUsuarioActivity.this, "Erro ao cadastrar", Toast.LENGTH_SHORT).show();

@@ -100,6 +100,20 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                     binding.edtTelefone1.setText(perfilEmpresa.getTelefone1());
                     binding.edtTelefone2.setText(perfilEmpresa.getTelefone2());
                     binding.edtDocumento.setText(perfilEmpresa.getDocumento());
+                    if (binding.edtDocumento.getUnMasked().length() == 11 & mascara) {
+                        if (mascara2) {
+                            mascara = false;
+                            mascaraCnpj();
+                        } else {
+                            mascara2 = true;
+                        }
+
+                    } else if (binding.edtDocumento.getUnMasked().length() == 10 & !mascara) {
+                        mascara = true;
+                        mascara2 = false;
+                        mascaraCpf();
+                    }
+                    binding.edtDocumento.setText(perfilEmpresa.getDocumento());
 
                     binding.edtCep.setText(perfilEmpresa.getEndereco().getCep());
                     binding.edtUf.setText(perfilEmpresa.getEndereco().getUf());
@@ -126,7 +140,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
         String email = binding.edtEmail.getText().toString().trim();
         String telefone = binding.edtTelefone1.getText().toString();
         String telefone2 = binding.edtTelefone2.getText().toString();
-        String documento = binding.edtDocumento.getUnMasked();
+        String documento = binding.edtDocumento.getMasked();
         String cep = binding.edtCep.getText().toString();
         String estado = binding.edtUf.getText().toString();
         String numero = binding.edtNumero.getText().toString();

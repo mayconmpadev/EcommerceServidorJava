@@ -35,6 +35,7 @@ import java.util.List;
 public class ListaEnderecoActivity extends AppCompatActivity implements ListaEnderecoAdapter.OnClickLister, ListaEnderecoAdapter.OnLongClickLister {
     ActivityListaEnderecoBinding binding;
     private final List<Endereco> enderecoList = new ArrayList<>();
+    ListaEnderecoAdapter enderecoAdapter;
     private AlertDialog dialog;
     private Cliente clienteSelecionado;
 private SPM spm = new SPM(this);
@@ -57,7 +58,7 @@ private SPM spm = new SPM(this);
     private void configRvProdutos(List<Endereco> enderecoList) {
         binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         binding.recycler.setHasFixedSize(true);
-        ListaEnderecoAdapter enderecoAdapter = new ListaEnderecoAdapter(R.layout.item_lista_usuario, enderecoList, getApplicationContext(), true, this, this);
+       enderecoAdapter = new ListaEnderecoAdapter(R.layout.item_lista_usuario, enderecoList, getApplicationContext(), true, this, this);
         binding.recycler.setAdapter(enderecoAdapter);
     }
 
@@ -149,7 +150,7 @@ private SPM spm = new SPM(this);
 
             excluir(endereco);
 
-            //listaCategoriaAdapter.notifyDataSetChanged();
+            enderecoAdapter.notifyDataSetChanged();
 
             dialog.dismiss();
         });
