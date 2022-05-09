@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,6 +29,9 @@ import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.example.ecommerceservidorjava.util.Validacao;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
@@ -240,10 +244,7 @@ public class CadastroClienteActivity extends AppCompatActivity {
                                     if (task1.isSuccessful()) {
                                         binding.imageFake.setVisibility(View.GONE);
                                         binding.imagemFoto.setImageURI(resultUri);
-                                        FirebaseHelper.getAuth().signOut();
-                                        finishAffinity();
-                                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                        startActivity(intent);
+                                      recuperarLogin();
                                     } else {
                                         storageReferencere.delete(); //apaga a imagem previamente salva no banco
                                         Toast.makeText(getApplicationContext(), "Erro ao cadastrar", Toast.LENGTH_SHORT).show();
@@ -261,6 +262,29 @@ public class CadastroClienteActivity extends AppCompatActivity {
                         return false;
                     }
                 }).submit();
+
+
+    }
+
+    private void recuperarLogin(){
+
+        FirebaseHelper.getAuth().signOut();
+        String email = spm.getPreferencia("PREFERENCIAS","USUARIO","");
+        String senha = spm.getPreferencia("PREFERENCIAS","SENHA","");
+
+        FirebaseHelper.getAuth().signInWithEmailAndPassword(
+                email, senha
+        ).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                finishAffinity();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                Toast.makeText(getApplicationContext(), FirebaseHelper.getAuth().getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(getApplicationContext(),"erro: " + FirebaseHelper.getAuth().getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
 
     }

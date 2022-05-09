@@ -21,7 +21,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.example.ecommerceservidorjava.api.CEPService;
 import com.example.ecommerceservidorjava.databinding.ActivityPerfilEmpresaBinding;
-import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.model.Endereco;
 import com.example.ecommerceservidorjava.model.PerfilEmpresa;
 import com.example.ecommerceservidorjava.util.Base64Custom;
@@ -58,6 +57,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
     private boolean editar = false;
     private boolean mascara = true;
     private boolean mascara2 = false;
+    private boolean digitacao = false;
     private Uri resultUri;
     private Retrofit retrofit;
 
@@ -67,11 +67,13 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
         binding = ActivityPerfilEmpresaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         binding.include.textTitulo.setText("Perfil Empresa");
-        configClicks();
+
         iniciaRetrofit();
         recuperarPerfil();
+        configClicks();
 
     }
+
     private void iniciaRetrofit() {
         retrofit = new Retrofit
                 .Builder()
@@ -80,7 +82,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                 .build();
     }
 
-    private void recuperarPerfil(){
+    private void recuperarPerfil() {
         binding.progressBar.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
 
@@ -91,7 +93,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
+                if (snapshot.exists()) {
                     binding.progressBar.setVisibility(View.GONE);
                     perfilEmpresa = snapshot.getValue(PerfilEmpresa.class);
                     binding.imageFake.setVisibility(View.GONE);
@@ -100,10 +102,9 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                     binding.edtEmail.setText(perfilEmpresa.getEmail());
                     binding.edtTelefone1.setText(perfilEmpresa.getTelefone1());
                     binding.edtTelefone2.setText(perfilEmpresa.getTelefone2());
-                     binding.edtDocumento.setText(perfilEmpresa.getDocumento());
-             tipodocumento();
                     binding.edtDocumento.setText(perfilEmpresa.getDocumento());
-
+                    tipodocumento();
+                    binding.edtDocumento.setText(perfilEmpresa.getDocumento());
                     binding.edtCep.setText(perfilEmpresa.getEndereco().getCep());
                     binding.edtUf.setText(perfilEmpresa.getEndereco().getUf());
                     binding.edtNumero.setText(perfilEmpresa.getEndereco().getNumero());
@@ -112,7 +113,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                     binding.edtLogradouro.setText(perfilEmpresa.getEndereco().getLogradouro());
                     binding.edtObservacao.setText(perfilEmpresa.getEndereco().getComplemento());
 
-                }else {
+                } else {
                     resultUri = Uri.parse("android.resource://com.example.ecommerceservidorjava/drawable/user_123");
                     binding.progressBar.setVisibility(View.GONE);
                     perfilEmpresa = new PerfilEmpresa();
@@ -127,12 +128,11 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
     }
 
     private void tipodocumento() {
-        if (binding.edtDocumento.getUnMasked().length() == 14 & mascara) {
-            Toast.makeText(this, String.valueOf(binding.edtDocumento.getUnMasked().length()), Toast.LENGTH_SHORT).show();
-                mascaraCnpj();
+
+        if (perfilEmpresa.getDocumento().length() == 18) {
+            mascaraCnpj();
 
         } else {
-            Toast.makeText(this, String.valueOf(binding.edtDocumento.getUnMasked().length()), Toast.LENGTH_SHORT).show();
             mascaraCpf();
         }
     }
@@ -168,7 +168,6 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                                                     binding.progressBar.setVisibility(View.VISIBLE);
 
 
-
                                                     perfilEmpresa.setId("perfil_empresa");
                                                     perfilEmpresa.setNome(nome);
                                                     perfilEmpresa.setEmail(email);
@@ -190,7 +189,6 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                                                     } else {
                                                         editarDados(perfilEmpresa);
                                                     }
-
 
 
                                                 } else {
@@ -391,6 +389,14 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
         binding.cardFoto.setOnClickListener(view -> chamarImagens());
         binding.btnCriarConta.setOnClickListener(view -> validaDadosSalvar());
         binding.btnCep.setOnClickListener(view -> buscarCEP());
+        binding.edtDocumento.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b){
+                    digitacao = true;
+                }
+            }
+        });
         binding.edtDocumento.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -399,7 +405,9 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (digitacao)
                 if (binding.edtDocumento.getUnMasked().length() == 11 & mascara) {
+
                     if (mascara2) {
                         mascara = false;
                         mascaraCnpj();
@@ -408,6 +416,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                     }
 
                 } else if (binding.edtDocumento.getUnMasked().length() == 10 & !mascara) {
+
                     mascara = true;
                     mascara2 = false;
                     mascaraCpf();

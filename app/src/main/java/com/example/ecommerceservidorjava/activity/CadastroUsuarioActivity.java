@@ -153,7 +153,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     }
 
 
-
     //---------------------------------------------------- CRIAR CONTA -----------------------------------------------------------------
     private void criarConta(Usuario usuario) {
         FirebaseHelper.getAuth().createUserWithEmailAndPassword(
@@ -174,9 +173,31 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         });
     }
 
+    private void recuperarLogin() {
+
+        FirebaseHelper.getAuth().signOut();
+        String email = spm.getPreferencia("PREFERENCIAS", "USUARIO", "");
+        String senha = spm.getPreferencia("PREFERENCIAS", "SENHA", "");
+
+        FirebaseHelper.getAuth().signInWithEmailAndPassword(
+                email, senha
+        ).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                finishAffinity();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                Toast.makeText(getApplicationContext(), FirebaseHelper.getAuth().getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "erro: " + FirebaseHelper.getAuth().getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+    }
+
     //---------------------------------------------------- SALVAR IMAGEM E DADOS -----------------------------------------------------------------
     public void salvarDadosImagem(Usuario usuario) {
-        if (resultUri == null){
+        if (resultUri == null) {
             resultUri = Uri.parse("android.resource://com.example.ecommerceservidorjava/drawable/user_123");
         }
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
@@ -218,11 +239,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                                     if (task1.isSuccessful()) {
                                         binding.imageFake.setVisibility(View.GONE);
                                         binding.imagemFoto.setImageURI(resultUri);
-                                        FirebaseHelper.getAuth().signOut();
-                                        finishAffinity();
-                                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                        startActivity(intent);
+                                        recuperarLogin();
 
                                     } else {
                                         storageReferencere.delete(); //apaga a imagem previamente salva no banco
@@ -360,9 +377,9 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         binding.imgConfirmaSenha.setTag("imagem2");
         binding.cardFoto.setOnClickListener(view -> chamarImagens());
         binding.include.include.ibVoltar.setOnClickListener(view -> finish());
-        if (editar){
+        if (editar) {
             binding.include.textTitulo.setText("Editar");
-        }else {
+        } else {
             binding.include.textTitulo.setText("Novo");
         }
 

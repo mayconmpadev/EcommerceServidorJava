@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ActivityLoginBinding;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
+import com.example.ecommerceservidorjava.util.SPM;
 import com.example.ecommerceservidorjava.util.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -70,18 +71,20 @@ public class LoginActivity extends AppCompatActivity {
         ).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 if (FirebaseHelper.getAuth().getCurrentUser().isEmailVerified()) {
+                    SPM spm = new SPM(getApplicationContext());
+                    spm.setPreferencia("PREFERENCIAS","USUARIO", email);
+                    spm.setPreferencia("PREFERENCIAS","SENHA", senha);
                     recuperaUsuario(task.getResult().getUser().getUid());
                 } else {
-                   // FirebaseHelper.getAuth().signOut();
+                    // FirebaseHelper.getAuth().signOut();
                     binding.progressBar.setVisibility(View.GONE);
                     String msg = "Um email de confirmação foi enviado para *" + email + "* clique no link " +
                             "de confirmação do email para validar seu cadastro. Caso nao tenha recebido clique em reenviar";
 
                     dialogRenvioEmailConfirmacao("Reenvio", msg);
 
-
                 }
-                //
+
             } else {
 
                 Toast.makeText(this, FirebaseHelper.validaErros(task.getException().getMessage()), Toast.LENGTH_SHORT).show();
@@ -99,9 +102,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) { // Usuário
-                   Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                   startActivity(intent);
-                   finish();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
 
                 } else {
                     startActivity(new Intent(getBaseContext(), MainActivity.class));
