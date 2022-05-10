@@ -357,7 +357,9 @@ public class CheckoutActivity extends AppCompatActivity {
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
         orcamento.setId(databaseReference.push().getKey());
         orcamento.setIdCliente(clienteSelecionado);
-        orcamento.setIdEndereco(enderecoList.get(end));
+        if (enderecoList.size() > 0){
+            orcamento.setIdEndereco(enderecoList.get(end));
+        }
         orcamento.setIdUsuario(usuario);
         orcamento.setData(String.valueOf(Timestamp.getUnixTimestamp()));
         orcamento.setItens(itemVendaList);
@@ -374,9 +376,11 @@ public class CheckoutActivity extends AppCompatActivity {
                 .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
                 .child("orcamentos").child(user).child(orcamento.getId());
         produtoRef.setValue(orcamento).addOnSuccessListener(unused -> {
+            finishAffinity();
             Intent intent = new Intent(getApplicationContext(), ListaOrcamentoActivity.class);
+            intent.putExtra("orcamento", orcamento);
             startActivity(intent);
-            finish();
+
         });
         try {
             File perfil = new File(this.getExternalFilesDir(null)

@@ -247,7 +247,10 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
             produto = new Produto();
             produto.setId(databaseReference.push().getKey());
-            binding.editLucro.setText(String.valueOf(configuracao.getLucro()));
+            if (configuracao!= null){
+                binding.editLucro.setText(String.valueOf(configuracao.getLucro()));
+            }
+
             caminhoImagens.add("");
             caminhoImagens.add("");
             caminhoImagens.add("");

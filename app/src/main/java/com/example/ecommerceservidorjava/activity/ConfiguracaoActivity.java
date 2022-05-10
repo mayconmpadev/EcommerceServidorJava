@@ -72,6 +72,39 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         });
     }
 
+    public void validaDadosSalvar() {
+        String dinheiro = binding.edtDescontoDinheiro.getText().toString().trim();
+        String debito = binding.edtDescontoDebito.getText().toString().trim();
+        String parcelas = binding.edtParcelas.getText().toString().trim();
+        String lucro = binding.edtLucro.getText().toString().trim();
+
+
+
+        if (!dinheiro.isEmpty()) {
+            if (!debito.isEmpty()) {
+                if (!parcelas.isEmpty()) {
+                    if (!lucro.isEmpty()) {
+
+                        salvar();
+
+                    } else {
+                        binding.edtLucro.requestFocus();
+                        binding.edtLucro.setError("O campo não pode ser vazio.");
+                    }
+                } else {
+                    binding.edtParcelas.requestFocus();
+                    binding.edtParcelas.setError("O campo não pode ser vazio.");
+                }
+            } else {
+                binding.edtDescontoDebito.requestFocus();
+                binding.edtDescontoDebito.setError("O campo não pode ser vazio.");
+            }
+        } else {
+            binding.edtDescontoDinheiro.requestFocus();
+            binding.edtDescontoDinheiro.setError("O campo não pode ser vazio.");
+        }
+    }
+
 
     //---------------------------------------------------- SALVAR IMAGEM E DADOS -----------------------------------------------------------------
     public void salvar() {
@@ -106,7 +139,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         binding.edtParcelas.setTransformationMethod(null);
         binding.edtLucro.setTransformationMethod(null);
         binding.include.include.ibVoltar.setOnClickListener(view -> finish());
-        binding.btnCriarConta.setOnClickListener(view -> salvar());
+        binding.btnCriarConta.setOnClickListener(view -> validaDadosSalvar());
 
     }
 
