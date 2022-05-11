@@ -567,6 +567,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra("id", "geral");
         startActivity(intent);
         finish();
     }

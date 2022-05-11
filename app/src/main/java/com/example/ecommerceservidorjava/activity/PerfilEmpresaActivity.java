@@ -114,7 +114,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                     binding.edtObservacao.setText(perfilEmpresa.getEndereco().getComplemento());
 
                 } else {
-                    resultUri = Uri.parse("android.resource://com.example.ecommerceservidorjava/drawable/user_123");
+                    resultUri = Uri.parse("android.resource://com.example.ecommerceservidorjava/drawable/ic_photo");
                     binding.progressBar.setVisibility(View.GONE);
                     perfilEmpresa = new PerfilEmpresa();
                 }
