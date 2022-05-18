@@ -5,6 +5,7 @@ import static com.itextpdf.text.Rectangle.NO_BORDER;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -13,9 +14,13 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ActivityCheckoutBinding;
 import com.example.ecommerceservidorjava.model.Cliente;
@@ -94,6 +99,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
                     binding.edtNome.setText(clienteSelecionado.getNome());
                     binding.edtTelefone.setText(clienteSelecionado.getTelefone1());
+
                     recuperaEndereco(0);
                 }
             }
@@ -129,6 +135,20 @@ public class CheckoutActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     perfilEmpresa = snapshot.getValue(PerfilEmpresa.class);
+                    Glide.with(getApplicationContext())
+                            .asBitmap()
+                            .load(perfilEmpresa.getUrlImagem())
+                            .into(new CustomTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                   // binding.imagemFoto.setImageBitmap(resource);
+                                    setLocalBitmapUri(resource);
+                                }
+
+                                @Override
+                                public void onLoadCleared(@Nullable Drawable placeholder) {
+                                }
+                            });
                     binding.progressBar.setVisibility(View.GONE);
                 }else{
                     binding.progressBar.setVisibility(View.GONE);
@@ -350,9 +370,12 @@ public class CheckoutActivity extends AppCompatActivity {
         binding.ibDebito.setOnClickListener(view -> formaDePagamento(view));
         binding.ibCredito.setOnClickListener(view -> formaDePagamento(view));
         binding.includeSheet.btnContinue.setOnClickListener(view -> finalizar());
+        binding.include.include.ibVoltar.setOnClickListener(view -> finish());
     }
 
     private void finalizar() {
+        clienteSelecionado.setNome(binding.edtNome.getText().toString());
+        clienteSelecionado.setTelefone1(binding.edtTelefone.getText().toString());
         orcamento = new Orcamento();
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
         orcamento.setId(databaseReference.push().getKey());
@@ -383,23 +406,10 @@ public class CheckoutActivity extends AppCompatActivity {
 
         });
         try {
-            File perfil = new File(this.getExternalFilesDir(null)
-                    + File.separator
-                    + "ecommercempa/foto perfil"
-                    + File.separator);
 
-            File file = new File(perfil + File.separator + "perfil" + ".png");
-            if (file.exists()) {
+
                 createPdf(orcamento, perfilEmpresa);
-            } else {
 
-                if (perfilEmpresa == null) {
-                    setLocalBitmapUri("perfil");
-                } else {
-
-                    baixarFoto();
-                }
-            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -410,11 +420,8 @@ public class CheckoutActivity extends AppCompatActivity {
 
     }
 
-    public Uri setLocalBitmapUri(String uid) {
-        // Extract Bitmap from ImageView drawable
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_user_login_off);
+    public Uri setLocalBitmapUri(Bitmap bitmap) {
 
-        // Store image to default external storage directory
         Uri bmpUri = null;
         try {
             File file = new File(this.getExternalFilesDir(null) + File.separator + "ecommercempa/foto perfil" + File.separator);
@@ -422,55 +429,20 @@ public class CheckoutActivity extends AppCompatActivity {
             if (!file.exists()) {
                 file.mkdirs();
             }
-            file = new File(file + File.separator + uid + ".png");
+            file = new File(file + File.separator + "perfil" + ".png");
             FileOutputStream out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 50, out);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 50, out);
             out.close();
             bmpUri = Uri.fromFile(file);
 
-            try {
-                createPdf(orcamento, perfilEmpresa);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (DocumentException e) {
-                e.printStackTrace();
-            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
         return bmpUri;
     }
 
-    private void baixarFoto() {
-      binding.progressBar.setVisibility(View.VISIBLE);
 
-        FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
-        StorageReference storageReference = firebaseStorage.getReferenceFromUrl(perfilEmpresa.getUrlImagem());
-        File pdfFolder = new File(this.getExternalFilesDir(null)
-                + File.separator
-                + "ecommercempa/foto perfil"
-                + File.separator);
-        if (!pdfFolder.exists()) {
-            pdfFolder.mkdirs();
-        }
-        final File myFile2 = new File(pdfFolder + File.separator + "perfil" + ".png");
-
-        storageReference.getFile(myFile2).addOnSuccessListener(taskSnapshot -> {
-            binding.progressBar.setVisibility(View.GONE);
-            Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile2);
-            try {
-                createPdf(orcamento, perfilEmpresa);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (DocumentException e) {
-                e.printStackTrace();
-            }
-
-        }).addOnFailureListener(exception -> {
-            // Handle any errors
-            Toast.makeText(getApplicationContext(), "erro: " + exception.getMessage(), Toast.LENGTH_LONG).show();
-        });
-    }
 
 
     private void createPdf(Orcamento orcamento, PerfilEmpresa perfilEmpresa) throws IOException, DocumentException {
@@ -520,8 +492,8 @@ public class CheckoutActivity extends AppCompatActivity {
         File baseDir = this.getExternalFilesDir(null);
         String url = baseDir.getAbsolutePath() + File.separator + "ecommercempa/foto perfil/" + "perfil" + ".png";
         Image img = Image.getInstance(url);
-        img.scaleAbsoluteWidth(100f);
-        img.scaleAbsoluteHeight(100f);
+        img.scaleAbsoluteWidth(90);
+        img.scaleAbsoluteHeight(90f);
         img.setAlignment(Element.ALIGN_CENTER);
         PdfPCell c1 = new PdfPCell();
         c1.addElement(img);

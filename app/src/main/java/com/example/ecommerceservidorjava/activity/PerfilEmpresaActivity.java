@@ -2,6 +2,9 @@ package com.example.ecommerceservidorjava.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -18,7 +21,10 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
+import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.api.CEPService;
 import com.example.ecommerceservidorjava.databinding.ActivityPerfilEmpresaBinding;
 import com.example.ecommerceservidorjava.model.Endereco;
@@ -41,6 +47,8 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import retrofit2.Call;
@@ -97,7 +105,21 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                     binding.progressBar.setVisibility(View.GONE);
                     perfilEmpresa = snapshot.getValue(PerfilEmpresa.class);
                     binding.imageFake.setVisibility(View.GONE);
-                    Glide.with(getApplicationContext()).load(perfilEmpresa.getUrlImagem()).into(binding.imagemFoto);
+                    Glide.with(getApplicationContext())
+                            .asBitmap()
+                            .load(perfilEmpresa.getUrlImagem())
+                            .into(new CustomTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                    binding.imagemFoto.setImageBitmap(resource);
+                                    setLocalBitmapUri(resource);
+                                }
+
+                                @Override
+                                public void onLoadCleared(@Nullable Drawable placeholder) {
+                                }
+                            });
+                   // Glide.with(getApplicationContext()).load(perfilEmpresa.getUrlImagem()).into(binding.imagemFoto);
                     binding.edtNome.setText(perfilEmpresa.getNome());
                     binding.edtEmail.setText(perfilEmpresa.getEmail());
                     binding.edtTelefone1.setText(perfilEmpresa.getTelefone1());
@@ -254,6 +276,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                         resource.compress(Bitmap.CompressFormat.JPEG, 70, bytes);
                         ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes.toByteArray());
+                         setLocalBitmapUri(resource);
 
                         try {
                             bytes.close();
@@ -272,6 +295,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                                     if (task1.isSuccessful()) {
                                         binding.imageFake.setVisibility(View.GONE);
                                         binding.imagemFoto.setImageURI(resultUri);
+
                                         Toast.makeText(getApplicationContext(), "Salvo com sucesso", Toast.LENGTH_SHORT).show();
                                     } else {
                                         storageReferencere.delete(); //apaga a imagem previamente salva no banco
@@ -307,7 +331,6 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
 
                 binding.imagemFoto.setImageURI(resultUri);
                 finish();
-
 
             } else {
 
@@ -392,7 +415,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
         binding.edtDocumento.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                if (b){
+                if (b) {
                     digitacao = true;
                 }
             }
@@ -406,21 +429,21 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (digitacao)
-                if (binding.edtDocumento.getUnMasked().length() == 11 & mascara) {
+                    if (binding.edtDocumento.getUnMasked().length() == 11 & mascara) {
 
-                    if (mascara2) {
-                        mascara = false;
-                        mascaraCnpj();
-                    } else {
-                        mascara2 = true;
+                        if (mascara2) {
+                            mascara = false;
+                            mascaraCnpj();
+                        } else {
+                            mascara2 = true;
+                        }
+
+                    } else if (binding.edtDocumento.getUnMasked().length() == 10 & !mascara) {
+
+                        mascara = true;
+                        mascara2 = false;
+                        mascaraCpf();
                     }
-
-                } else if (binding.edtDocumento.getUnMasked().length() == 10 & !mascara) {
-
-                    mascara = true;
-                    mascara2 = false;
-                    mascaraCpf();
-                }
             }
 
             @Override
@@ -442,6 +465,28 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
         Mask mask = new Mask("___.___.___-__", '_', MaskStyle.COMPLETABLE);
         MaskChangedListener listener = new MaskChangedListener(mask);
         binding.edtDocumento.addTextChangedListener(listener);
+    }
+
+    public Uri setLocalBitmapUri(Bitmap bitmap) {
+
+        Uri bmpUri = null;
+        try {
+            File file = new File(this.getExternalFilesDir(null) + File.separator + "ecommercempa/foto perfil" + File.separator);
+
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            file = new File(file + File.separator + "perfil" + ".png");
+            FileOutputStream out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 50, out);
+            out.close();
+            bmpUri = Uri.fromFile(file);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
     }
 
     //---------------------------------------------------- RECORTE DE IMAGEM -----------------------------------------------------------------

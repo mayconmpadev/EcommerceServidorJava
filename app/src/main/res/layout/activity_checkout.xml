@@ -103,15 +103,18 @@
                     </LinearLayout>
 
 
-                    <EditText
+                    <com.santalu.maskara.widget.MaskEditText
                         android:id="@+id/edtTelefone"
                         style="@style/EditText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="(27) 99999-9999"
-                        android:inputType="textCapWords"
+                        android:hint="(21) 98888-7777"
+                        android:inputType="number"
                         android:padding="8dp"
-                        android:textSize="14sp" />
+                        app:mask="(__) _____-____"
+                        app:maskCharacter="_"
+                        android:textSize="14sp"
+                        app:maskStyle="completable" />
 
                 </LinearLayout>
 
@@ -280,16 +283,16 @@
                         android:padding="8dp"
                         android:textSize="14sp" />
 
-                  <ImageView
-                      android:id="@+id/imageEndereco"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:layout_marginTop="16dp"
-                      android:layout_gravity="right"
-                      android:src="@drawable/ic_proximo"
-                      app:tint="@color/color_verde">
+                    <ImageView
+                        android:id="@+id/imageEndereco"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginTop="16dp"
+                        android:src="@drawable/ic_proximo"
+                        app:tint="@color/color_verde">
 
-                  </ImageView>
+                    </ImageView>
 
                 </LinearLayout>
 
