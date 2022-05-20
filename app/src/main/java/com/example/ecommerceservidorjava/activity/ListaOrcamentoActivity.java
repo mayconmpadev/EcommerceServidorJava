@@ -32,15 +32,14 @@ import com.example.ecommerceservidorjava.databinding.ActivityListaOrcamentoBindi
 import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrcamentoBinding;
-import com.example.ecommerceservidorjava.model.Cliente;
+import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
 import com.example.ecommerceservidorjava.model.Orcamento;
-import com.example.ecommerceservidorjava.model.PerfilEmpresa;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.GerarPDF;
-import com.example.ecommerceservidorjava.util.Parametro;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -70,7 +69,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         setContentView(binding.getRoot());
         recuperarIntent();
         configSearchView();
-        recuperaProdutos();
+        recuperaOrcamento();
         binding.floatingActionButton.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CadastroOrcamentoActivity.class);
             startActivity(intent);
@@ -115,9 +114,10 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         });
 
     }
+
     private void recuperarIntent() {
         orcamento = (Orcamento) getIntent().getSerializableExtra("orcamento");
-        if (orcamento != null){
+        if (orcamento != null) {
             enviarPDFWhatsapp();
         }
     }
@@ -154,12 +154,12 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     }
 
 
-    private void recuperaProdutos() {
+    private void recuperaOrcamento() {
         SPM spm = new SPM(getApplicationContext());
         String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
         Query produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""))).child("orcamentos").child(user).orderByChild("nome");
-        produtoRef.addValueEventListener(new ValueEventListener() {
+        produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -182,6 +182,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
+
         });
     }
 
@@ -287,6 +288,22 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
                 });
             });
 
+        });
+
+    }
+
+    private void alterarStatus(Orcamento orcamento,int position, String status) {
+        SPM spm = new SPM(getApplicationContext());
+        String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference()
+                .child("empresas")
+                .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                .child("orcamentos")
+                .child(user)
+                .child(orcamento.getId()).child("status");
+        databaseReference.setValue(status).addOnSuccessListener(unused -> {
+            orcamentoList.get(position).setStatus(status);
+            orcamentoAdapter.notifyItemChanged(position);
         });
 
     }
@@ -457,7 +474,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         }
     };
 
-    private void showDialog() {
+    private void showDialog(Orcamento cliente, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogOpcaoOrcamentoBinding dialogBinding = DialogOpcaoOrcamentoBinding
@@ -484,6 +501,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         dialogBinding.llStatus.setOnClickListener(view -> {
 
             dialog.dismiss();
+            showDialogStatus(orcamento, position);
 
         });
 
@@ -499,6 +517,34 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         dialog.show();
     }
 
+    private void showDialogStatus(Orcamento orcamento, int  position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
+
+        DialogOpcaoStatusBinding dialogBinding = DialogOpcaoStatusBinding
+                .inflate(LayoutInflater.from(this));
+
+
+        dialogBinding.llAnalise.setOnClickListener(view -> {
+            dialog.dismiss();
+            alterarStatus(orcamento, position, "Em analise");
+        });
+
+        dialogBinding.llAprovado.setOnClickListener(view -> {
+            dialog.dismiss();
+            alterarStatus(orcamento, position,"Aprovado");
+        });
+
+        dialogBinding.llRecusado.setOnClickListener(view -> {
+            dialog.dismiss();
+            alterarStatus(orcamento, position,"Recusado");
+
+        });
+
+        builder.setView(dialogBinding.getRoot());
+        dialog = builder.create();
+        dialog.show();
+    }
+
 
     // Oculta o teclado do dispotivo
     private void ocultaTeclado() {
@@ -508,25 +554,6 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     }
 
 
-    public void onClick(Orcamento cliente) {
-
-        orcamento = cliente;
-
-        showDialog();
-        GerarPDF gerarPDF = new GerarPDF(orcamento, this);
-        // while (Parametro.bPdf){
-        // Toast.makeText(getApplicationContext(), "teste", Toast.LENGTH_SHORT).show();
-        // break;
-        //   }
-
-
-    }
-
-    @Override
-    public void onLongClick(Orcamento cliente) {
-
-
-    }
 
     private void listaVazia() {
 
@@ -570,5 +597,25 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         intent.putExtra("id", "geral");
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void onClick(Orcamento usuario, int position) {
+        orcamento = usuario;
+
+        showDialog(usuario, position);
+        GerarPDF gerarPDF = new GerarPDF(orcamento, this);
+        // while (Parametro.bPdf){
+        // Toast.makeText(getApplicationContext(), "teste", Toast.LENGTH_SHORT).show();
+        // break;
+        //   }
+
+
+    }
+
+
+    @Override
+    public void onLongClick(Orcamento usuario) {
+
     }
 }

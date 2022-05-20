@@ -57,6 +57,14 @@ public class ListaOrcamentoAdapter extends RecyclerView.Adapter<ListaOrcamentoAd
         holder.binding.textNome.setText(orcamento.getIdCliente().getNome().substring(0, 1).toUpperCase().concat(orcamento.getIdCliente().getNome().substring(1)));
         holder.binding.textEmeil.setText(orcamento.getIdCliente().getTelefone1());
         holder.binding.textTotal.setText(orcamento.getTotal());
+        if (orcamento.getStatus().equals("Em analise")){
+            holder.binding.viewStatus.setBackgroundResource(R.color.ouro);
+        }else if(orcamento.getStatus().equals("Aprovado")){
+            holder.binding.viewStatus.setBackgroundResource(R.color.color_verde);
+        }else {
+            holder.binding.viewStatus.setBackgroundResource(R.color.red);
+        }
+
         holder.binding.textData.setText(Timestamp.getFormatedDateTime(Long.parseLong(orcamento.getData()),"dd/MM/yyyy - HH:mm"));
 
 
@@ -65,7 +73,7 @@ public class ListaOrcamentoAdapter extends RecyclerView.Adapter<ListaOrcamentoAd
 
 
 
-        holder.binding.root.setOnClickListener(v -> onClickLister.onClick(orcamento));
+        holder.binding.root.setOnClickListener(v -> onClickLister.onClick(orcamento, position));
         holder.itemView.setOnLongClickListener(v -> {
             onLongClickLister.onLongClick(orcamento);
             return true;
@@ -90,9 +98,9 @@ public class ListaOrcamentoAdapter extends RecyclerView.Adapter<ListaOrcamentoAd
     }
 
     public interface OnClickLister {
-        void onClick(Orcamento usuario);
+        void onClick(Orcamento usuario, int position);
 
-        void onLongClick(Orcamento usuario);
+
 
     }
 

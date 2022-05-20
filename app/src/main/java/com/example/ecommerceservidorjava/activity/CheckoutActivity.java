@@ -374,49 +374,54 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private void finalizar() {
-        clienteSelecionado.setNome(binding.edtNome.getText().toString());
-        clienteSelecionado.setTelefone1(binding.edtTelefone.getText().toString());
-        orcamento = new Orcamento();
-        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
-        orcamento.setId(databaseReference.push().getKey());
-        orcamento.setIdCliente(clienteSelecionado);
-        if (enderecoList.size() > 0){
-            orcamento.setIdEndereco(enderecoList.get(end));
-        }
-        orcamento.setIdUsuario(usuario);
-        orcamento.setData(String.valueOf(Timestamp.getUnixTimestamp()));
-        orcamento.setItens(itemVendaList);
-        orcamento.setStatus("Em analise");
-        orcamento.setDesconto(String.valueOf(desconto));
-        orcamento.setTipoPagamento(pagamento);
-        orcamento.setTotal(binding.includeSheet.tvTotalCart.getText().toString());
-        orcamento.setSubTotal(subTotal);
+        if (clienteSelecionado != null){
+            clienteSelecionado.setNome(binding.edtNome.getText().toString());
+            clienteSelecionado.setTelefone1(binding.edtTelefone.getText().toString());
+            orcamento = new Orcamento();
+            DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
+            orcamento.setId(databaseReference.push().getKey());
+            orcamento.setIdCliente(clienteSelecionado);
+            if (enderecoList.size() > 0){
+                orcamento.setIdEndereco(enderecoList.get(end));
+            }
+            orcamento.setIdUsuario(usuario);
+            orcamento.setData(String.valueOf(Timestamp.getUnixTimestamp()));
+            orcamento.setItens(itemVendaList);
+            orcamento.setStatus("Em analise");
+            orcamento.setDesconto(String.valueOf(desconto));
+            orcamento.setTipoPagamento(pagamento);
+            orcamento.setTotal(binding.includeSheet.tvTotalCart.getText().toString());
+            orcamento.setSubTotal(subTotal);
 
-        SPM spm = new SPM(getApplicationContext());
-        String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
-        DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
-                .child("empresas")
-                .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                .child("orcamentos").child(user).child(orcamento.getId());
-        produtoRef.setValue(orcamento).addOnSuccessListener(unused -> {
-            finishAffinity();
-            Intent intent = new Intent(getApplicationContext(), ListaOrcamentoActivity.class);
-            intent.putExtra("orcamento", orcamento);
-            startActivity(intent);
+            SPM spm = new SPM(getApplicationContext());
+            String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
+            DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
+                    .child("empresas")
+                    .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                    .child("orcamentos").child(user).child(orcamento.getId());
+            produtoRef.setValue(orcamento).addOnSuccessListener(unused -> {
+                finishAffinity();
+                Intent intent = new Intent(getApplicationContext(), ListaOrcamentoActivity.class);
+                intent.putExtra("orcamento", orcamento);
+                startActivity(intent);
 
-        });
-        try {
+            });
+            try {
 
 
                 createPdf(orcamento, perfilEmpresa);
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (DocumentException e) {
-            Toast.makeText(this, " erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (DocumentException e) {
+                Toast.makeText(this, " erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        }else {
+            Toast.makeText(getApplicationContext(), "Selecione um Cliente", Toast.LENGTH_SHORT).show();
         }
+
 
     }
 
