@@ -1,10 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".fragment.InicioFragment">
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+   >
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/texthoje"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+
+            android:padding="8dp"
+            android:text="hoje">
+        </TextView>
+
+        <TextView
+            android:id="@+id/textJaneiro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            style="@style/TextView"
+            android:text="Janeiro">
+        </TextView>
+
+        <TextView
+            android:id="@+id/textFevereiro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            style="@style/TextView"
+            android:text="Fevereiro">
+        </TextView>
+
+        <TextView
+            android:id="@+id/textMarco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            style="@style/TextView"
+            android:text="Março">
+        </TextView>
+
+        <TextView
+            android:id="@+id/textAbril"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            style="@style/TextView"
+            android:text="Abril">
+        </TextView>
+
+        <TextView
+            android:id="@+id/textMaio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            style="@style/TextView"
+            android:text="Maio">
+        </TextView>
+
+        <TextView
+            android:id="@+id/textJunho"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            style="@style/TextView"
+            android:text="Junho">
+        </TextView>
+
+        <TextView
+            android:id="@+id/textAgosto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            style="@style/TextView"
+            android:text="Agosto">
+        </TextView>
+
+        <TextView
+            android:id="@+id/textSetembro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            style="@style/TextView"
+            android:text="Setembro">
+        </TextView>
+
+        <TextView
+            android:id="@+id/textOutubro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            style="@style/TextView"
+            android:text="Outubro">
+        </TextView>
+
+        <TextView
+            android:id="@+id/textNovembro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            style="@style/TextView"
+            android:text="Novembro">
+        </TextView>
+
+        <TextView
+            android:id="@+id/textDezembro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            style="@style/TextView"
+            android:text="Dezembro">
+        </TextView>
+    </LinearLayout>
+
+</HorizontalScrollView>
 
 
-</FrameLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+    </View>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="8dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/bg_red_btn"
+            android:layout_marginHorizontal="8dp"
+            style="@style/Button"
+            android:text="Despesa">
+
+        </androidx.appcompat.widget.AppCompatButton>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="0dp"
+            android:layout_weight="1"
+            style="@style/Button"
+            android:text="Receita">
+
+        </androidx.appcompat.widget.AppCompatButton>
+    </LinearLayout>
+
+</LinearLayout>

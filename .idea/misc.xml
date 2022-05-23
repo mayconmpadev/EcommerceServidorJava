@@ -17,6 +17,8 @@
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/item_categoria_vertical.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/item_lista_orcamento.xml" value="0.33" />
         <entry key="..\:/Users/Maycon/AndroidStudioProjects/EcommerceServidorJava/app/src/main/res/layout/item_produto_adapter.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable-mdpi/bg_btn.xml" value="0.38333333333333336" />
+        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable-mdpi/bg_red_btn.xml" value="0.38333333333333336" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable-xxhdpi/bg_categoria_home.xml" value="0.403125" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable-xxhdpi/ic_delete2.xml" value="0.403125" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/drawable/bg_add.xml" value="0.403125" />
@@ -94,7 +96,7 @@
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/dialog_padrao.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/dialog_padrao_ok_cancelar.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/fragment_geral.xml" value="0.38697916666666665" />
-        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/fragment_inicio.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/fragment_inicio.xml" value="0.33" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/fragment_list_usuario.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/fragment_pedidos.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/fragment_perfil.xml" value="0.38697916666666665" />

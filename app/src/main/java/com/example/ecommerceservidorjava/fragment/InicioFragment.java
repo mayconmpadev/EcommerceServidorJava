@@ -1,66 +1,79 @@
 package com.example.ecommerceservidorjava.fragment;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.example.ecommerceservidorjava.R;
+import com.example.ecommerceservidorjava.databinding.FragmentInicioBinding;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link InicioFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class InicioFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+List<TextView> mes = new ArrayList<>();
+    FragmentInicioBinding binding;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public InicioFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment InicioFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static InicioFragment newInstance(String param1, String param2) {
-        InicioFragment fragment = new InicioFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mes.add(binding.texthoje);
+        mes.add(binding.textJaneiro);
+        mes.add(binding.textFevereiro);
+        mes.add(binding.textMarco);
+        mes.add(binding.textAbril);
+        mes.add(binding.textMaio);
+        mes.add(binding.textJunho);
+        mes.add(binding.textJunho);
+        mes.add(binding.textAgosto);
+        mes.add(binding.textSetembro);
+        mes.add(binding.textOutubro);
+        mes.add(binding.textNovembro);
+        mes.add(binding.textDezembro);
+        configClicks();
+
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_inicio, container, false);
+
+        binding = FragmentInicioBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
+
+    private void configClicks() {
+        for (int i = 0; i < mes.size(); i++) {
+            clickMes(mes.get(i));
+        }
+    }
+
+
+    private void clickMes(TextView textView) {
+        textView.setOnClickListener(view -> {
+            for (int i = 0; i < mes.size(); i++) {
+                if (mes.get(i).getText().toString().equals(textView.getText().toString())){
+                    mes.get(i).setBackgroundResource(R.color.color_laranja);
+                    mes.get(i).setTextColor(ContextCompat.getColor(getContext(), R.color.branco));
+                }else {
+                    mes.get(i).setBackgroundResource(R.color.branco);
+                    mes.get(i).setTextColor(ContextCompat.getColor(getContext(), R.color.preto));
+                }
+            }
+
+        });
+
+    }
+
 }

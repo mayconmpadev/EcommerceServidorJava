@@ -136,8 +136,6 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         configRvProdutos(filtroList);
 
 
-        configRvProdutos(filtroList);
-
         if (filtroList.isEmpty()) {
             binding.textVazio.setVisibility(View.VISIBLE);
             binding.textVazio.setText("Nenhum produto encontrado.");
@@ -302,7 +300,13 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
                 .child(user)
                 .child(orcamento.getId()).child("status");
         databaseReference.setValue(status).addOnSuccessListener(unused -> {
-            orcamentoList.get(position).setStatus(status);
+            if (filtroList.size() > 0){
+                filtroList.get(position).setStatus(status);
+            }else {
+                orcamentoList.get(position).setStatus(status);
+            }
+
+
             orcamentoAdapter.notifyItemChanged(position);
         });
 
