@@ -30,7 +30,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
-
+                    style="@style/TextView"
                     android:padding="8dp"
                     android:text="hoje"></TextView>
 
@@ -145,12 +145,13 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/color_verde"
+
         app:cardCornerRadius="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/borda"
             android:orientation="vertical"
             android:padding="10dp">
 
@@ -158,17 +159,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="$ BALANÇO"
-
-                android:textColor="@color/branco">
+                android:textStyle="bold"
+                android:textColor="@color/grey_80">
 
             </TextView>
 
             <TextView
+                android:id="@+id/textLucro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="R$ 2.128,00"
-                android:textColor="@color/branco"
+                android:textColor="@color/grey_80"
                 android:textSize="24sp"
                 android:textStyle="bold">
 
@@ -179,7 +181,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="no mês de abril"
-                android:textColor="@color/branco"
+                android:textColor="@color/grey_80"
                 android:textSize="14sp">
 
             </TextView>
@@ -199,12 +201,13 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="8dp"
             android:layout_weight="1"
-            android:backgroundTint="@color/color_verde"
+
             app:cardCornerRadius="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@drawable/borda"
                 android:orientation="vertical"
                 android:padding="10dp">
 
@@ -212,19 +215,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableLeft="@drawable/ic_receita"
+                    android:drawableTint="@color/grey_80"
                     android:gravity="center"
                     android:text="RECEITA"
-                    android:textColor="@color/branco"
+                    android:textColor="@color/grey_80"
                     android:textStyle="bold">
 
                 </TextView>
 
                 <TextView
+                    android:id="@+id/textReceita"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="R$ 2.558,00"
-                    android:textColor="@color/branco"
+                    android:textColor="@color/grey_80"
                     android:textSize="20sp"
                     android:textStyle="bold">
 
@@ -251,12 +256,13 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="16dp"
             android:layout_weight="1"
-            android:backgroundTint="@color/red"
+
             app:cardCornerRadius="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@drawable/borda_red"
                 android:orientation="vertical"
                 android:padding="10dp">
 
@@ -264,20 +270,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableLeft="@drawable/ic_despesa"
-                    android:drawableTint="@color/branco"
+                    android:drawableTint="@color/grey_80"
                     android:gravity="center"
                     android:text="DESPESA"
-                    android:textColor="@color/branco"
+                    android:textColor="@color/grey_80"
                     android:textStyle="bold">
 
                 </TextView>
 
                 <TextView
+                    android:id="@+id/textDespesa"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="R$ 430,00"
-                    android:textColor="@color/branco"
+                    android:textColor="@color/grey_80"
                     android:textSize="20sp"
                     android:textStyle="bold">
 
@@ -328,10 +335,11 @@
             </TextView>
 
             <TextView
+                android:id="@+id/textAnalise"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:drawableLeft="@drawable/ic_quadrado_orc"
+                android:drawableLeft="@drawable/ic_recibo"
                 android:drawableTint="@color/ouro"
                 android:gravity="center"
                 android:text="12"
@@ -342,10 +350,11 @@
             </TextView>
 
             <TextView
+                android:id="@+id/textAprovado"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:drawableLeft="@drawable/ic_quadrado_orc"
+                android:drawableLeft="@drawable/ic_recibo"
                 android:drawableTint="@color/color_verde"
                 android:gravity="center"
                 android:text="8"
@@ -356,10 +365,11 @@
             </TextView>
 
             <TextView
+                android:id="@+id/textRecusado"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:drawableLeft="@drawable/ic_quadrado_orc"
+                android:drawableLeft="@drawable/ic_recibo"
                 android:drawableTint="@color/red"
                 android:gravity="center"
                 android:text="10"
@@ -395,7 +405,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:background="@color/color_cinza_claro"
+
                 android:foreground="?android:attr/selectableItemBackground"
                 android:orientation="horizontal"
                 android:paddingVertical="5dp">
@@ -412,6 +422,7 @@
                 </TextView>
 
                 <TextView
+                    android:id="@+id/textQtdVendas"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
@@ -444,6 +455,7 @@
                 </TextView>
 
                 <TextView
+                    android:id="@+id/textQtdServico"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
@@ -461,7 +473,7 @@
                 android:layout_height="wrap_content"
                 android:paddingVertical="5dp"
                 android:clickable="true"
-                android:background="@color/color_cinza_claro"
+
                 android:foreground="?android:attr/selectableItemBackground"
                 android:orientation="horizontal">
 
@@ -477,6 +489,7 @@
                 </TextView>
 
                 <TextView
+                    android:id="@+id/textProdutosBaixo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
@@ -509,6 +522,7 @@
                 </TextView>
 
                 <TextView
+                    android:id="@+id/textQtdContasPagar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
@@ -526,7 +540,7 @@
                 android:layout_height="wrap_content"
                 android:paddingVertical="5dp"
                 android:clickable="true"
-                android:background="@color/color_cinza_claro"
+
                 android:foreground="?android:attr/selectableItemBackground"
                 android:orientation="horizontal">
 
@@ -542,6 +556,7 @@
                 </TextView>
 
                 <TextView
+                    android:id="@+id/textQtdReceber"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"

@@ -210,15 +210,26 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             binding.editObservacao.setText(produtoSelecionado.getObservacao());
 
             recuperarCategotia(produtoSelecionado.getIdsCategorias());
-            binding.imageFake0.setVisibility(View.GONE);
-            binding.imageFake1.setVisibility(View.GONE);
-            binding.imageFake2.setVisibility(View.GONE);
-            Glide.with(this).load(produtoSelecionado.getUrlImagem0()).into(binding.imagemProduto0);
-            Glide.with(this).load(produtoSelecionado.getUrlImagem1()).into(binding.imagemProduto1);
-            Glide.with(this).load(produtoSelecionado.getUrlImagem2()).into(binding.imagemProduto2);
-            caminhoImagens.add(produtoSelecionado.getUrlImagem0());
-            caminhoImagens.add(produtoSelecionado.getUrlImagem1());
-            caminhoImagens.add(produtoSelecionado.getUrlImagem2());
+
+            if (produtoSelecionado.getUrlImagem0() != null){
+                binding.imageFake0.setVisibility(View.GONE);
+                Glide.with(this).load(produtoSelecionado.getUrlImagem0()).into(binding.imagemProduto0);
+                caminhoImagens.add(produtoSelecionado.getUrlImagem0());
+                binding.cardViewImage1.setVisibility(View.VISIBLE);
+            }
+
+            if (produtoSelecionado.getUrlImagem1() != null){
+                binding.imageFake1.setVisibility(View.GONE);
+                Glide.with(this).load(produtoSelecionado.getUrlImagem1()).into(binding.imagemProduto1);
+                caminhoImagens.add(produtoSelecionado.getUrlImagem1());
+                binding.cardViewImage2.setVisibility(View.VISIBLE);
+            }
+            if (produtoSelecionado.getUrlImagem2() != null){
+                binding.imageFake2.setVisibility(View.GONE);
+                Glide.with(this).load(produtoSelecionado.getUrlImagem2()).into(binding.imagemProduto2);
+                caminhoImagens.add(produtoSelecionado.getUrlImagem2());
+            }
+
 
             String sStatus = produtoSelecionado.getStatus();
 
@@ -251,9 +262,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                 binding.editLucro.setText(String.valueOf(configuracao.getLucro()));
             }
 
-            caminhoImagens.add("");
-            caminhoImagens.add("");
-            caminhoImagens.add("");
+
         }
     }
 
@@ -363,11 +372,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
         if (imagemUri_0 == null & !editar) {
             Toast.makeText(getApplicationContext(), "Selecione todas as imagens", Toast.LENGTH_SHORT).show();
-        } else if (imagemUri_1 == null & !editar) {
-            Toast.makeText(getApplicationContext(), "Selecione todas as imagens", Toast.LENGTH_SHORT).show();
-        } else if (imagemUri_2 == null & !editar) {
-            Toast.makeText(getApplicationContext(), "Selecione todas as imagens", Toast.LENGTH_SHORT).show();
-        } else if (nome.isEmpty()) {
+        }  else if (nome.isEmpty()) {
             binding.editNome.setError("preencha o campo");
             binding.editNome.requestFocus();
         } else if (descricao.isEmpty()) {
@@ -424,7 +429,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                 caminhoImagens.set(2, "");
                 salvarDadosImagem(produto, imagemUri_2, 2);
             }
-            if (imagemUri_0 == null & imagemUri_1 == null & imagemUri_2 == null) {
+            if (imagemUri_0 == null ) {
                 salvarDados();
             }
         }
@@ -486,9 +491,16 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     }
 
     public void salvarDados() {
-        produto.setUrlImagem0(caminhoImagens.get(0));
-        produto.setUrlImagem1(caminhoImagens.get(1));
-        produto.setUrlImagem2(caminhoImagens.get(2));
+
+            produto.setUrlImagem0(caminhoImagens.get(0));
+            if (caminhoImagens.size() > 1 ){
+                produto.setUrlImagem1(caminhoImagens.get(1));
+            }
+        if (caminhoImagens.size() > 2 ){
+            produto.setUrlImagem2(caminhoImagens.get(2));
+        }
+
+
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
@@ -498,6 +510,8 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
             if (task1.isSuccessful()) {
                 finish();
+            }else {
+                Toast.makeText(getApplicationContext(), "erro de foto", Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -651,14 +665,26 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                     imagemUri_0 = result.getUri();
                     binding.imagemProduto0.setImageURI(imagemUri_0);
                     binding.imageFake0.setVisibility(View.GONE);
+                    binding.cardViewImage1.setVisibility(View.VISIBLE);
+                    if (caminhoImagens.size() == 0){
+                        caminhoImagens.add("");
+                    }
+
                 } else if (imagemSelecionada == 1) {
                     imagemUri_1 = result.getUri();
                     binding.imagemProduto1.setImageURI(imagemUri_1);
                     binding.imageFake1.setVisibility(View.GONE);
+                    binding.cardViewImage2.setVisibility(View.VISIBLE);
+                    if (caminhoImagens.size() == 1){
+                        caminhoImagens.add("");
+                    }
                 } else {
                     imagemUri_2 = result.getUri();
                     binding.imagemProduto2.setImageURI(imagemUri_2);
                     binding.imageFake2.setVisibility(View.GONE);
+                    if (caminhoImagens.size() == 2){
+                        caminhoImagens.add("");
+                    }
                 }
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {

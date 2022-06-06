@@ -29,9 +29,10 @@
 
             <HorizontalScrollView
                 android:id="@+id/horizontalScrollView"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scrollbars="none"
+android:layout_gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -39,15 +40,16 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+
                     android:orientation="horizontal"
                     android:paddingHorizontal="8dp"
                     android:paddingTop="16dp">
 
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cardViewImage0"
                         android:layout_width="180dp"
                         android:layout_height="180dp"
                         android:layout_margin="8dp"
-
                         app:cardCornerRadius="10dp"
                         app:cardElevation="5dp">
 
@@ -71,10 +73,11 @@
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cardViewImage1"
                         android:layout_width="180dp"
                         android:layout_height="180dp"
                         android:layout_margin="8dp"
-
+                        android:visibility="gone"
                         app:cardCornerRadius="10dp"
                         app:cardElevation="5dp">
 
@@ -98,10 +101,11 @@
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cardViewImage2"
                         android:layout_width="180dp"
                         android:layout_height="180dp"
                         android:layout_margin="8dp"
-
+                        android:visibility="gone"
                         app:cardCornerRadius="10dp"
                         app:cardElevation="5dp">
 
@@ -162,12 +166,11 @@
 
                 <EditText
                     android:id="@+id/editDescricao"
+                    style="@style/EditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                 style="@style/EditText"
                     android:hint="Mochila grande e muito confortável."
-                    android:inputType="textCapSentences"
-                     />
+                    android:inputType="textCapSentences" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -269,9 +272,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:maxLength="2"
                             android:background="@drawable/bg_edit_off"
                             android:inputType="number"
+                            android:maxLength="2"
                             android:padding="16dp"
                             android:selectAllOnFocus="true"
                             android:text="0" />

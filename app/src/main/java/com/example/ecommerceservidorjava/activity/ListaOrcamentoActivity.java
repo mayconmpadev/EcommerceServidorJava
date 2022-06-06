@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -31,6 +32,7 @@ import com.example.ecommerceservidorjava.adapter.ListaOrcamentoAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaOrcamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
+import com.example.ecommerceservidorjava.databinding.DialogOpcaoEnviarBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrcamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
 import com.example.ecommerceservidorjava.model.Orcamento;
@@ -39,13 +41,12 @@ import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.GerarPDF;
 import com.example.ecommerceservidorjava.util.SPM;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -88,6 +89,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     }
 
     private void configSearchView() {
+        EditText edtSerachView = binding.searchView.findViewById(R.id.search_src_text);
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String pesquisa) {
@@ -99,12 +101,18 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                if (newText.isEmpty()) {
+                    binding.textVazio.setVisibility(View.GONE);
+                    ocultaTeclado();
+                    filtroList.clear();
+                    configRvProdutos(orcamentoList);
+                }
                 return false;
             }
         });
 
         binding.searchView.findViewById(R.id.search_close_btn).setOnClickListener(v -> {
-            EditText edtSerachView = binding.searchView.findViewById(R.id.search_src_text);
+
             binding.textVazio.setVisibility(View.GONE);
             edtSerachView.setText("");
             edtSerachView.clearFocus();
@@ -151,37 +159,114 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         binding.recycler.setAdapter(orcamentoAdapter);
     }
 
-
     private void recuperaOrcamento() {
         SPM spm = new SPM(getApplicationContext());
-        String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
-        Query produtoRef = FirebaseHelper.getDatabaseReference()
-                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""))).child("orcamentos").child(user).orderByChild("nome");
+        DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
+                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                .child("orcamentos");
         produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                orcamentoList.clear();
+                // orcamentoList.clear();
                 if (snapshot.exists()) {
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        Orcamento cliente = ds.getValue(Orcamento.class);
-                        orcamentoList.add(cliente);
-                        binding.progressBar2.setVisibility(View.GONE);
-                    }
-                    configRvProdutos(orcamentoList);
+
+                    binding.progressBar2.setVisibility(View.GONE);
+                    monitorarLista();
+
                 } else {
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
                 }
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-
         });
+    }
+
+    private void monitorarLista() {
+        orcamentoList.clear();
+        SPM spm = new SPM(getApplicationContext());
+        //String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
+        Query produtoRef = FirebaseHelper.getDatabaseReference()
+                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                .child("orcamentos").orderByChild("data");
+        produtoRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                if (snapshot.exists()) {
+                    Orcamento cliente = snapshot.getValue(Orcamento.class);
+                    orcamentoList.add(cliente);
+                    binding.progressBar2.setVisibility(View.GONE);
+
+                    configRvProdutos(orcamentoList);
+                } else {
+                    binding.progressBar2.setVisibility(View.GONE);
+                    binding.textVazio.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Orcamento orcamento = snapshot.getValue(Orcamento.class);
+
+                for (int i = 0; i < orcamentoList.size(); i++) {
+                    if (orcamentoList.get(i).getId().equals(orcamento.getId())) {
+                        orcamentoList.set(i, orcamento);
+                    }
+                }
+
+                orcamentoAdapter.notifyDataSetChanged();
+                if (!filtroList.isEmpty()) {
+                    for (int i = 0; i < filtroList.size(); i++) {
+                        if (filtroList.get(i).getId().equals(orcamento.getId())) {
+                            filtroList.set(i, orcamento);
+                        }
+                    }
+
+                    orcamentoAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                Orcamento orcamento = snapshot.getValue(Orcamento.class);
+
+                for (int i = 0; i < orcamentoList.size(); i++) {
+                    if (orcamentoList.get(i).getId().equals(orcamento.getId())) {
+                        orcamentoList.remove(i);
+                    }
+                }
+
+                orcamentoAdapter.notifyDataSetChanged();
+                if (!filtroList.isEmpty()) {
+                    for (int i = 0; i < filtroList.size(); i++) {
+                        if (filtroList.get(i).getId().equals(orcamento.getId())) {
+                            filtroList.remove(i);
+                        }
+                    }
+
+                    orcamentoAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Toast.makeText(getApplicationContext(), "onChildMoved", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getApplicationContext(), "onCancelled", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
     private void showDialog(Orcamento cliente) {
@@ -228,20 +313,20 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         dialog.show();
     }
 
-    private void showDialogDelete(Orcamento cliente) {
+    private void showDialogDelete(Orcamento orcamento) {
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 ListaOrcamentoActivity.this, R.style.CustomAlertDialog2);
 
         DialogDeleteBinding deleteBinding = DialogDeleteBinding
                 .inflate(LayoutInflater.from(ListaOrcamentoActivity.this));
-        deleteBinding.textTitulo.setText("Deseja remover o produto " + cliente.getIdCliente().getNome() + "?");
+        deleteBinding.textTitulo.setText("Deseja remover o produto " + orcamento.getIdCliente().getNome() + "?");
         deleteBinding.btnFechar.setOnClickListener(v -> {
             dialog.dismiss();
             orcamentoAdapter.notifyDataSetChanged();
         });
 
         deleteBinding.btnSim.setOnClickListener(v -> {
-            orcamentoList.remove(cliente);
+            orcamentoList.remove(orcamento);
 
             if (orcamentoList.isEmpty()) {
                 binding.textVazio.setText("Sua lista esta vazia.");
@@ -249,7 +334,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
                 binding.textVazio.setText("");
             }
             dialog.dismiss();
-            excluir(cliente);
+            excluir(orcamento);
 
         });
 
@@ -261,48 +346,31 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void excluir(Orcamento cliente) {
+    public void excluir(Orcamento orcamento) {
         binding.progressBar2.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
-                .child(caminho);
+                .child(caminho).child("orcamentos").child(orcamento.getId());
+        databaseReference.removeValue();
 
 
-        StorageReference storageReference = FirebaseHelper.getStorageReference()
-                .child("empresas")
-                .child(caminho)
-                .child("imagens")
-                .child("clientes")
-                .child(cliente.getId());
+        binding.progressBar2.setVisibility(View.GONE);
 
-        storageReference.delete().addOnSuccessListener(unused -> {
-
-            binding.progressBar2.setVisibility(View.GONE);
-            databaseReference.child("enderecos").child(cliente.getId()).removeValue().addOnSuccessListener(unused1 -> {
-
-                databaseReference.child("clientes").child(cliente.getId()).removeValue().addOnSuccessListener(unused2 -> {
-                    orcamentoAdapter.notifyDataSetChanged();
-                    Toast.makeText(getApplicationContext(), "Excluido com sucesso!", Toast.LENGTH_SHORT).show();
-                });
-            });
-
-        });
 
     }
 
-    private void alterarStatus(Orcamento orcamento,int position, String status) {
+    private void alterarStatus(Orcamento orcamento, int position, String status) {
         SPM spm = new SPM(getApplicationContext());
         String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference()
                 .child("empresas")
                 .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
                 .child("orcamentos")
-                .child(user)
                 .child(orcamento.getId()).child("status");
         databaseReference.setValue(status).addOnSuccessListener(unused -> {
-            if (filtroList.size() > 0){
+            if (filtroList.size() > 0) {
                 filtroList.get(position).setStatus(status);
-            }else {
+            } else {
                 orcamentoList.get(position).setStatus(status);
             }
 
@@ -486,14 +554,13 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
 
         dialogBinding.llEnviar.setOnClickListener(view -> {
-            enviarPDFWhatsapp();
             dialog.dismiss();
+            showDialogEnviar();
 
         });
 
         dialogBinding.llEditar.setOnClickListener(view -> {
-            enviarPDFEmeail();
-            dialog.dismiss();
+
 
         });
 
@@ -515,13 +582,21 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
         });
 
+        dialogBinding.llRecibo.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), ReciboActivity.class);
+            intent.putExtra("orcamentoSelecionado", orcamento);
+            startActivity(intent);
+            dialog.dismiss();
+
+        });
+
 
         builder.setView(dialogBinding.getRoot());
         dialog = builder.create();
         dialog.show();
     }
 
-    private void showDialogStatus(Orcamento orcamento, int  position) {
+    private void showDialogStatus(Orcamento orcamento, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogOpcaoStatusBinding dialogBinding = DialogOpcaoStatusBinding
@@ -535,14 +610,44 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
         dialogBinding.llAprovado.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(orcamento, position,"Aprovado");
+            alterarStatus(orcamento, position, "Aprovado");
         });
 
         dialogBinding.llRecusado.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(orcamento, position,"Recusado");
+            alterarStatus(orcamento, position, "Recusado");
 
         });
+
+
+        builder.setView(dialogBinding.getRoot());
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showDialogEnviar() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
+
+        DialogOpcaoEnviarBinding dialogBinding = DialogOpcaoEnviarBinding
+                .inflate(LayoutInflater.from(this));
+
+
+        dialogBinding.llWhatsapp.setOnClickListener(view -> {
+            enviarPDFWhatsapp();
+            dialog.dismiss();
+        });
+
+        dialogBinding.llEmail.setOnClickListener(view -> {
+            enviarPDFEmeail();
+            dialog.dismiss();
+        });
+
+        dialogBinding.llImprimir.setOnClickListener(view -> {
+            dialog.dismiss();
+
+
+        });
+
 
         builder.setView(dialogBinding.getRoot());
         dialog = builder.create();
@@ -556,7 +661,6 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         inputMethodManager.hideSoftInputFromWindow(binding.searchView.getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
     }
-
 
 
     private void listaVazia() {
@@ -619,7 +723,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
 
     @Override
-    public void onLongClick(Orcamento usuario) {
-
+    public void onLongClick(Orcamento orcamento) {
+        showDialogDelete(orcamento);
     }
 }

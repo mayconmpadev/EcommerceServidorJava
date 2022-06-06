@@ -295,7 +295,7 @@ public class CheckoutActivity extends AppCompatActivity {
         binding.textDebito.setTextColor(getResources().getColor(R.color.grey_40));
         binding.textCredito.setTextColor(getResources().getColor(R.color.grey_40));
         pagamento = "dinheiro";
-        binding.includeSheet.tvTotalCart.setText(total(pagamento, 5));
+        binding.includeSheet.tvTotalCart.setText(total(pagamento, configuracao.getDesconto_dinheiro()));
         desconto = configuracao.getDesconto_dinheiro();
     }
 
@@ -307,7 +307,7 @@ public class CheckoutActivity extends AppCompatActivity {
         binding.textDebito.setTextColor(getResources().getColor(R.color.preto));
         binding.textCredito.setTextColor(getResources().getColor(R.color.grey_40));
         pagamento = "debito";
-        binding.includeSheet.tvTotalCart.setText(total(pagamento, 3));
+        binding.includeSheet.tvTotalCart.setText(total(pagamento, configuracao.getDesconto_debito()));
         desconto = configuracao.getDesconto_debito();
     }
 
@@ -337,6 +337,7 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private String total(String tipo, int valor) {
+        Toast.makeText(getApplicationContext(), String.valueOf(valor), Toast.LENGTH_SHORT).show();
         BigDecimal total = new BigDecimal("0");
         BigDecimal desconto = new BigDecimal("0");
 
@@ -398,7 +399,7 @@ public class CheckoutActivity extends AppCompatActivity {
             DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
                     .child("empresas")
                     .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                    .child("orcamentos").child(user).child(orcamento.getId());
+                    .child("orcamentos").child(orcamento.getId());
             produtoRef.setValue(orcamento).addOnSuccessListener(unused -> {
                 finishAffinity();
                 Intent intent = new Intent(getApplicationContext(), ListaOrcamentoActivity.class);

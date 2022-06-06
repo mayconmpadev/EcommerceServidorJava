@@ -186,7 +186,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         produtoRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                binding.textVazio.setVisibility(View.VISIBLE);
                 produtoList.clear();
                 if (snapshot.exists()) {
                     for (DataSnapshot ds : snapshot.getChildren()) {
