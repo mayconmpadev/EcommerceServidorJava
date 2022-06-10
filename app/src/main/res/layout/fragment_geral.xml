@@ -375,7 +375,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/teste2"
+            android:id="@+id/despesa"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginTop="8dp"
@@ -408,7 +408,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:text="teste 2"
+                    android:text="Despesa"
                     android:textStyle="bold">
 
                 </TextView>

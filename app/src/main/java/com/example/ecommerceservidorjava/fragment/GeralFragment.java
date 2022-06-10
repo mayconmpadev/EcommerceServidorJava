@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 
+import com.example.ecommerceservidorjava.activity.CadastroDespesaActivity;
 import com.example.ecommerceservidorjava.activity.ConfiguracaoActivity;
 import com.example.ecommerceservidorjava.activity.ListaCategoriaActivity;
 import com.example.ecommerceservidorjava.activity.ListaClienteActivity;
@@ -85,6 +86,12 @@ private FragmentGeralBinding binding;
 
         binding.ajustes.setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), ConfiguracaoActivity.class);
+            startActivity(intent);
+
+        });
+
+        binding.despesa.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), CadastroDespesaActivity.class);
             startActivity(intent);
 
         });
