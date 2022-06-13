@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EcommerceServidorJava">
         <activity
+            android:name=".activity.ListaDespesaActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.CadastroDespesaActivity"
             android:exported="false" />
         <activity

@@ -58,7 +58,7 @@ import java.util.List;
 public class CadastroProdutoActivity extends AppCompatActivity implements CategoriaDialogAdapter.OnClick {
 
     private DialogFormProdutoCategoriaBinding categoriaBinding;
-
+    private ActivityCadastroProdutoBinding binding;
     private final List<String> idsCategoriasSelecionadas = new ArrayList<>();
     private final List<String> caminhoImagens = new ArrayList<>();
     private final List<String> codigoList = new ArrayList<>();
@@ -73,7 +73,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     private AlertDialog dialog;
     private boolean editar = false;
     private SPM spm = new SPM(this);
-    private ActivityCadastroProdutoBinding binding;
+
     private boolean bVenda = true;
     private boolean bLucro = true;
     private boolean bCategoria = false;

@@ -30,9 +30,9 @@
 
     <string-array name="forma_pagamento">
         <item>Dinheiro</item>
-        <item>Cartão de crédito</item>
+        <item>Pix</item>
         <item>Cartão de débito</item>
-        <item>Pix (mt)</item>
+        <item>Cartão de crédito</item>
         <item>Boleto</item>
     </string-array>
 
@@ -42,6 +42,13 @@
         <item>3x</item>
         <item>4x</item>
         <item>5x</item>
+        <item>6x</item>
+        <item>7x</item>
+        <item>8x</item>
+        <item>9x</item>
+        <item>10x</item>
+        <item>11x</item>
+        <item>12x</item>
     </string-array>
 
 </resources>
