@@ -139,12 +139,22 @@ public class CadastroDespesaActivity extends AppCompatActivity {
             binding.btnCategorias.setText(despesaSelecionado.getCategoria());
 
 
-            String[] arrayUnidade = getResources().getStringArray(R.array.forma_pagamento);
+            String[] arrayPagamento = getResources().getStringArray(R.array.forma_pagamento);
 
 
-            for (int i = 0; i < arrayUnidade.length; i++) {
-                if (arrayUnidade[i].equals(despesaSelecionado.getTipoPagamento())) {
+            for (int i = 0; i < arrayPagamento.length; i++) {
+                if (arrayPagamento[i].equals(despesaSelecionado.getTipoPagamento())) {
                     binding.spinnerFPagamento.setSelection(i);
+                    break;
+                }
+            }
+
+            String[] arrayStatus = getResources().getStringArray(R.array.status_despesa);
+
+
+            for (int i = 0; i < arrayStatus.length; i++) {
+                if (arrayStatus[i].equals(despesaSelecionado.getTipoPagamento())) {
+                    binding.spinnerStatus.setSelection(i);
                     break;
                 }
             }
@@ -185,7 +195,10 @@ public class CadastroDespesaActivity extends AppCompatActivity {
         String descricao = binding.editDescricao.getText().toString();
 
         String valor = binding.editValor.getText().toString();
+        String tipoPagamento = binding.spinnerFPagamento.getSelectedItem().toString();
         String qtdParcelas = binding.spinnerParcelas.getSelectedItem().toString().replace("x", "");
+
+        String status = binding.spinnerStatus.getSelectedItem().toString();
         String parcela = binding.editparcela.getText().toString();
         String categoria = binding.btnCategorias.getText().toString();
         String data = binding.editData.getText().toString();
@@ -210,6 +223,8 @@ public class CadastroDespesaActivity extends AppCompatActivity {
             despesa.setDescricao(descricao);
             despesa.setValor(valor);
             despesa.setQtd_parcelas(Integer.parseInt(qtdParcelas));
+            despesa.setStatus(status);
+            despesa.setTipoPagamento(tipoPagamento);
             despesa.setValor_parcela(parcela);
             despesa.setData(String.valueOf(timestap));
             despesa.setCategoria(categoria);
