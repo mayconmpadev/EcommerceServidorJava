@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +34,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
+    boolean senha = true;
+    boolean confirmaSenha = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,13 +197,30 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    //---------------------------------------------------- MOSTRAR SENHA -----------------------------------------------------------------
+    private void mostrarSenha(boolean status, ImageView imageView, EditText editText) {
+        if (status) {
+            imageView.setImageResource(R.drawable.ic_action_visivel);
+            editText.setInputType(InputType.TYPE_CLASS_TEXT);
+        } else {
+            imageView.setImageResource(R.drawable.ic_action_nao_visivel);
+            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        }
+
+        if (imageView.getTag().equals("imagem")) { //alterar o boolean especifico conforme o imageview
+            senha = !senha;
+        } else {
+            confirmaSenha = !confirmaSenha;
+        }
+    }
+
     private void configClicks() {
 
-
+        binding.imgSenha.setTag("imagem");// tag para saber quem é o imageview
         binding.include.ibVoltar.setOnClickListener(view -> finish());
 
         binding.btnLogin.setOnClickListener(view -> validaDados());
-
+        binding.imgSenha.setOnClickListener(view -> mostrarSenha(senha, binding.imgSenha, binding.edtSenha));
         binding.btnRecuperaSenha.setOnClickListener(view ->
                 startActivity(new Intent(this, RecuperarSenhaActivity.class)));
 

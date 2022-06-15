@@ -43,30 +43,48 @@
                 android:hint="Email"
                 android:inputType="textEmailAddress"
                style="@style/EditText"
-                app:layout_constraintBottom_toTopOf="@+id/edtSenha"
+                app:layout_constraintBottom_toTopOf="@+id/linearSenha"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed" />
 
-            <EditText
-                android:id="@+id/edtSenha"
+            <LinearLayout
+                android:id="@+id/linearSenha"
+                style="@style/EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                style="@style/EditText"
-                android:drawableStart="@drawable/ic_senha_off"
-                android:drawableEnd="@drawable/ic_action_nao_visivel"
-                android:drawablePadding="16dp"
-                android:hint="Senha"
-                android:inputType="textPassword"
-
-
+                android:gravity="center"
+                android:orientation="horizontal"
                 app:layout_constraintBottom_toTopOf="@+id/btnLogin"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edtEmail" />
+                app:layout_constraintTop_toBottomOf="@+id/edtEmail">
+
+                <EditText
+                    android:id="@+id/edtSenha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_edit_off"
+
+                    android:hint="Senha"
+                    android:inputType="textPassword"
+                    android:textColor="@color/preto"
+                    android:textColorHint="@color/color_cinza_escuro" />
+
+                <ImageView
+                    android:id="@+id/imgSenha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_action_nao_visivel">
+
+                </ImageView>
+            </LinearLayout>
+
+
+
 
             <android.widget.Button
                 android:id="@+id/btnLogin"
@@ -78,7 +96,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edtSenha" />
+                app:layout_constraintTop_toBottomOf="@+id/linearSenha" />
 
             <TextView
                 android:id="@+id/btnRecuperaSenha"

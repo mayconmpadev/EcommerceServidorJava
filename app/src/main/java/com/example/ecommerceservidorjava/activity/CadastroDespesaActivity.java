@@ -56,7 +56,8 @@ public class CadastroDespesaActivity extends AppCompatActivity {
         Calendar calendar = Calendar.getInstance();
         long data = calendar.getTimeInMillis();
         binding.editData.setText(Timestamp.getFormatedDateTime(data / 1000, "dd/MM/yyyy"));
-        despesa.setData(String.valueOf(data));
+        timestap = data;
+
 
         binding.spinnerParcelas.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
