@@ -62,6 +62,11 @@ public class ListaProdutoAdapter extends RecyclerView.Adapter<ListaProdutoAdapte
         if (produto.getStatus().equals("rascunho")){
             holder.binding.cardView.setForeground(ContextCompat.getDrawable(context,R.color.color_fundo));
         }
+        if (Integer.parseInt(produto.getQuantidadeMinima()) > Integer.parseInt(produto.getQuantidadeEtoque())){
+            holder.binding.cardView.setForeground(ContextCompat.getDrawable(context,R.color.color_fundo));
+        }else {
+            holder.binding.cardView.setForeground(ContextCompat.getDrawable(context,R.color.transparente));
+        }
         holder.binding.txtValorProduto.setText(produto.getPrecoVenda());
         Glide.with(context).load(produto.getUrlImagem0()).centerCrop().placeholder(R.drawable.ic_action_visivel).into(holder.binding.imagemProduto);
 

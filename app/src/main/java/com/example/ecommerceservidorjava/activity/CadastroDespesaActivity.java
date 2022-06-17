@@ -17,7 +17,6 @@ import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ActivityCadastroDespesaBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDespesaCategoriaBinding;
 import com.example.ecommerceservidorjava.model.Despesa;
-import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
@@ -53,10 +52,6 @@ public class CadastroDespesaActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         recuperarIntent();
         clicks();
-        Calendar calendar = Calendar.getInstance();
-        long data = calendar.getTimeInMillis();
-        binding.editData.setText(Timestamp.getFormatedDateTime(data / 1000, "dd/MM/yyyy"));
-        timestap = data;
 
 
         binding.spinnerParcelas.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -134,11 +129,12 @@ public class CadastroDespesaActivity extends AppCompatActivity {
             binding.editDescricao.setText(despesaSelecionado.getDescricao());
             binding.editInstituicao.setText(despesaSelecionado.getInstituicao());
             binding.editValor.setText(despesaSelecionado.getValor());
-            binding.spinnerParcelas.setSelection(despesaSelecionado.getQtd_parcelas() + 1);
+            binding.spinnerParcelas.setSelection(despesaSelecionado.getQtd_parcelas() - 1);
             binding.editparcela.setText(despesaSelecionado.getValor_parcela());
-            binding.editData.setText(Timestamp.getFormatedDateTime(Long.parseLong(despesaSelecionado.getData()) / 1000, "dd/MM/yyyy"));
-            binding.btnCategorias.setText(despesaSelecionado.getCategoria());
+            binding.editData.setText(Timestamp.getFormatedDateTime(Long.parseLong(despesaSelecionado.getData()), "dd/MM/yyyy"));
 
+            binding.btnCategorias.setText(despesaSelecionado.getCategoria());
+            timestap = Long.parseLong(despesaSelecionado.getData());
 
             String[] arrayPagamento = getResources().getStringArray(R.array.forma_pagamento);
 
@@ -164,7 +160,10 @@ public class CadastroDespesaActivity extends AppCompatActivity {
             DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
             despesa = new Despesa();
             despesa.setId(databaseReference.push().getKey());
-
+            Calendar calendar = Calendar.getInstance();
+            long data = calendar.getTimeInMillis();
+            binding.editData.setText(Timestamp.getFormatedDateTime(data / 1000, "dd/MM/yyyy"));
+            timestap = data / 1000;
 
 
         }

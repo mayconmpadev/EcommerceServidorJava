@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -21,17 +20,15 @@ import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.adapter.ListaDespesaAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityListaDespesaBinding;
 import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
+import com.example.ecommerceservidorjava.databinding.DialogOpcaoDespesaBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoEnviarBinding;
-import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrcamentoBinding;
-import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
+import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusDespesaBinding;
 import com.example.ecommerceservidorjava.model.Despesa;
-
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
@@ -267,9 +264,9 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
                 .inflate(LayoutInflater.from(this));
 
 
-       // Glide.with(getApplicationContext())
-                //.load(despesa.getIdCliente().getUrlImagem())
-              //  .into(dialogBinding.imagemProduto);
+        // Glide.with(getApplicationContext())
+        //.load(despesa.getIdCliente().getUrlImagem())
+        //  .into(dialogBinding.imagemProduto);
 
 
         dialogBinding.btnEndereco.setOnClickListener(view -> {
@@ -310,7 +307,7 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
 
         DialogDeleteBinding deleteBinding = DialogDeleteBinding
                 .inflate(LayoutInflater.from(ListaDespesaActivity.this));
-        deleteBinding.textTitulo.setText("Deseja remover o produto " + despesa.getDescricao() + "?");
+        deleteBinding.textTitulo.setText("Deseja remover a despesa " + despesa.getDescricao() + "?");
         deleteBinding.btnFechar.setOnClickListener(v -> {
             dialog.dismiss();
             despesaAdapter.notifyDataSetChanged();
@@ -341,7 +338,7 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
         binding.progressBar2.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
-                .child(caminho).child("orcamentos").child(despesa.getId());
+                .child(caminho).child("despesas").child(despesa.getId());
         databaseReference.removeValue();
 
 
@@ -356,7 +353,7 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference()
                 .child("empresas")
                 .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                .child("orcamentos")
+                .child("despesas")
                 .child(despesa.getId()).child("status");
         databaseReference.setValue(status).addOnSuccessListener(unused -> {
             if (filtroList.size() > 0) {
@@ -371,62 +368,30 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
 
     }
 
-
-
-
-
-
-
-    BroadcastReceiver onCompleteVisualizar = new BroadcastReceiver() {
-        public void onReceive(Context ctxt, Intent intent) {
-
-
-        }
-    };
-
-
-
     private void showDialog(Despesa despesa, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
-        DialogOpcaoOrcamentoBinding dialogBinding = DialogOpcaoOrcamentoBinding
+        DialogOpcaoDespesaBinding dialogBinding = DialogOpcaoDespesaBinding
                 .inflate(LayoutInflater.from(this));
 
 
-        dialogBinding.llEnviar.setOnClickListener(view -> {
-            dialog.dismiss();
-            showDialogEnviar();
-
-        });
-
         dialogBinding.llEditar.setOnClickListener(view -> {
 
-
-        });
-
-        dialogBinding.llClonar.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), CadastroDespesaActivity.class);
+            intent.putExtra("despesaSelecionado", despesa);
+            startActivity(intent);
             dialog.dismiss();
-
         });
 
         dialogBinding.llStatus.setOnClickListener(view -> {
-
             dialog.dismiss();
             showDialogStatus(despesa, position);
 
         });
 
-        dialogBinding.llPdf.setOnClickListener(view -> {
-
+        dialogBinding.llDeletar.setOnClickListener(view -> {
             dialog.dismiss();
-
-        });
-
-        dialogBinding.llRecibo.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), ReciboActivity.class);
-            intent.putExtra("orcamentoSelecionado", despesa);
-            startActivity(intent);
-            dialog.dismiss();
+            showDialogDelete(despesa);
 
         });
 
@@ -439,23 +404,23 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
     private void showDialogStatus(Despesa despesa, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
-        DialogOpcaoStatusBinding dialogBinding = DialogOpcaoStatusBinding
+        DialogOpcaoStatusDespesaBinding dialogBinding = DialogOpcaoStatusDespesaBinding
                 .inflate(LayoutInflater.from(this));
 
 
-        dialogBinding.llAnalise.setOnClickListener(view -> {
+        dialogBinding.llAberta.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(despesa, position, "Em analise");
+            alterarStatus(despesa, position, "A vencer");
         });
 
-        dialogBinding.llAprovado.setOnClickListener(view -> {
+        dialogBinding.llPago.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(despesa, position, "Aprovado");
+            alterarStatus(despesa, position, "Pago");
         });
 
-        dialogBinding.llRecusado.setOnClickListener(view -> {
+        dialogBinding.llVencida.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(despesa, position, "Recusado");
+            alterarStatus(despesa, position, "Vencida");
 
         });
 
@@ -465,34 +430,6 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
         dialog.show();
     }
 
-    private void showDialogEnviar() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
-
-        DialogOpcaoEnviarBinding dialogBinding = DialogOpcaoEnviarBinding
-                .inflate(LayoutInflater.from(this));
-
-
-        dialogBinding.llWhatsapp.setOnClickListener(view -> {
-
-            dialog.dismiss();
-        });
-
-        dialogBinding.llEmail.setOnClickListener(view -> {
-
-            dialog.dismiss();
-        });
-
-        dialogBinding.llImprimir.setOnClickListener(view -> {
-            dialog.dismiss();
-
-
-        });
-
-
-        builder.setView(dialogBinding.getRoot());
-        dialog = builder.create();
-        dialog.show();
-    }
 
 
     // Oculta o teclado do dispotivo

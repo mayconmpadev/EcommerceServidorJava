@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -25,11 +26,13 @@ import com.example.ecommerceservidorjava.databinding.ActivityListaProdutoBinding
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogLojaProdutoBinding;
 import com.example.ecommerceservidorjava.model.Categoria;
+import com.example.ecommerceservidorjava.model.Orcamento;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -180,26 +183,16 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
     private void recuperaProdutos() {
         SPM spm = new SPM(getApplicationContext());
-        Query produtoRef = FirebaseHelper.getDatabaseReference()
+        DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                .child("produtos").orderByChild("nome");
-        produtoRef.addValueEventListener(new ValueEventListener() {
+                .child("produtos");
+        produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                binding.textVazio.setVisibility(View.VISIBLE);
-                produtoList.clear();
+                //produtoList.clear();
                 if (snapshot.exists()) {
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        Produto produto = ds.getValue(Produto.class);
-
-                        produtoList.add(produto);
-                        filtroProdutoCategoriaList.add(produto);
-
-
-                        binding.progressBar2.setVisibility(View.GONE);
-                        binding.textVazio.setVisibility(View.GONE);
-                    }
-                    configRvProdutos(produtoList);
+                    binding.progressBar2.setVisibility(View.GONE);
+                    monitorarLista();
                 } else {
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
@@ -212,6 +205,89 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
             }
         });
+    }
+
+    private void monitorarLista() {
+        produtoList.clear();
+        SPM spm = new SPM(getApplicationContext());
+        //String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
+        Query produtoRef = FirebaseHelper.getDatabaseReference()
+                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                .child("produtos").orderByChild("data");
+        produtoRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                if (snapshot.exists()) {
+                    Produto produto = snapshot.getValue(Produto.class);
+                    produtoList.add(produto);
+                    binding.progressBar2.setVisibility(View.GONE);
+
+                    configRvProdutos(produtoList);
+                } else {
+                    binding.progressBar2.setVisibility(View.GONE);
+                    binding.textVazio.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Produto produto = snapshot.getValue(Produto.class);
+
+                for (int i = 0; i < produtoList.size(); i++) {
+                    if (produtoList.get(i).getId().equals(produto.getId())) {
+                        produtoList.set(i, produto);
+                    }
+                }
+
+                produtoAdapter.notifyDataSetChanged();
+                if (!filtroProdutoNomeList.isEmpty()) {
+                    for (int i = 0; i < filtroProdutoNomeList.size(); i++) {
+                        if (filtroProdutoNomeList.get(i).getId().equals(produto.getId())) {
+                            filtroProdutoNomeList.set(i, produto);
+                        }
+                    }
+
+                    produtoAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                Produto produto = snapshot.getValue(Produto.class);
+
+                for (int i = 0; i < produtoList.size(); i++) {
+                    if (produtoList.get(i).getId().equals(produto.getId())) {
+                        produtoList.remove(i);
+                    }
+                }
+
+                produtoAdapter.notifyDataSetChanged();
+                if (!filtroProdutoNomeList.isEmpty()) {
+                    for (int i = 0; i < filtroProdutoNomeList.size(); i++) {
+                        if (filtroProdutoNomeList.get(i).getId().equals(produto.getId())) {
+                            filtroProdutoNomeList.remove(i);
+                        }
+                    }
+
+                    produtoAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Toast.makeText(getApplicationContext(), "onChildMoved", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getApplicationContext(), "onCancelled", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
     private void filtraProdutoCategoria() {
