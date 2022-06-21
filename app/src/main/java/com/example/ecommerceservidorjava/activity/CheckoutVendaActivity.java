@@ -4,7 +4,6 @@ import static com.itextpdf.text.Rectangle.NO_BORDER;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,35 +15,29 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.ecommerceservidorjava.R;
-import com.example.ecommerceservidorjava.databinding.ActivityCheckoutBinding;
+import com.example.ecommerceservidorjava.databinding.ActivityCheckoutVendaBinding;
 import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.model.Configuracao;
 import com.example.ecommerceservidorjava.model.Endereco;
 import com.example.ecommerceservidorjava.model.ItemVenda;
-import com.example.ecommerceservidorjava.model.Orcamento;
 import com.example.ecommerceservidorjava.model.PerfilEmpresa;
 import com.example.ecommerceservidorjava.model.Usuario;
+import com.example.ecommerceservidorjava.model.Venda;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.example.ecommerceservidorjava.util.Timestamp;
 import com.example.ecommerceservidorjava.util.Util;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -71,9 +64,9 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-public class CheckoutActivity extends AppCompatActivity {
-    private ActivityCheckoutBinding binding;
-    private Orcamento orcamento;
+public class CheckoutVendaActivity extends AppCompatActivity {
+    private ActivityCheckoutVendaBinding binding;
+    private Venda venda;
     private PerfilEmpresa perfilEmpresa;
     private Configuracao configuracao;
     private Usuario usuario;
@@ -110,7 +103,7 @@ public class CheckoutActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityCheckoutBinding.inflate(getLayoutInflater());
+        binding = ActivityCheckoutVendaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         binding.includeSheet.btnContinue.setText("finalizar");
         binding.include.textTitulo.setText("Checkout");
@@ -141,7 +134,7 @@ public class CheckoutActivity extends AppCompatActivity {
                             .into(new CustomTarget<Bitmap>() {
                                 @Override
                                 public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                   // binding.imagemFoto.setImageBitmap(resource);
+                                    // binding.imagemFoto.setImageBitmap(resource);
                                     setLocalBitmapUri(resource);
                                 }
 
@@ -160,7 +153,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
             }
         });
-        }
+    }
 
     private void recuperaEndereco(final int iEndereco) {
         SPM spm = new SPM(getApplicationContext());
@@ -378,39 +371,39 @@ public class CheckoutActivity extends AppCompatActivity {
         if (clienteSelecionado != null){
             clienteSelecionado.setNome(binding.edtNome.getText().toString());
             clienteSelecionado.setTelefone1(binding.edtTelefone.getText().toString());
-            orcamento = new Orcamento();
+            venda = new Venda();
             DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
-            orcamento.setId(databaseReference.push().getKey());
-            orcamento.setIdCliente(clienteSelecionado);
+            venda.setId(databaseReference.push().getKey());
+            venda.setIdCliente(clienteSelecionado);
             if (enderecoList.size() > 0){
-                orcamento.setIdEndereco(enderecoList.get(end));
+                venda.setIdEndereco(enderecoList.get(end));
             }
-            orcamento.setIdUsuario(usuario);
-            orcamento.setData(String.valueOf(Timestamp.getUnixTimestamp()));
-            orcamento.setItens(itemVendaList);
-            orcamento.setStatus("Em analise");
-            orcamento.setDesconto(String.valueOf(desconto));
-            orcamento.setTipoPagamento(pagamento);
-            orcamento.setTotal(binding.includeSheet.tvTotalCart.getText().toString());
-            orcamento.setSubTotal(subTotal);
+            venda.setIdUsuario(usuario);
+            venda.setData(String.valueOf(Timestamp.getUnixTimestamp()));
+            venda.setItens(itemVendaList);
+            venda.setStatus("Em analise");
+            venda.setDesconto(String.valueOf(desconto));
+            venda.setTipoPagamento(pagamento);
+            venda.setTotal(binding.includeSheet.tvTotalCart.getText().toString());
+            venda.setSubTotal(subTotal);
 
             SPM spm = new SPM(getApplicationContext());
             String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
             DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
                     .child("empresas")
                     .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                    .child("orcamentos").child(orcamento.getId());
-            produtoRef.setValue(orcamento).addOnSuccessListener(unused -> {
+                    .child("vendas").child(venda.getId());
+            produtoRef.setValue(venda).addOnSuccessListener(unused -> {
                 finishAffinity();
-                Intent intent = new Intent(getApplicationContext(), ListaOrcamentoActivity.class);
-                intent.putExtra("orcamento", orcamento);
+                Intent intent = new Intent(getApplicationContext(), ListaVendaActivity.class);
+                intent.putExtra("venda", venda);
                 startActivity(intent);
 
             });
             try {
 
 
-                createPdf(orcamento, perfilEmpresa);
+                createPdf(venda, perfilEmpresa);
 
 
             } catch (IOException e) {
@@ -451,7 +444,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
 
 
-    private void createPdf(Orcamento orcamento, PerfilEmpresa perfilEmpresa) throws IOException, DocumentException {
+    private void createPdf(Venda venda, PerfilEmpresa perfilEmpresa) throws IOException, DocumentException {
 
         // LINE SEPARATOR
         LineSeparator lineSeparator = new LineSeparator();
@@ -459,14 +452,14 @@ public class CheckoutActivity extends AppCompatActivity {
 
         File pdfFolder = new File(this.getExternalFilesDir(null)
                 + File.separator
-                + "ecommercempa/orcamentos"
+                + "ecommercempa/vendas"
                 + File.separator);
         if (!pdfFolder.exists()) {
             pdfFolder.mkdirs();
         }
 
 
-        myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
+        myFile = new File(pdfFolder + File.separator + "venda" + ".pdf");
 
 
         OutputStream output = new FileOutputStream(myFile);
@@ -520,11 +513,11 @@ public class CheckoutActivity extends AppCompatActivity {
         Paragraph pDez = new Paragraph( perfilEmpresa.getNome(),paragraphFont2);
 
         Paragraph p10 = new Paragraph(10, "Criado em", paragraphFont3);
-        Paragraph p11 = new Paragraph(10, Timestamp.getFormatedDateTime(Long.parseLong(orcamento.getData()), "dd/MM/yy"), paragraphFont4);
+        Paragraph p11 = new Paragraph(10, Timestamp.getFormatedDateTime(Long.parseLong(venda.getData()), "dd/MM/yy"), paragraphFont4);
         Paragraph p12 = new Paragraph(25, "Valido por", paragraphFont3);
         Paragraph p13 = new Paragraph(10, "30 dias", paragraphFont4);
         Paragraph p14 = new Paragraph(23, "Orçamento id:", paragraphFont3);
-        Paragraph p15 = new Paragraph(10, orcamento.getData(), paragraphFont4);
+        Paragraph p15 = new Paragraph(10, venda.getData(), paragraphFont4);
 
         p5.setAlignment(Element.ALIGN_CENTER);
         p6.setAlignment(Element.ALIGN_CENTER);
@@ -568,7 +561,7 @@ public class CheckoutActivity extends AppCompatActivity {
         PdfPCell c5 = new PdfPCell();
         c1.addElement(img);
         Paragraph p16 = new Paragraph(10, "Cliente:", paragraphFont2);
-        Paragraph p17 = new Paragraph(10, orcamento.getIdCliente().getNome(), paragraphFont);
+        Paragraph p17 = new Paragraph(10, venda.getIdCliente().getNome(), paragraphFont);
         Paragraph p18 = new Paragraph(10, "Vendedor:", paragraphFont2);
         Paragraph p19 = new Paragraph(10, usuario.getNome(), paragraphFont);
 
@@ -588,11 +581,11 @@ public class CheckoutActivity extends AppCompatActivity {
         PdfPCell c8 = new PdfPCell();
         c1.addElement(img);
         Paragraph p20 = new Paragraph(10, "Telefone 1:", paragraphFont2);
-        Paragraph p21 = new Paragraph(10, orcamento.getIdCliente().getTelefone1(), paragraphFont);
+        Paragraph p21 = new Paragraph(10, venda.getIdCliente().getTelefone1(), paragraphFont);
         Paragraph p22 = new Paragraph(10, "Telefone 2:", paragraphFont2);
-        Paragraph p23 = new Paragraph(10, orcamento.getIdCliente().getTelefone2(), paragraphFont);
+        Paragraph p23 = new Paragraph(10, venda.getIdCliente().getTelefone2(), paragraphFont);
         Paragraph p24 = new Paragraph(10, "Email:", paragraphFont2);
-        Paragraph p25 = new Paragraph(10, orcamento.getIdCliente().getEmail(), paragraphFont);
+        Paragraph p25 = new Paragraph(10, venda.getIdCliente().getEmail(), paragraphFont);
 
         c6.addElement(p20);
         c6.addElement(p21);
@@ -602,7 +595,7 @@ public class CheckoutActivity extends AppCompatActivity {
         c8.addElement(p25);
 
 
-        Chunk chunk = new Chunk("Orçamento", chapterFont2);
+        Chunk chunk = new Chunk("Venda", chapterFont2);
         // chunk.setBackground(BaseColor.BLACK);
         Paragraph titulo = new Paragraph(chunk);
         titulo.setAlignment(Element.ALIGN_CENTER);
@@ -658,7 +651,7 @@ public class CheckoutActivity extends AppCompatActivity {
         canvas4.rectangle(rect4);
 
 
-        createTable(orcamento);
+        createTable(venda);
 
 
         Chunk glue1 = new Chunk(new VerticalPositionMark());
@@ -667,12 +660,12 @@ public class CheckoutActivity extends AppCompatActivity {
         p1.add(subTotal);
         document.add(p1);
 
-        if (Integer.parseInt(orcamento.getDesconto()) > 0) {
+        if (Integer.parseInt(venda.getDesconto()) > 0) {
 
             Chunk glue2 = new Chunk(new VerticalPositionMark());
             Paragraph p2 = new Paragraph("Desconto aplicado nos produtos", paragraphFont3);
             p2.add(new Chunk(glue2));
-            p2.add(orcamento.getDesconto() + "%");
+            p2.add(venda.getDesconto() + "%");
             document.add(p2);
         }
 
@@ -682,7 +675,7 @@ public class CheckoutActivity extends AppCompatActivity {
         Chunk glue = new Chunk(new VerticalPositionMark());
         Paragraph p = new Paragraph("Total", paragraphFont);
         p.add(new Chunk(glue));
-        p.add(orcamento.getTotal());
+        p.add(venda.getTotal());
         document.add(p);
 
 
@@ -692,7 +685,7 @@ public class CheckoutActivity extends AppCompatActivity {
         glue3.setFont(paragraphFont2);
         Paragraph p3 = new Paragraph("Forma de pagamento: ", paragraphFont3);
         p3.add(new Chunk(glue3));
-        p3.add(orcamento.getTipoPagamento());
+        p3.add(venda.getTipoPagamento());
         document.add(p3);
 
         document.add(new Paragraph("\n", paragraphRodaPe));
@@ -713,7 +706,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
     }
 
-    private void createTable(Orcamento orcamento)
+    private void createTable(Venda venda)
             throws DocumentException {
 
         Font paragraphFont = FontFactory.getFont(FontFactory.HELVETICA, 9, Font.NORMAL, BaseColor.WHITE);
@@ -759,13 +752,13 @@ public class CheckoutActivity extends AppCompatActivity {
         table.addCell(c1);
         table.setHeaderRows(1);
 //l
-        for (int i = 0; i < orcamento.getItens().size(); i++) {
+        for (int i = 0; i < venda.getItens().size(); i++) {
 
-            table.addCell(new PdfPCell(new Phrase(orcamento.getItens().get(i).getCodigo(), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(orcamento.getItens().get(i).getNome(), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(String.valueOf(orcamento.getItens().get(i).getQtd()), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(orcamento.getItens().get(i).getPreco(), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(NumberFormat.getCurrencyInstance().format(somatoriaDosProdutosIguais(orcamento.getItens().get(i).getPreco(), String.valueOf(orcamento.getItens().get(i).getQtd()))), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(venda.getItens().get(i).getCodigo(), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(venda.getItens().get(i).getNome(), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(String.valueOf(venda.getItens().get(i).getQtd()), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(venda.getItens().get(i).getPreco(), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(NumberFormat.getCurrencyInstance().format(somatoriaDosProdutosIguais(venda.getItens().get(i).getPreco(), String.valueOf(venda.getItens().get(i).getQtd()))), paragraphFont2)));
         }
 
         document.add(table);

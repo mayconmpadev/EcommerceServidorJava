@@ -50,7 +50,7 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-public class GerarPDF extends AppCompatActivity {
+public class GerarPDFOrcamento extends AppCompatActivity {
 
     private Orcamento orcamento;
     private PerfilEmpresa perfilEmpresa;
@@ -63,7 +63,7 @@ public class GerarPDF extends AppCompatActivity {
     Document document = new Document();
     File myFile;
 
-    public GerarPDF(Orcamento orcamento, Context context) {
+    public GerarPDFOrcamento(Orcamento orcamento, Context context) {
         this.orcamento = orcamento;
         this.context = context;
         spm = new SPM(context);

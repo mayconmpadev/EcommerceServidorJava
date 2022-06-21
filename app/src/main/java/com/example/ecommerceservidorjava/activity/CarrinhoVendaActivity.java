@@ -3,12 +3,10 @@ package com.example.ecommerceservidorjava.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import com.example.ecommerceservidorjava.adapter.CarrinhoAdapter;
-import com.example.ecommerceservidorjava.databinding.ActivityCarrinhoBinding;
+import com.example.ecommerceservidorjava.adapter.CarrinhoVendaAdapter;
+import com.example.ecommerceservidorjava.databinding.ActivityCarrinhoVendaBinding;
 import com.example.ecommerceservidorjava.model.ItemVenda;
 import com.example.ecommerceservidorjava.util.Util;
 
@@ -17,22 +15,22 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CarrinhoActivity extends AppCompatActivity implements CarrinhoAdapter.OnClickLister {
-    private ActivityCarrinhoBinding binding;
-    private CarrinhoAdapter carrinhoAdapter;
+public class CarrinhoVendaActivity extends AppCompatActivity implements CarrinhoVendaAdapter.OnClickLister {
+    private ActivityCarrinhoVendaBinding binding;
+    private CarrinhoVendaAdapter carrinhoVendaAdapter;
     private ArrayList<ItemVenda> itemVendaList;
     private int quantidade = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityCarrinhoBinding.inflate(getLayoutInflater());
+        binding = ActivityCarrinhoVendaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         recuperarIntent();
         configRvProdutos(itemVendaList);
         binding.include.textTitulo.setText("Carrinho");
         binding.includeSheet.btnContinue.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(),CheckoutActivity.class);
+            Intent intent = new Intent(getApplicationContext(), CheckoutVendaActivity.class);
             intent.putExtra("itemVenda", itemVendaList);
             startActivity(intent);
         });
@@ -54,8 +52,8 @@ public class CarrinhoActivity extends AppCompatActivity implements CarrinhoAdapt
     private void configRvProdutos(List<ItemVenda> itemVendas) {
         binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         binding.recycler.setHasFixedSize(true);
-        carrinhoAdapter = new CarrinhoAdapter(itemVendas, getApplicationContext(), this);
-        binding.recycler.setAdapter(carrinhoAdapter);
+        carrinhoVendaAdapter = new CarrinhoVendaAdapter(itemVendas, getApplicationContext(), this);
+        binding.recycler.setAdapter(carrinhoVendaAdapter);
     }
 
     private void somar(int position, ItemVenda itemVenda) {
@@ -63,7 +61,7 @@ public class CarrinhoActivity extends AppCompatActivity implements CarrinhoAdapt
         itemVenda.setQtd(itemVenda.getQtd() + 1);
         quantidade = quantidade + 1;
         binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
-        carrinhoAdapter.notifyItemChanged(position);
+        carrinhoVendaAdapter.notifyItemChanged(position);
         binding.lytCartSheet.setVisibility(View.VISIBLE);
         binding.includeSheet.tvTotalCart.setText(total());
 
@@ -77,7 +75,7 @@ public class CarrinhoActivity extends AppCompatActivity implements CarrinhoAdapt
         }
         quantidade = quantidade - 1;
         binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
-        carrinhoAdapter.notifyItemChanged(position);
+        carrinhoVendaAdapter.notifyItemChanged(position);
         binding.includeSheet.tvTotalCart.setText(total());
 
 
@@ -106,7 +104,7 @@ public class CarrinhoActivity extends AppCompatActivity implements CarrinhoAdapt
             binding.lytCartSheet.setVisibility(View.GONE);
         }
         binding.includeSheet.tvTotalCart.setText(total());
-        carrinhoAdapter.notifyDataSetChanged();
+        carrinhoVendaAdapter.notifyDataSetChanged();
 
 
     }

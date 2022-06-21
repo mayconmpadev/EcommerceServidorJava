@@ -28,18 +28,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
-import com.example.ecommerceservidorjava.adapter.ListaOrcamentoAdapter;
-import com.example.ecommerceservidorjava.databinding.ActivityListaOrcamentoBinding;
+import com.example.ecommerceservidorjava.adapter.ListaVendaAdapter;
+import com.example.ecommerceservidorjava.databinding.ActivityListaVendaBinding;
 import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoEnviarBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrcamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
-import com.example.ecommerceservidorjava.model.Orcamento;
 import com.example.ecommerceservidorjava.model.Produto;
+import com.example.ecommerceservidorjava.model.Venda;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.GerarPDFOrcamento;
+import com.example.ecommerceservidorjava.util.GerarPDFVendas;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -53,26 +54,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOrcamentoAdapter.OnClickLister, ListaOrcamentoAdapter.OnLongClickLister {
-    ActivityListaOrcamentoBinding binding;
-    ListaOrcamentoAdapter orcamentoAdapter;
-    private final List<Orcamento> orcamentoList = new ArrayList<>();
-    List<Orcamento> filtroList = new ArrayList<>();
+public class ListaVendaActivity extends AppCompatActivity implements ListaVendaAdapter.OnClickLister, ListaVendaAdapter.OnLongClickLister {
+    ActivityListaVendaBinding binding;
+    ListaVendaAdapter vendaAdapter;
+    private final List<Venda> vendaList = new ArrayList<>();
+    List<Venda> filtroList = new ArrayList<>();
     SPM spm = new SPM(this);
     private AlertDialog dialog;
-    private Orcamento orcamento;
+    private Venda venda;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        binding = ActivityListaOrcamentoBinding.inflate(getLayoutInflater());
+        binding = ActivityListaVendaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         recuperarIntent();
         configSearchView();
         recuperaOrcamento();
         binding.floatingActionButton.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), CadastroOrcamentoActivity.class);
+            Intent intent = new Intent(getApplicationContext(), CadastroVendaActivity.class);
             startActivity(intent);
         });
         binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -105,7 +106,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
                     binding.textVazio.setVisibility(View.GONE);
                     ocultaTeclado();
                     filtroList.clear();
-                    configRvProdutos(orcamentoList);
+                    configRvProdutos(vendaList);
                 }
                 return false;
             }
@@ -118,14 +119,14 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
             edtSerachView.clearFocus();
             ocultaTeclado();
             filtroList.clear();
-            configRvProdutos(orcamentoList);
+            configRvProdutos(vendaList);
         });
 
     }
 
     private void recuperarIntent() {
-        orcamento = (Orcamento) getIntent().getSerializableExtra("orcamento");
-        if (orcamento != null) {
+        venda = (Venda) getIntent().getSerializableExtra("venda");
+        if (venda != null) {
             enviarPDFWhatsapp();
         }
     }
@@ -134,9 +135,9 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     private void filtraProdutoNome(String pesquisa) {
 
 
-        for (Orcamento orcamento : orcamentoList) {
-            if (orcamento.getIdCliente().getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
-                filtroList.add(orcamento);
+        for (Venda venda : vendaList) {
+            if (venda.getIdCliente().getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+                filtroList.add(this.venda);
             }
         }
 
@@ -152,18 +153,18 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         }
     }
 
-    private void configRvProdutos(List<Orcamento> orcamentoList) {
+    private void configRvProdutos(List<Venda> vendaList) {
         binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         binding.recycler.setHasFixedSize(true);
-        orcamentoAdapter = new ListaOrcamentoAdapter(R.layout.item_lista_usuario, orcamentoList, getApplicationContext(), true, this, this);
-        binding.recycler.setAdapter(orcamentoAdapter);
+        vendaAdapter = new ListaVendaAdapter(R.layout.item_lista_usuario, vendaList, getApplicationContext(), true, this, this);
+        binding.recycler.setAdapter(vendaAdapter);
     }
 
     private void recuperaOrcamento() {
         SPM spm = new SPM(getApplicationContext());
         DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                .child("orcamentos");
+                .child("vendas");
         produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -187,22 +188,22 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     }
 
     private void monitorarLista() {
-        orcamentoList.clear();
+        vendaList.clear();
         SPM spm = new SPM(getApplicationContext());
         //String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
         Query produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                .child("orcamentos").orderByChild("data");
+                .child("vendas").orderByChild("data");
         produtoRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
                 if (snapshot.exists()) {
-                    Orcamento cliente = snapshot.getValue(Orcamento.class);
-                    orcamentoList.add(cliente);
+                    Venda cliente = snapshot.getValue(Venda.class);
+                    vendaList.add(cliente);
                     binding.progressBar2.setVisibility(View.GONE);
 
-                    configRvProdutos(orcamentoList);
+                    configRvProdutos(vendaList);
                 } else {
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
@@ -211,15 +212,15 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Orcamento orcamento = snapshot.getValue(Orcamento.class);
+                Venda orcamento = snapshot.getValue(Venda.class);
 
-                for (int i = 0; i < orcamentoList.size(); i++) {
-                    if (orcamentoList.get(i).getId().equals(orcamento.getId())) {
-                        orcamentoList.set(i, orcamento);
+                for (int i = 0; i < vendaList.size(); i++) {
+                    if (vendaList.get(i).getId().equals(orcamento.getId())) {
+                        vendaList.set(i, orcamento);
                     }
                 }
 
-                orcamentoAdapter.notifyDataSetChanged();
+                vendaAdapter.notifyDataSetChanged();
                 if (!filtroList.isEmpty()) {
                     for (int i = 0; i < filtroList.size(); i++) {
                         if (filtroList.get(i).getId().equals(orcamento.getId())) {
@@ -227,22 +228,22 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
                         }
                     }
 
-                    orcamentoAdapter.notifyDataSetChanged();
+                    vendaAdapter.notifyDataSetChanged();
                 }
 
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                Orcamento orcamento = snapshot.getValue(Orcamento.class);
+                Venda orcamento = snapshot.getValue(Venda.class);
 
-                for (int i = 0; i < orcamentoList.size(); i++) {
-                    if (orcamentoList.get(i).getId().equals(orcamento.getId())) {
-                        orcamentoList.remove(i);
+                for (int i = 0; i < vendaList.size(); i++) {
+                    if (vendaList.get(i).getId().equals(orcamento.getId())) {
+                        vendaList.remove(i);
                     }
                 }
 
-                orcamentoAdapter.notifyDataSetChanged();
+                vendaAdapter.notifyDataSetChanged();
                 if (!filtroList.isEmpty()) {
                     for (int i = 0; i < filtroList.size(); i++) {
                         if (filtroList.get(i).getId().equals(orcamento.getId())) {
@@ -250,7 +251,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
                         }
                     }
 
-                    orcamentoAdapter.notifyDataSetChanged();
+                    vendaAdapter.notifyDataSetChanged();
                 }
 
             }
@@ -269,7 +270,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
     }
 
-    private void showDialog(Orcamento cliente) {
+    private void showDialog(Venda cliente) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogClienteOpcoesBinding dialogBinding = DialogClienteOpcoesBinding
@@ -313,28 +314,28 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         dialog.show();
     }
 
-    private void showDialogDelete(Orcamento orcamento) {
+    private void showDialogDelete(Venda venda) {
         AlertDialog.Builder builder = new AlertDialog.Builder(
-                ListaOrcamentoActivity.this, R.style.CustomAlertDialog2);
+                ListaVendaActivity.this, R.style.CustomAlertDialog2);
 
         DialogDeleteBinding deleteBinding = DialogDeleteBinding
-                .inflate(LayoutInflater.from(ListaOrcamentoActivity.this));
-        deleteBinding.textTitulo.setText("Deseja remover o produto " + orcamento.getIdCliente().getNome() + "?");
+                .inflate(LayoutInflater.from(ListaVendaActivity.this));
+        deleteBinding.textTitulo.setText("Deseja remover o produto " + venda.getIdCliente().getNome() + "?");
         deleteBinding.btnFechar.setOnClickListener(v -> {
             dialog.dismiss();
-            orcamentoAdapter.notifyDataSetChanged();
+            vendaAdapter.notifyDataSetChanged();
         });
 
         deleteBinding.btnSim.setOnClickListener(v -> {
-            orcamentoList.remove(orcamento);
+            vendaList.remove(venda);
 
-            if (orcamentoList.isEmpty()) {
+            if (vendaList.isEmpty()) {
                 binding.textVazio.setText("Sua lista esta vazia.");
             } else {
                 binding.textVazio.setText("");
             }
             dialog.dismiss();
-            excluir(orcamento);
+            excluir(venda);
 
         });
 
@@ -346,11 +347,11 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void excluir(Orcamento orcamento) {
+    public void excluir(Venda venda) {
         binding.progressBar2.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
-                .child(caminho).child("orcamentos").child(orcamento.getId());
+                .child(caminho).child("vendas").child(venda.getId());
         databaseReference.removeValue();
 
 
@@ -359,23 +360,23 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
     }
 
-    private void alterarStatus(Orcamento orcamento, int position, String status) {
+    private void alterarStatus(Venda venda, int position, String status) {
         SPM spm = new SPM(getApplicationContext());
         String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference()
                 .child("empresas")
                 .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                .child("orcamentos")
-                .child(orcamento.getId()).child("status");
+                .child("vendas")
+                .child(venda.getId()).child("status");
         databaseReference.setValue(status).addOnSuccessListener(unused -> {
             if (filtroList.size() > 0) {
                 filtroList.get(position).setStatus(status);
             } else {
-                orcamentoList.get(position).setStatus(status);
+                vendaList.get(position).setStatus(status);
             }
 
 
-            orcamentoAdapter.notifyItemChanged(position);
+            vendaAdapter.notifyItemChanged(position);
         });
 
     }
@@ -386,13 +387,13 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
         File pdfFolder = new File(getExternalFilesDir(null)
                 + File.separator
-                + "ecommercempa/orcamentos"
+                + "ecommercempa/vendas"
                 + File.separator);
         if (!pdfFolder.exists()) {
             pdfFolder.mkdirs();
         }
-        File myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
-        String telefone = "55" + orcamento.getIdCliente().getTelefone1().replaceAll("\\D", "");
+        File myFile = new File(pdfFolder + File.separator + "venda" + ".pdf");
+        String telefone = "55" + venda.getIdCliente().getTelefone1().replaceAll("\\D", "");
         Intent sendIntent = new Intent("android.intent.action.SEND");
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
         sendIntent.setPackage(
@@ -414,17 +415,17 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         try {
             File pdfFolder = new File(getExternalFilesDir(null)
                     + File.separator
-                    + "ecommercempa/orcamentos"
+                    + "ecommercempa/vendas"
                     + File.separator);
             if (!pdfFolder.exists()) {
                 pdfFolder.mkdirs();
             }
-            File myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
+            File myFile = new File(pdfFolder + File.separator + "venda" + ".pdf");
             Intent email = new Intent(Intent.ACTION_SENDTO);
             email.setType("message/rfc822");
             email.putExtra(Intent.EXTRA_SUBJECT, "Orcamento em anexo");
             email.putExtra(Intent.EXTRA_TEXT, "obrigado pela preferencia");
-            email.putExtra(Intent.EXTRA_EMAIL, new String[]{orcamento.getIdCliente().getEmail()});
+            email.putExtra(Intent.EXTRA_EMAIL, new String[]{venda.getIdCliente().getEmail()});
 
             Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
             email.putExtra(Intent.EXTRA_STREAM, uri);
@@ -454,12 +455,12 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
         File pdfFolder = new File(getExternalFilesDir(null)
                 + File.separator
-                + "ecommercempa/orcamentos"
+                + "ecommercempa/vendas"
                 + File.separator);
         if (!pdfFolder.exists()) {
             pdfFolder.mkdirs();
         }
-        File myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
+        File myFile = new File(pdfFolder + File.separator + "venda" + ".pdf");
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(uri, "application/pdf");
@@ -481,13 +482,13 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
             File pdfFolder = new File(getExternalFilesDir(null)
                     + File.separator
-                    + "ecommercempa/orcamentos"
+                    + "ecommercempa/vendas"
                     + File.separator);
             if (!pdfFolder.exists()) {
                 pdfFolder.mkdirs();
             }
             File myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
-            String telefone = "55" + orcamento.getIdCliente().getTelefone1().replaceAll("\\D", "");
+            String telefone = "55" + venda.getIdCliente().getTelefone1().replaceAll("\\D", "");
             Intent sendIntent = new Intent("android.intent.action.SEND");
             Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
             sendIntent.setComponent(new ComponentName("com.whatsapp", "com.whatsapp.ContactPicker"));
@@ -508,17 +509,17 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
                 File pdfFolder = new File(getExternalFilesDir(null)
                         + File.separator
-                        + "mpasistema/orcamentos"
+                        + "mpasistema/vendas"
                         + File.separator);
                 if (!pdfFolder.exists()) {
                     pdfFolder.mkdirs();
                 }
-                File myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
+                File myFile = new File(pdfFolder + File.separator + "venda" + ".pdf");
                 Intent email = new Intent(Intent.ACTION_SENDTO);
                 email.setType("message/rfc822");
                 email.putExtra(Intent.EXTRA_SUBJECT, "Orcamento em anexo");
                 email.putExtra(Intent.EXTRA_TEXT, "obrigado pela preferencia");
-                email.putExtra(Intent.EXTRA_EMAIL, new String[]{orcamento.getIdCliente().getEmail()});
+                email.putExtra(Intent.EXTRA_EMAIL, new String[]{venda.getIdCliente().getEmail()});
 
                 Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
                 email.putExtra(Intent.EXTRA_STREAM, uri);
@@ -546,7 +547,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         }
     };
 
-    private void showDialog(Orcamento cliente, int position) {
+    private void showDialog(Venda cliente, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogOpcaoOrcamentoBinding dialogBinding = DialogOpcaoOrcamentoBinding
@@ -572,7 +573,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         dialogBinding.llStatus.setOnClickListener(view -> {
 
             dialog.dismiss();
-            showDialogStatus(orcamento, position);
+            showDialogStatus(venda, position);
 
         });
 
@@ -584,7 +585,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
         dialogBinding.llRecibo.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), ReciboActivity.class);
-            intent.putExtra("orcamentoSelecionado", orcamento);
+            intent.putExtra("vendaSelecionado", venda);
             startActivity(intent);
             dialog.dismiss();
 
@@ -596,7 +597,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         dialog.show();
     }
 
-    private void showDialogStatus(Orcamento orcamento, int position) {
+    private void showDialogStatus(Venda venda, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogOpcaoStatusBinding dialogBinding = DialogOpcaoStatusBinding
@@ -605,17 +606,17 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
         dialogBinding.llAnalise.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(orcamento, position, "Em analise");
+            alterarStatus(venda, position, "Em analise");
         });
 
         dialogBinding.llAprovado.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(orcamento, position, "Aprovado");
+            alterarStatus(venda, position, "Aprovado");
         });
 
         dialogBinding.llRecusado.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(orcamento, position, "Recusado");
+            alterarStatus(venda, position, "Recusado");
 
         });
 
@@ -708,11 +709,11 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     }
 
     @Override
-    public void onClick(Orcamento usuario, int position) {
-        orcamento = usuario;
+    public void onClick(Venda usuario, int position) {
+        venda = usuario;
 
         showDialog(usuario, position);
-        GerarPDFOrcamento gerarPDFOrcamento = new GerarPDFOrcamento(orcamento, this);
+        GerarPDFVendas gerarPDFOrcamento = new GerarPDFVendas(venda, this);
         // while (Parametro.bPdf){
         // Toast.makeText(getApplicationContext(), "teste", Toast.LENGTH_SHORT).show();
         // break;
@@ -723,7 +724,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
 
     @Override
-    public void onLongClick(Orcamento orcamento) {
-        showDialogDelete(orcamento);
+    public void onLongClick(Venda venda) {
+        showDialogDelete(venda);
     }
 }

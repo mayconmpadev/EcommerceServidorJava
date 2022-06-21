@@ -75,9 +75,14 @@
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_cadastro_orcamento.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_cadastro_produto.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_cadastro_usuario.xml" value="0.33" />
+        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_cadastro_venda.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_caminho_servidor.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_carrinho.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_carrinho_orcamento.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_carrinho_venda.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_checkout.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_checkout_orcamento.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_checkout_venda.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_configuracao.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_list_usuario.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_lista_categoria.xml" value="0.38697916666666665" />
@@ -87,6 +92,7 @@
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_lista_orcamento.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_lista_produto.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_lista_usuario.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_lista_venda.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_login.xml" value="0.38333333333333336" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_main.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/mayco/Documents/aplicativos/java/EcommerceServidoJava/app/src/main/res/layout/activity_perfil_empresa.xml" value="0.3729166666666667" />

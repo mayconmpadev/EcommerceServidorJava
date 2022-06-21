@@ -1,9 +1,7 @@
 package com.example.ecommerceservidorjava.adapter;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -12,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ItemCartBinding;
-import com.example.ecommerceservidorjava.databinding.ItemProdutoOrcamentoBinding;
 import com.example.ecommerceservidorjava.model.ItemVenda;
 import com.example.ecommerceservidorjava.util.Util;
 
@@ -21,14 +18,14 @@ import java.text.NumberFormat;
 import java.util.List;
 
 
-public class CarrinhoAdapter extends RecyclerView.Adapter<CarrinhoAdapter.MyViewHolder> {
+public class CarrinhoVendaAdapter extends RecyclerView.Adapter<CarrinhoVendaAdapter.MyViewHolder> {
 
     private final List<ItemVenda> itemVendaList;
     private final Context context;
     private final OnClickLister onClickLister;
 
 
-    public CarrinhoAdapter( List<ItemVenda> itemVendaList, Context context, OnClickLister onClickLister) {
+    public CarrinhoVendaAdapter(List<ItemVenda> itemVendaList, Context context, OnClickLister onClickLister) {
 
 
         this.itemVendaList = itemVendaList;

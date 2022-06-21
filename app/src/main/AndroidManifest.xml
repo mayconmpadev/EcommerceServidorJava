@@ -18,6 +18,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EcommerceServidorJava">
         <activity
+            android:name=".activity.CheckoutVendaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.CadastroVendaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.ListaVendaActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.ListaDespesaActivity"
             android:exported="false" />
         <activity
@@ -33,10 +42,13 @@
             android:name=".activity.PerfilEmpresaActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.CheckoutActivity"
+            android:name=".activity.CheckoutOrcamentoActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.CarrinhoActivity"
+            android:name=".activity.CarrinhoOrcamentoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.CarrinhoVendaActivity"
             android:exported="false" />
         <activity
             android:name=".activity.CadastroOrcamentoActivity"

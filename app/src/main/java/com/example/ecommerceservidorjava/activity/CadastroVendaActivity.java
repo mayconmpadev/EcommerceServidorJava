@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.ecommerceservidorjava.R;
-import com.example.ecommerceservidorjava.adapter.CadastroOrcamentoAdapter;
+import com.example.ecommerceservidorjava.adapter.CadastroVendaAdapter;
 import com.example.ecommerceservidorjava.adapter.ListaCategoriaHorizontalAdapter;
-import com.example.ecommerceservidorjava.databinding.ActivityCadastroOrcamentoBinding;
+import com.example.ecommerceservidorjava.databinding.ActivityCadastroVendaBinding;
 import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.model.ItemVenda;
 import com.example.ecommerceservidorjava.model.Produto;
@@ -36,9 +36,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class CadastroOrcamentoActivity extends AppCompatActivity implements CadastroOrcamentoAdapter.OnClickLister, ListaCategoriaHorizontalAdapter.OnClickLister {
-    ActivityCadastroOrcamentoBinding binding;
-    CadastroOrcamentoAdapter produtoAdapter;
+public class CadastroVendaActivity extends AppCompatActivity implements CadastroVendaAdapter.OnClickLister, ListaCategoriaHorizontalAdapter.OnClickLister {
+    ActivityCadastroVendaBinding binding;
+    CadastroVendaAdapter produtoAdapter;
 
     private final List<Produto> produtoList = new ArrayList<>();
     private final List<ItemVenda> itemVendaList = new ArrayList<>();
@@ -55,7 +55,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityCadastroOrcamentoBinding.inflate(getLayoutInflater());
+        binding = ActivityCadastroVendaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         configSearchView();
         recuperaProdutos();
@@ -132,7 +132,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
     private void configRvProdutos(List<Produto> produtoList, List<ItemVenda> itemVendaList) {
         binding.recycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
         binding.recycler.setHasFixedSize(true);
-        produtoAdapter = new CadastroOrcamentoAdapter(produtoList, itemVendaList, getApplicationContext(), this);
+        produtoAdapter = new CadastroVendaAdapter(produtoList, itemVendaList, getApplicationContext(), this);
         binding.recycler.setAdapter(produtoAdapter);
     }
 
@@ -314,7 +314,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
             }
         }
 
-        Intent intent = new Intent(getApplicationContext(), CarrinhoOrcamentoActivity.class);
+        Intent intent = new Intent(getApplicationContext(), CarrinhoVendaActivity.class);
         intent.putExtra("itemVenda", arrayList);
         startActivity(intent);
     }
