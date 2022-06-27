@@ -378,10 +378,10 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         } else if (descricao.isEmpty()) {
             binding.editDescricao.setError("preencha o campo");
             binding.editDescricao.requestFocus();
-        } else if (precoCusto.equals("R$ 0,00")) {
+        } else if (precoCusto.replaceAll("[^0-9]", "").equals("000")) {
             binding.editPrecoCusto.setError("preencha o campo");
             binding.editPrecoCusto.requestFocus();
-        } else if (precoVenda.equals("R$ 0,00")) {
+        } else if (precoVenda.replaceAll("[^0-9]", "").equals("000")) {
             binding.editPrecoVenda.setError("preencha o campo");
             binding.editPrecoVenda.requestFocus();
         } else if (codigo.isEmpty()) {

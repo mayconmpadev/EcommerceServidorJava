@@ -26,12 +26,10 @@ import com.example.ecommerceservidorjava.databinding.ActivityListaProdutoBinding
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogLojaProdutoBinding;
 import com.example.ecommerceservidorjava.model.Categoria;
-import com.example.ecommerceservidorjava.model.Orcamento;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -57,6 +55,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     private SPM spm = new SPM(this);
     private Categoria categoriaSelecionada;
     private String pesquisa = "";
+    int qtdImagem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,6 +193,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                     binding.progressBar2.setVisibility(View.GONE);
                     monitorarLista();
                 } else {
+                    monitorarLista();
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
                 }
@@ -217,11 +217,12 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         produtoRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                Toast.makeText(getApplicationContext(), "onChildAdded", Toast.LENGTH_SHORT).show();
                 if (snapshot.exists()) {
                     Produto produto = snapshot.getValue(Produto.class);
                     produtoList.add(produto);
                     binding.progressBar2.setVisibility(View.GONE);
+                    binding.textVazio.setVisibility(View.GONE);
 
                     configRvProdutos(produtoList);
                 } else {
@@ -232,6 +233,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Toast.makeText(getApplicationContext(), "onChildChanged", Toast.LENGTH_SHORT).show();
                 Produto produto = snapshot.getValue(Produto.class);
 
                 for (int i = 0; i < produtoList.size(); i++) {
@@ -255,11 +257,15 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                Toast.makeText(getApplicationContext(), "onChildRemoved", Toast.LENGTH_SHORT).show();
                 Produto produto = snapshot.getValue(Produto.class);
-
+                if (produtoList.size() == 0){
+                    binding.textVazio.setVisibility(View.VISIBLE);
+                }
                 for (int i = 0; i < produtoList.size(); i++) {
                     if (produtoList.get(i).getId().equals(produto.getId())) {
                         produtoList.remove(i);
+
                     }
                 }
 
@@ -268,6 +274,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                     for (int i = 0; i < filtroProdutoNomeList.size(); i++) {
                         if (filtroProdutoNomeList.get(i).getId().equals(produto.getId())) {
                             filtroProdutoNomeList.remove(i);
+
                         }
                     }
 
@@ -353,6 +360,11 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
 
     public void excluir(Produto produto) {
+        qtdImagem = 0;
+        if (produto.getUrlImagem0() != null) qtdImagem++;
+        if (produto.getUrlImagem1() != null) qtdImagem++;
+        if (produto.getUrlImagem2() != null) qtdImagem++;
+        Toast.makeText(getApplicationContext(), String.valueOf(qtdImagem), Toast.LENGTH_SHORT).show();
         binding.progressBar2.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
@@ -360,7 +372,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                 .child("produtos").child(produto.getId());
 
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < qtdImagem; i++) {
             StorageReference storageReference = FirebaseHelper.getStorageReference()
                     .child("empresas")
                     .child(caminho)
@@ -370,14 +382,11 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                     .child("imagem" + i);
             int finalI = i;
             storageReference.delete().addOnSuccessListener(unused -> {
-                if (finalI == 2) {
+                if (finalI == qtdImagem - 1) {
                     binding.progressBar2.setVisibility(View.GONE);
-                    databaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            produtoAdapter.notifyDataSetChanged();
-                            Toast.makeText(getApplicationContext(), "Excluido com sucesso!", Toast.LENGTH_SHORT).show();
-                        }
+                    databaseReference.removeValue().addOnSuccessListener(unused1 -> {
+                        produtoAdapter.notifyDataSetChanged();
+                        Toast.makeText(getApplicationContext(), "Excluido com sucesso!", Toast.LENGTH_SHORT).show();
                     });
                 }
             });
@@ -494,3 +503,4 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
     }
 }
+//TODO: atualizar lista com estoque baixo.

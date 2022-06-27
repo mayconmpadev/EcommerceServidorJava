@@ -32,7 +32,7 @@ public class GeralFragment extends Fragment {
 
 private FragmentGeralBinding binding;
 
-
+//TODO: redesenhar essa tela
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

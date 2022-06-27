@@ -181,7 +181,7 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
         Query produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
                 .child("produtos").orderByChild("nome");
-        produtoRef.addValueEventListener(new ValueEventListener() {
+        produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -350,3 +350,4 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
 
     }
 }
+

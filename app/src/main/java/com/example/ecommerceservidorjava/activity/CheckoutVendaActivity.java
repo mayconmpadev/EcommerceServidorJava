@@ -74,6 +74,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
     private ArrayList<ItemVenda> itemVendaList;
     private ArrayList<Endereco> enderecoList = new ArrayList<>();
     private int quantidade;
+    private int qtdEstoque;
     private int end = 0;
     private String pagamento = "credito";
     private String subTotal = "";
@@ -115,7 +116,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
 
     }
 
-    private void recuperarPerfil(){
+    private void recuperarPerfil() {
         binding.progressBar.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
 
@@ -126,7 +127,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
+                if (snapshot.exists()) {
                     perfilEmpresa = snapshot.getValue(PerfilEmpresa.class);
                     Glide.with(getApplicationContext())
                             .asBitmap()
@@ -143,7 +144,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
                                 }
                             });
                     binding.progressBar.setVisibility(View.GONE);
-                }else{
+                } else {
                     binding.progressBar.setVisibility(View.GONE);
                 }
             }
@@ -206,9 +207,9 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
+                if (snapshot.exists()) {
                     usuario = snapshot.getValue(Usuario.class);
-                }else {
+                } else {
                     Toast.makeText(getApplicationContext(), "usuario não exixte", Toast.LENGTH_SHORT).show();
                 }
 
@@ -237,7 +238,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     binding.progressBar.setVisibility(View.GONE);
                     configuracao = snapshot.getValue(Configuracao.class);
-
 
 
                 } else {
@@ -368,14 +368,14 @@ public class CheckoutVendaActivity extends AppCompatActivity {
     }
 
     private void finalizar() {
-        if (clienteSelecionado != null){
+        if (clienteSelecionado != null) {
             clienteSelecionado.setNome(binding.edtNome.getText().toString());
             clienteSelecionado.setTelefone1(binding.edtTelefone.getText().toString());
             venda = new Venda();
             DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
             venda.setId(databaseReference.push().getKey());
             venda.setIdCliente(clienteSelecionado);
-            if (enderecoList.size() > 0){
+            if (enderecoList.size() > 0) {
                 venda.setIdEndereco(enderecoList.get(end));
             }
             venda.setIdUsuario(usuario);
@@ -394,10 +394,8 @@ public class CheckoutVendaActivity extends AppCompatActivity {
                     .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
                     .child("vendas").child(venda.getId());
             produtoRef.setValue(venda).addOnSuccessListener(unused -> {
-                finishAffinity();
-                Intent intent = new Intent(getApplicationContext(), ListaVendaActivity.class);
-                intent.putExtra("venda", venda);
-                startActivity(intent);
+                baixaEstoque();
+
 
             });
             try {
@@ -412,10 +410,41 @@ public class CheckoutVendaActivity extends AppCompatActivity {
                 Toast.makeText(this, " erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
-        }else {
+        } else {
             Toast.makeText(getApplicationContext(), "Selecione um Cliente", Toast.LENGTH_SHORT).show();
         }
 
+
+    }
+
+    private void baixaEstoque() {
+        for (int i = 0; i < venda.getItens().size(); i++) {
+            String id = venda.getItens().get(i).getIdProduto();
+            int a  = i;
+
+            DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
+                    .child("empresas")
+                    .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                    .child("produtos").child(id).child("quantidadeEtoque");
+
+            produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String qtd = (String) snapshot.getValue().toString();
+                qtdEstoque = Integer.parseInt(qtd);
+                    qtdEstoque = qtdEstoque - venda.getItens().get(a).getQtd();
+                    Toast.makeText(getApplicationContext(), String.valueOf(qtdEstoque), Toast.LENGTH_SHORT).show();
+                    produtoRef.setValue(String.valueOf(qtdEstoque));
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+            //produtoRef.setValue(qtdEstoque - venda.getItens().get(i).getQtd());
+
+        }
 
     }
 
@@ -440,8 +469,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         }
         return bmpUri;
     }
-
-
 
 
     private void createPdf(Venda venda, PerfilEmpresa perfilEmpresa) throws IOException, DocumentException {
@@ -507,10 +534,10 @@ public class CheckoutVendaActivity extends AppCompatActivity {
 
         Paragraph p5 = new Paragraph("Tel.: " + perfilEmpresa.getTelefone1(), paragraphFont2);
         Paragraph p6 = new Paragraph("WhatsApp.: " + perfilEmpresa.getTelefone2(), paragraphFont2);
-        Paragraph p7 = new Paragraph("Rua: " + perfilEmpresa.getEndereco().getLogradouro() + " - " + "N.: " + perfilEmpresa.getEndereco().getNumero(),paragraphFont2);
-        Paragraph p8 = new Paragraph(perfilEmpresa.getEndereco().getBairro() + " - " + perfilEmpresa.getEndereco().getLocalidade() + " - " + perfilEmpresa.getEndereco().getUf(),paragraphFont2);
-        Paragraph p9 = new Paragraph("CEP: " + perfilEmpresa.getEndereco().getCep(),paragraphFont2);
-        Paragraph pDez = new Paragraph( perfilEmpresa.getNome(),paragraphFont2);
+        Paragraph p7 = new Paragraph("Rua: " + perfilEmpresa.getEndereco().getLogradouro() + " - " + "N.: " + perfilEmpresa.getEndereco().getNumero(), paragraphFont2);
+        Paragraph p8 = new Paragraph(perfilEmpresa.getEndereco().getBairro() + " - " + perfilEmpresa.getEndereco().getLocalidade() + " - " + perfilEmpresa.getEndereco().getUf(), paragraphFont2);
+        Paragraph p9 = new Paragraph("CEP: " + perfilEmpresa.getEndereco().getCep(), paragraphFont2);
+        Paragraph pDez = new Paragraph(perfilEmpresa.getNome(), paragraphFont2);
 
         Paragraph p10 = new Paragraph(10, "Criado em", paragraphFont3);
         Paragraph p11 = new Paragraph(10, Timestamp.getFormatedDateTime(Long.parseLong(venda.getData()), "dd/MM/yy"), paragraphFont4);
@@ -670,8 +697,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         }
 
 
-
-
         Chunk glue = new Chunk(new VerticalPositionMark());
         Paragraph p = new Paragraph("Total", paragraphFont);
         p.add(new Chunk(glue));
@@ -691,7 +716,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         document.add(new Paragraph("\n", paragraphRodaPe));
 
 
-
         Paragraph rodape2 = new Paragraph(perfilEmpresa.getNome(), paragraphRodaPe);
         rodape2.setAlignment(Element.ALIGN_CENTER);
         document.add(rodape2);
@@ -701,7 +725,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         document.add(rodape3);
 
         document.close();
-
 
 
     }
@@ -763,6 +786,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
 
         document.add(table);
     }
+
     private BigDecimal somatoriaDosProdutosIguais(String sPreco, String sQtd) {
         BigDecimal total = new BigDecimal("0");
 
@@ -775,3 +799,5 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         return total;
     }
 }
+
+//TODO: excluir produtos do banco de dados
