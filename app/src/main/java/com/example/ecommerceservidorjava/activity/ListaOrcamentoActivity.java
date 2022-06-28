@@ -241,7 +241,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
                         orcamentoList.remove(i);
                     }
                 }
-
+               listVazia();
                 orcamentoAdapter.notifyDataSetChanged();
                 if (!filtroList.isEmpty()) {
                     for (int i = 0; i < filtroList.size(); i++) {
@@ -249,7 +249,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
                             filtroList.remove(i);
                         }
                     }
-
+                  listVazia();
                     orcamentoAdapter.notifyDataSetChanged();
                 }
 
@@ -326,13 +326,8 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         });
 
         deleteBinding.btnSim.setOnClickListener(v -> {
-            orcamentoList.remove(orcamento);
 
-            if (orcamentoList.isEmpty()) {
-                binding.textVazio.setText("Sua lista esta vazia.");
-            } else {
-                binding.textVazio.setText("");
-            }
+
             dialog.dismiss();
             excluir(orcamento);
 
@@ -661,9 +656,16 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         inputMethodManager.hideSoftInputFromWindow(binding.searchView.getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
     }
+    private void listVazia() {
+        if (orcamentoList.size() == 0) {
+            binding.textVazio.setVisibility(View.VISIBLE);
+        } else {
+            binding.textVazio.setVisibility(View.GONE);
+        }
+    }
 
 
-    private void listaVazia() {
+    private void listaProdutosVazia() {
 
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")

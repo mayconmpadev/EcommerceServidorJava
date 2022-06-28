@@ -259,6 +259,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
                 Toast.makeText(getApplicationContext(), "onChildRemoved", Toast.LENGTH_SHORT).show();
                 Produto produto = snapshot.getValue(Produto.class);
+
                 if (produtoList.size() == 0){
                     binding.textVazio.setVisibility(View.VISIBLE);
                 }
@@ -266,18 +267,22 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                     if (produtoList.get(i).getId().equals(produto.getId())) {
                         produtoList.remove(i);
 
+
+
+
                     }
                 }
-
+                listVazia();
                 produtoAdapter.notifyDataSetChanged();
                 if (!filtroProdutoNomeList.isEmpty()) {
                     for (int i = 0; i < filtroProdutoNomeList.size(); i++) {
                         if (filtroProdutoNomeList.get(i).getId().equals(produto.getId())) {
                             filtroProdutoNomeList.remove(i);
 
+
                         }
                     }
-
+                    listVazia();
                     produtoAdapter.notifyDataSetChanged();
                 }
 
@@ -339,15 +344,10 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         });
 
         deleteBinding.btnSim.setOnClickListener(v -> {
-            produtoList.remove(produto);
 
-            if (produtoList.isEmpty()) {
-                binding.textVazio.setText("Sua lista esta vazia.");
-            } else {
-                binding.textVazio.setText("");
-            }
             dialog.dismiss();
             excluir(produto);
+
 
         });
 
@@ -360,11 +360,11 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
 
     public void excluir(Produto produto) {
+
         qtdImagem = 0;
         if (produto.getUrlImagem0() != null) qtdImagem++;
         if (produto.getUrlImagem1() != null) qtdImagem++;
         if (produto.getUrlImagem2() != null) qtdImagem++;
-        Toast.makeText(getApplicationContext(), String.valueOf(qtdImagem), Toast.LENGTH_SHORT).show();
         binding.progressBar2.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
@@ -464,10 +464,10 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     }
 
     private void listVazia() {
-        if (produtoList.isEmpty()) {
-            binding.textVazio.setText("Nenhum produto cadastrado.");
+        if (produtoList.size() == 0) {
+            binding.textVazio.setVisibility(View.VISIBLE);
         } else {
-            binding.textVazio.setText("");
+            binding.textVazio.setVisibility(View.GONE);
         }
     }
 
