@@ -60,7 +60,8 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
         setContentView(binding.getRoot());
         recuperarIntent();
         configSearchView();
-        recuperaOrcamento();
+       // recuperaOrcamento();
+        monitorarLista();
         binding.floatingActionButton.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CadastroDespesaActivity.class);
             startActivity(intent);
@@ -162,6 +163,7 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
                     monitorarLista();
 
                 } else {
+                    monitorarLista();
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
                 }
@@ -184,23 +186,22 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
         produtoRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Toast.makeText(getApplicationContext(), "onChildAdded", Toast.LENGTH_SHORT).show();
 
                 if (snapshot.exists()) {
                     Despesa despesa = snapshot.getValue(Despesa.class);
                     despesaList.add(despesa);
-                    binding.progressBar2.setVisibility(View.GONE);
 
                     configRvProdutos(despesaList);
-                } else {
-                    binding.progressBar2.setVisibility(View.GONE);
-                    binding.textVazio.setVisibility(View.VISIBLE);
                 }
+                binding.progressBar2.setVisibility(View.GONE);
+                listVazia();
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Despesa despesa = snapshot.getValue(Despesa.class);
-
+                Toast.makeText(getApplicationContext(), "onChildChanged", Toast.LENGTH_SHORT).show();
                 for (int i = 0; i < despesaList.size(); i++) {
                     if (despesaList.get(i).getId().equals(despesa.getId())) {
                         despesaList.set(i, despesa);
@@ -231,6 +232,7 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
                 }
 
                 despesaAdapter.notifyDataSetChanged();
+                listVazia();
                 if (!filtroList.isEmpty()) {
                     for (int i = 0; i < filtroList.size(); i++) {
                         if (filtroList.get(i).getId().equals(despesa.getId())) {
@@ -239,6 +241,7 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
                     }
 
                     despesaAdapter.notifyDataSetChanged();
+                    listVazia();
                 }
 
             }
@@ -314,13 +317,7 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
         });
 
         deleteBinding.btnSim.setOnClickListener(v -> {
-            despesaList.remove(despesa);
 
-            if (despesaList.isEmpty()) {
-                binding.textVazio.setText("Sua lista esta vazia.");
-            } else {
-                binding.textVazio.setText("");
-            }
             dialog.dismiss();
             excluir(despesa);
 
@@ -439,41 +436,12 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
                 InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
-
-    private void listaVazia() {
-
-        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
-        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
-                .child(caminho)
-                .child("produtos");
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    ArrayList<Despesa> arrayList = new ArrayList<Despesa>();
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        Despesa produto = ds.getValue(Despesa.class);
-
-                        arrayList.add(produto);
-
-                    }
-
-                    if (arrayList.size() > 0) {
-
-
-                    } else {
-
-                    }
-                } else {
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+    private void listVazia() {
+        if (despesaList.size() == 0) {
+            binding.textVazio.setVisibility(View.VISIBLE);
+        } else {
+            binding.textVazio.setVisibility(View.GONE);
+        }
     }
 
     @Override

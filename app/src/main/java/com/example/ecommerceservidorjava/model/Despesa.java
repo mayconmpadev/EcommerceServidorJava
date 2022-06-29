@@ -9,6 +9,7 @@ public class Despesa implements Serializable {
     private String valor;
     private int qtd_parcelas;
     private String valor_parcela;
+    private int parcela_paga;
     private String data;
     private String categoria;
     private String tipoPagamento;
@@ -57,6 +58,14 @@ public class Despesa implements Serializable {
 
     public void setValor_parcela(String valor_parcela) {
         this.valor_parcela = valor_parcela;
+    }
+
+    public int getParcela_paga() {
+        return parcela_paga;
+    }
+
+    public void setParcela_paga(int parcela_paga) {
+        this.parcela_paga = parcela_paga;
     }
 
     public String getData() {

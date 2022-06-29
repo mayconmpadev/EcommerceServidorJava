@@ -228,6 +228,7 @@ public class CadastroDespesaActivity extends AppCompatActivity {
             despesa.setValor_parcela(parcela);
             despesa.setData(String.valueOf(timestap));
             despesa.setCategoria(categoria);
+            despesa.setParcela_paga(0);
             salvarDados();
 
         }

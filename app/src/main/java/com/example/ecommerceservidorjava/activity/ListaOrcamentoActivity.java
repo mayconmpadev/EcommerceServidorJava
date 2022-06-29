@@ -174,6 +174,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
                     monitorarLista();
 
                 } else {
+                    monitorarLista();
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
                 }

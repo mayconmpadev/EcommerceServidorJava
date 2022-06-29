@@ -63,7 +63,8 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         binding = ActivityListaProdutoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         configSearchView();
-        recuperaProdutos();
+       // recuperaProdutos();
+        monitorarLista();
         recuperaCategotia();
         binding.floatingActionButton.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CadastroProdutoActivity.class);
