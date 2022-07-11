@@ -57,6 +57,7 @@ public class ListaProdutoAdapter extends RecyclerView.Adapter<ListaProdutoAdapte
         if (produto.getDesconto().equals("0")){
             holder.binding.txtDescontoProduto.setVisibility(View.INVISIBLE);
         }else{
+            holder.binding.txtDescontoProduto.setVisibility(View.VISIBLE);
             holder.binding.txtDescontoProduto.setText("-"+ produto.getDesconto()+ "%");
         }
         if (produto.getStatus().equals("rascunho")){

@@ -33,6 +33,7 @@ import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.example.ecommerceservidorjava.util.Timestamp;
 import com.example.ecommerceservidorjava.util.Util;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -388,7 +389,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
             venda.setSubTotal(subTotal);
 
             SPM spm = new SPM(getApplicationContext());
-            String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
             DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
                     .child("empresas")
                     .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
@@ -434,7 +434,14 @@ public class CheckoutVendaActivity extends AppCompatActivity {
                 qtdEstoque = Integer.parseInt(qtd);
                     qtdEstoque = qtdEstoque - venda.getItens().get(a).getQtd();
                     Toast.makeText(getApplicationContext(), String.valueOf(qtdEstoque), Toast.LENGTH_SHORT).show();
-                    produtoRef.setValue(String.valueOf(qtdEstoque));
+                    produtoRef.setValue(String.valueOf(qtdEstoque)).addOnSuccessListener(unused -> {
+                        if (a == venda.getItens().size() -1){
+                            finishAffinity();
+                            Intent intent = new Intent(getApplicationContext(), ListaVendaActivity.class);
+                            intent.putExtra("venda", venda);
+                            startActivity(intent);
+                        }
+                    });
                 }
 
                 @Override
@@ -442,7 +449,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
 
                 }
             });
-            //produtoRef.setValue(qtdEstoque - venda.getItens().get(i).getQtd());
+
 
         }
 
@@ -774,7 +781,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         (c1).setBackgroundColor(BaseColor.BLACK);
         table.addCell(c1);
         table.setHeaderRows(1);
-//l
+
         for (int i = 0; i < venda.getItens().size(); i++) {
 
             table.addCell(new PdfPCell(new Phrase(venda.getItens().get(i).getCodigo(), paragraphFont2)));
@@ -800,4 +807,3 @@ public class CheckoutVendaActivity extends AppCompatActivity {
     }
 }
 
-//TODO: excluir produtos do banco de dados

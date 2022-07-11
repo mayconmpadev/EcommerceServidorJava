@@ -11,6 +11,7 @@ public class Despesa implements Serializable {
     private String valor_parcela;
     private int parcela_paga;
     private String data;
+    private String data_vencimento;
     private String categoria;
     private String tipoPagamento;
     private String instituicao;
@@ -74,6 +75,14 @@ public class Despesa implements Serializable {
 
     public void setData(String data) {
         this.data = data;
+    }
+
+    public String getData_vencimento() {
+        return data_vencimento;
+    }
+
+    public void setData_vencimento(String data_vencimento) {
+        this.data_vencimento = data_vencimento;
     }
 
     public String getCategoria() {

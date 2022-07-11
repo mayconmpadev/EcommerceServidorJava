@@ -21,6 +21,13 @@
         <item>rascunho</item>
     </string-array>
 
+    <string-array name="status_ordem_servico">
+        <item>em analise</item>
+        <item>aguardando peça</item>
+        <item>reparado</item>
+        <item>sem reparo</item>
+    </string-array>
+
     <string-array name="unidades">
         <item>unidade (un)</item>
         <item>quilo (kg)</item>
@@ -37,9 +44,10 @@
     </string-array>
 
     <string-array name="status_despesa">
-        <item>Pago</item>
         <item>A vencer</item>
         <item>Vencida</item>
+        <item>Pago</item>
+
 
     </string-array>
 

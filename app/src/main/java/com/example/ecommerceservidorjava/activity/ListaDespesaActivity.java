@@ -371,10 +371,24 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
         DialogOpcaoDespesaBinding dialogBinding = DialogOpcaoDespesaBinding
                 .inflate(LayoutInflater.from(this));
 
+        if (despesa.getTipoPagamento().equals("Cartão de crédito") || despesa.getTipoPagamento().equals("Boleto")){
+            dialogBinding.llPagarPrestacao.setVisibility(View.VISIBLE);
+        }else {
+            dialogBinding.llPagarPrestacao.setVisibility(View.GONE);
+        }
+
 
         dialogBinding.llEditar.setOnClickListener(view -> {
 
             Intent intent = new Intent(getApplicationContext(), CadastroDespesaActivity.class);
+            intent.putExtra("despesaSelecionado", despesa);
+            startActivity(intent);
+            dialog.dismiss();
+        });
+
+        dialogBinding.llPagarPrestacao.setOnClickListener(view -> {
+
+            Intent intent = new Intent(getApplicationContext(), ParcelasActivity.class);
             intent.putExtra("despesaSelecionado", despesa);
             startActivity(intent);
             dialog.dismiss();

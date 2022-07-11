@@ -396,7 +396,6 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
             orcamento.setSubTotal(subTotal);
 
             SPM spm = new SPM(getApplicationContext());
-            String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
             DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
                     .child("empresas")
                     .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))

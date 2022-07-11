@@ -111,6 +111,28 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             }
         });
 
+        binding.editDesconto.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if (bLucro) {
+                    bVenda = false;
+                    porcentagem1(binding.editLucro.getText().toString());
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
 
         binding.editPrecoCusto.addTextChangedListener(new TextWatcher() {
             @Override
@@ -238,7 +260,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                 idsCategoriasSelecionadas.add(produtoSelecionado.getIdsCategorias().get(i));
 
             }
-            String[] arrayStatus = getResources().getStringArray(R.array.perfil_usuario);
+            String[] arrayStatus = getResources().getStringArray(R.array.status_produto);
             for (int i = 0; i < arrayStatus.length; i++) {
                 if (arrayStatus[i].equals(sStatus)) {
                     binding.spinnerStatus.setSelection(i);

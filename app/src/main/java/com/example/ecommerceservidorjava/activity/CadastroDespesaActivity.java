@@ -7,6 +7,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class CadastroDespesaActivity extends AppCompatActivity {
@@ -41,9 +43,10 @@ public class CadastroDespesaActivity extends AppCompatActivity {
     private Despesa despesaSelecionado;
     long timestap;
     private SPM spm = new SPM(this);
-    private boolean bVenda = true;
+    private boolean bPagas = true;
     private boolean bLucro = true;
     private boolean bValor = true;
+    ArrayList<String> teste = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +61,10 @@ public class CadastroDespesaActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (bLucro) {
-                    bVenda = false;
+
                     porcentagem1(binding.spinnerParcelas.getSelectedItem().toString().replace("x", ""));
+                    parcelasPagas(Integer.parseInt(binding.spinnerParcelas.getSelectedItem().toString().replace("x", "")), bPagas);
+
                 }
             }
 
@@ -80,7 +85,7 @@ public class CadastroDespesaActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (bValor) {
                     bLucro = false;
-                    bVenda = false;
+
 
                     porcentagem(binding.spinnerParcelas.getSelectedItem().toString().replace("x", ""));
                 }
@@ -107,7 +112,7 @@ public class CadastroDespesaActivity extends AppCompatActivity {
         BigDecimal c = a.divide(b, 2, RoundingMode.HALF_UP);
         binding.editparcela.setText(NumberFormat.getCurrencyInstance().format(c));
         bLucro = true;
-        bVenda = true;
+
     }
 
     private void porcentagem1(String string) {
@@ -117,7 +122,7 @@ public class CadastroDespesaActivity extends AppCompatActivity {
         a = a.divide(divisor);
         BigDecimal c = a.divide(b, 2, RoundingMode.HALF_UP);
         binding.editparcela.setText(NumberFormat.getCurrencyInstance().format(c));
-        bVenda = true;
+
     }
 
     private void recuperarIntent() {
@@ -125,7 +130,7 @@ public class CadastroDespesaActivity extends AppCompatActivity {
         if (despesaSelecionado != null) {
             binding.btnSalvar.setText("Salvar");
             editar = true;
-
+            bPagas = true;
             binding.editDescricao.setText(despesaSelecionado.getDescricao());
             binding.editInstituicao.setText(despesaSelecionado.getInstituicao());
             binding.editValor.setText(despesaSelecionado.getValor());
@@ -150,7 +155,7 @@ public class CadastroDespesaActivity extends AppCompatActivity {
 
 
             for (int i = 0; i < arrayStatus.length; i++) {
-                if (arrayStatus[i].equals(despesaSelecionado.getTipoPagamento())) {
+                if (arrayStatus[i].equals(despesaSelecionado.getStatus())) {
                     binding.spinnerStatus.setSelection(i);
                     break;
                 }
@@ -167,6 +172,25 @@ public class CadastroDespesaActivity extends AppCompatActivity {
 
 
         }
+
+    }
+
+    private void parcelasPagas(int qtd, boolean b) {
+        String[] pagas = new String[qtd];
+        for (int i = 0; i < qtd; i++) {
+            pagas[i] = String.valueOf(i + 1);
+        }
+
+
+        ArrayAdapter adaptador = new ArrayAdapter(this, android.R.layout.simple_spinner_item, pagas);
+
+        adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spinnerParcelasPagas.setAdapter(adaptador);
+        if (b) {
+          binding.spinnerParcelasPagas.setSelection(despesaSelecionado.getParcela_paga() -1);
+        }
+        bPagas = false;
+
     }
 
 
@@ -197,6 +221,7 @@ public class CadastroDespesaActivity extends AppCompatActivity {
         String valor = binding.editValor.getText().toString();
         String tipoPagamento = binding.spinnerFPagamento.getSelectedItem().toString();
         String qtdParcelas = binding.spinnerParcelas.getSelectedItem().toString().replace("x", "");
+        int proximaParcela = Integer.parseInt(binding.spinnerParcelasPagas.getSelectedItem().toString());
 
         String status = binding.spinnerStatus.getSelectedItem().toString();
         String parcela = binding.editparcela.getText().toString();
@@ -228,7 +253,7 @@ public class CadastroDespesaActivity extends AppCompatActivity {
             despesa.setValor_parcela(parcela);
             despesa.setData(String.valueOf(timestap));
             despesa.setCategoria(categoria);
-            despesa.setParcela_paga(0);
+            despesa.setParcela_paga(proximaParcela);
             salvarDados();
 
         }
@@ -345,8 +370,11 @@ public class CadastroDespesaActivity extends AppCompatActivity {
         if (position <= 2) {
             binding.spinnerParcelas.setSelection(0);
             binding.spinnerParcelas.setEnabled(false);
+            binding.spinnerParcelasPagas.setSelection(0);
+            binding.spinnerParcelasPagas.setEnabled(false);
         } else {
             binding.spinnerParcelas.setEnabled(true);
+            binding.spinnerParcelasPagas.setEnabled(true);
         }
 
     }

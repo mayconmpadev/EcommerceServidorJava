@@ -19,6 +19,7 @@ import com.example.ecommerceservidorjava.activity.ListaCategoriaActivity;
 import com.example.ecommerceservidorjava.activity.ListaClienteActivity;
 import com.example.ecommerceservidorjava.activity.ListaDespesaActivity;
 import com.example.ecommerceservidorjava.activity.ListaOrcamentoActivity;
+import com.example.ecommerceservidorjava.activity.ListaOrdemServicoActivity;
 import com.example.ecommerceservidorjava.activity.ListaUsuarioActivity;
 import com.example.ecommerceservidorjava.activity.ListaProdutoActivity;
 import com.example.ecommerceservidorjava.activity.ListaVendaActivity;
@@ -100,6 +101,12 @@ private FragmentGeralBinding binding;
 
         binding.despesa.setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), ListaDespesaActivity.class);
+            startActivity(intent);
+
+        });
+
+        binding.ordenServico.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), ListaOrdemServicoActivity.class);
             startActivity(intent);
 
         });

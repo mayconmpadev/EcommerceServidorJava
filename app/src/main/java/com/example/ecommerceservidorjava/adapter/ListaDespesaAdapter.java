@@ -53,7 +53,7 @@ public class ListaDespesaAdapter extends RecyclerView.Adapter<ListaDespesaAdapte
 
         holder.binding.textNome.setText(despesa.getDescricao().substring(0, 1).toUpperCase().concat(despesa.getDescricao().substring(1)));
         if (despesa.getTipoPagamento().equals("Cartão de crédito") || despesa.getTipoPagamento().equals("Boleto")){
-            holder.binding.textEmeil.setText(despesa.getParcela_paga()+ 1 + "/" + despesa.getQtd_parcelas() + "x " + despesa.getValor_parcela());
+            holder.binding.textEmeil.setText(despesa.getParcela_paga()+ "/" + despesa.getQtd_parcelas() + "x " + despesa.getValor_parcela());
         }else {
             holder.binding.textEmeil.setText(despesa.getQtd_parcelas() + "x " + despesa.getValor_parcela());
         }

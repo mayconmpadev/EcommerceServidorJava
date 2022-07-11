@@ -18,6 +18,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EcommerceServidorJava">
         <activity
+            android:name=".activity.ListaOrdemServicoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.CadastroOrdemServicoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.ParcelasActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.CheckoutVendaActivity"
             android:exported="false" />
         <activity

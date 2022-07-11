@@ -39,7 +39,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView">
 
 
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -121,7 +120,6 @@
                     </LinearLayout>
 
                 </LinearLayout>
-
 
 
                 <LinearLayout
@@ -209,25 +207,68 @@
 
                 </LinearLayout>
 
-
-
-
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Data" />
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="2"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="parcelas" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_edit_off"
+
+                            android:orientation="vertical">
+
+                            <androidx.appcompat.widget.AppCompatSpinner
+                                android:id="@+id/spinnerParcelasPagas"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                tools:entries="@array/qtd_parcelas"
+                                android:padding="16dp"
+                                android:theme="@style/Spinner" />
+                        </LinearLayout>
 
 
-                <TextView
-                    android:id="@+id/editData"
-                    style="@style/EditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableRight="@drawable/ic_data"
-                    android:drawableTint="@color/grey_80"
-                    android:hint="21/03/2022"
-                    android:inputType="textCapWords" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Data" />
+
+
+                        <TextView
+                            android:id="@+id/editData"
+                            style="@style/EditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawableRight="@drawable/ic_data"
+                            android:drawableTint="@color/grey_80"
+                            android:hint="21/03/2022"
+                            android:inputType="textCapWords" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -260,9 +301,6 @@
 
 
                 </LinearLayout>
-
-
-
 
 
                 <android.widget.Button
