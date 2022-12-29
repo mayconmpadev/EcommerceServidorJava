@@ -23,17 +23,18 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.example.ecommerceservidorjava.R;
-import com.example.ecommerceservidorjava.databinding.ActivityCadastroClienteBinding;
+import com.example.ecommerceservidorjava.databinding.ActivityCadastroCliente2Binding;
 import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.example.ecommerceservidorjava.util.Validacao;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.santalu.maskara.Mask;
@@ -46,8 +47,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class CadastroClienteActivity extends AppCompatActivity {
-    private ActivityCadastroClienteBinding binding;
+public class CadastroCliente2Activity extends AppCompatActivity {
+    private ActivityCadastroCliente2Binding binding;
     boolean senha = true;
     boolean confirmaSenha = true;
     private SPM spm = new SPM(this);
@@ -61,12 +62,13 @@ public class CadastroClienteActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityCadastroClienteBinding.inflate(getLayoutInflater());
+        binding = ActivityCadastroCliente2Binding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         recuperarIntent();
         configClicks();
 
     }
+
     //---------------------------------------------------- RECUPERAR OBJETO -----------------------------------------------------------------
     private void recuperarIntent() {
         clienteSelecionado = (Cliente) getIntent().getSerializableExtra("clienteSelecionado");
@@ -110,69 +112,65 @@ public class CadastroClienteActivity extends AppCompatActivity {
         String confirmaSenha = binding.edtConfirmaSenha.getText().toString().trim();
 
         if (!nome.isEmpty()) {
-            if (!email.isEmpty()) {
-                if (!telefone.isEmpty()) {
-                    if (telefone.length() == 15) {
-                        if (!senha.isEmpty()) {
+            if (!telefone.isEmpty()) {
+                if (telefone.length() == 15) {
+                    if (!senha.isEmpty()) {
+                        if (!confirmaSenha.isEmpty()) {
                             if (!confirmaSenha.isEmpty()) {
-                                if (!confirmaSenha.isEmpty()) {
-                                    if (verificarDocumento(documento)) {
+                                if (verificarDocumento(documento)) {
 
-                                        binding.progressBar.setVisibility(View.VISIBLE);
+                                    binding.progressBar.setVisibility(View.VISIBLE);
 
-                                        cliente = new Cliente();
-                                        cliente.setNome(nome);
-                                        cliente.setEmail(email);
-                                        cliente.setTelefone1(telefone);
-                                        cliente.setTelefone2(telefone2);
-                                        cliente.setSenha(senha);
-                                        cliente.setDocumento(binding.edtDocumento.getMasked());
-                                        cliente.setObservacao(binding.edtObservacao.getText().toString());
-                                        cliente.setPerfil(binding.spinner.getSelectedItem().toString());
-                                        cliente.setStatus(binding.checkbox.isChecked());
+                                    cliente = new Cliente();
+                                    cliente.setNome(nome);
+                                    cliente.setEmail(email);
+                                    cliente.setTelefone1(telefone);
+                                    cliente.setTelefone2(telefone2);
+                                    cliente.setSenha(senha);
+                                    cliente.setDocumento(binding.edtDocumento.getMasked());
+                                    cliente.setObservacao(binding.edtObservacao.getText().toString());
+                                    cliente.setPerfil(binding.spinner.getSelectedItem().toString());
+                                    cliente.setStatus(binding.checkbox.isChecked());
 
 
-                                        if (editar) {
-                                            cliente.setUrlImagem(clienteSelecionado.getUrlImagem());
-                                            cliente.setId(clienteSelecionado.getId());
-                                            if (resultUri != null) {
-                                                editarDadosImagem(cliente);
-                                            } else {
-                                                editarDados(cliente);
-                                            }
+                                    if (editar) {
+                                        cliente.setUrlImagem(clienteSelecionado.getUrlImagem());
+                                        cliente.setId(clienteSelecionado.getId());
+                                        if (resultUri != null) {
+                                            editarDadosImagem(cliente);
                                         } else {
-                                            criarConta(cliente);
+                                            editarDados(cliente);
                                         }
-
-
                                     } else {
-                                        binding.edtDocumento.requestFocus();
-                                        binding.edtDocumento.setError("documento invalido");
+                                        verificarTelefone(cliente);
                                     }
+
+
                                 } else {
-                                    binding.edtConfirmaSenha.requestFocus();
-                                    binding.edtConfirmaSenha.setError("Senha não confere.");
+                                    binding.edtDocumento.requestFocus();
+                                    binding.edtDocumento.setError("documento invalido");
                                 }
                             } else {
                                 binding.edtConfirmaSenha.requestFocus();
-                                binding.edtConfirmaSenha.setError("Confirme sua senha.");
+                                binding.edtConfirmaSenha.setError("Senha não confere.");
                             }
                         } else {
-                            binding.edtSenha.requestFocus();
-                            binding.edtSenha.setError("Informe uma senha.");
+                            binding.edtConfirmaSenha.requestFocus();
+                            binding.edtConfirmaSenha.setError("Confirme sua senha.");
                         }
                     } else {
-                        binding.edtTelefone1.requestFocus();
-                        binding.edtTelefone1.setError("Fomato do telefone inválido.");
+                        binding.edtSenha.requestFocus();
+                        binding.edtSenha.setError("Informe uma senha.");
                     }
                 } else {
                     binding.edtTelefone1.requestFocus();
-                    binding.edtTelefone1.setError("Informe um número de telefone.");
+                    binding.edtTelefone1.setError("Fomato do telefone inválido.");
                 }
             } else {
-                binding.edtEmail.requestFocus();
-                binding.edtEmail.setError("Informe seu email.");
+                binding.edtTelefone1.requestFocus();
+                binding.edtTelefone1.setError("Informe um número de telefone.");
             }
+
         } else {
             binding.edtNome.requestFocus();
             binding.edtNome.setError("Informe seu nome.");
@@ -181,37 +179,45 @@ public class CadastroClienteActivity extends AppCompatActivity {
 
 
     //---------------------------------------------------- CRIAR CONTA -----------------------------------------------------------------
-    private void criarConta(Cliente cliente) {
-        FirebaseHelper.getAuth().createUserWithEmailAndPassword(
-                cliente.getEmail(), cliente.getSenha()
-        ).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                String id = task.getResult().getUser().getUid();
-
-                cliente.setId(id);
-                verificarEmail(cliente);
+    private void verificarTelefone(Cliente cliente) {
 
 
-            } else {
-                Toast.makeText(this, FirebaseHelper.validaErros(task.getException().getMessage()), Toast.LENGTH_SHORT).show();
-                binding.progressBar.setVisibility(View.INVISIBLE);
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        Query produtoRef = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("clientes").child(Base64Custom.codificarBase64(cliente.getTelefone1()));
+
+        produtoRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Toast.makeText(CadastroCliente2Activity.this, "Esse telefone ja esta no cadastro de " + snapshot.getValue(Cliente.class).getNome(), Toast.LENGTH_SHORT).show();
+                    binding.progressBar.setVisibility(View.GONE);
+                } else {
+                    Toast.makeText(CadastroCliente2Activity.this, "nao existe", Toast.LENGTH_SHORT).show();
+                    salvarDadosImagem(cliente);
+                }
             }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
         });
     }
 
     //---------------------------------------------------- SALVAR IMAGEM E DADOS -----------------------------------------------------------------
     public void salvarDadosImagem(Cliente cliente) {
-        if (resultUri == null){
-         resultUri = Uri.parse("android.resource://com.example.ecommerceservidorjava/drawable/user_123");
+        if (resultUri == null) {
+            resultUri = Uri.parse("android.resource://com.example.ecommerceservidorjava/drawable/user_123");
         }
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("empresas")
-                .child(caminho).child("imagens").child("clientes").child(cliente.getId());
+                .child(caminho).child("imagens").child("clientes").child(Base64Custom.codificarBase64(cliente.getTelefone1()));
 
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
-                .child("clientes").child(cliente.getId());
+                .child("clientes").child(Base64Custom.codificarBase64(cliente.getTelefone1()));
 
         Glide.with(this).asBitmap().load(resultUri).apply(new RequestOptions().override(1024, 768))
                 .listener(new RequestListener<Bitmap>() {
@@ -244,7 +250,7 @@ public class CadastroClienteActivity extends AppCompatActivity {
                                     if (task1.isSuccessful()) {
                                         binding.imageFake.setVisibility(View.GONE);
                                         binding.imagemFoto.setImageURI(resultUri);
-                                      recuperarLogin();
+                                        recuperarLogin();
                                     } else {
                                         storageReferencere.delete(); //apaga a imagem previamente salva no banco
                                         Toast.makeText(getApplicationContext(), "Erro ao cadastrar", Toast.LENGTH_SHORT).show();
@@ -266,11 +272,11 @@ public class CadastroClienteActivity extends AppCompatActivity {
 
     }
 
-    private void recuperarLogin(){
+    private void recuperarLogin() {
 
         FirebaseHelper.getAuth().signOut();
-        String email = spm.getPreferencia("PREFERENCIAS","USUARIO","");
-        String senha = spm.getPreferencia("PREFERENCIAS","SENHA","");
+        String email = spm.getPreferencia("PREFERENCIAS", "USUARIO", "");
+        String senha = spm.getPreferencia("PREFERENCIAS", "SENHA", "");
 
         FirebaseHelper.getAuth().signInWithEmailAndPassword(
                 email, senha
@@ -280,14 +286,14 @@ public class CadastroClienteActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(), FirebaseHelper.getAuth().getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
-            }else {
-                Toast.makeText(getApplicationContext(),"erro: " + FirebaseHelper.getAuth().getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "erro: " + FirebaseHelper.getAuth().getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
             }
         });
 
 
-
     }
+
     //---------------------------------------------------- EDITAR DADOS -----------------------------------------------------------------
     private void editarDados(Cliente cliente) {
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
@@ -421,7 +427,7 @@ public class CadastroClienteActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-               tipodocumento();
+                tipodocumento();
             }
 
             @Override

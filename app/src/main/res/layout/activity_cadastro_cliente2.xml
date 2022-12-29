@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.CadastroClienteActivity">
+    tools:context=".activity.CadastroCliente2Activity">
 
     <include
         android:id="@+id/include"
@@ -73,97 +73,97 @@
                 android:hint="Nome"
                 android:inputType="textCapWords" />
 
-         <LinearLayout
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:id="@+id/linearCamposNaoEditados"
-             android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linearCamposNaoEditados"
+                android:orientation="vertical">
 
-             <TextView
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:layout_marginTop="16dp"
-                 android:text="Email" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Email" />
 
-             <EditText
-                 android:id="@+id/edtEmail"
-                 style="@style/EditText"
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
+                <EditText
+                    android:id="@+id/edtEmail"
+                    style="@style/EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
 
-                 android:hint="Email"
-                 android:inputType="textEmailAddress" />
+                    android:hint="Email"
+                    android:inputType="textEmailAddress" />
 
-             <TextView
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:layout_marginTop="16dp"
-                 android:text="Senha" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Senha" />
 
-             <LinearLayout
-                 android:id="@+id/linearSenha"
-                 style="@style/EditText"
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:gravity="center"
-                 android:orientation="horizontal">
+                <LinearLayout
+                    android:id="@+id/linearSenha"
+                    style="@style/EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                 <EditText
-                     android:id="@+id/edtSenha"
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content"
-                     android:layout_weight="1"
-                     android:background="@drawable/bg_edit_off"
+                    <EditText
+                        android:id="@+id/edtSenha"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_edit_off"
 
-                     android:text="123456"
-                     android:inputType="textPassword"
-                     android:textColor="@color/preto"
-                     android:textColorHint="@color/color_cinza_escuro" />
+                        android:text="123456"
+                        android:inputType="textPassword"
+                        android:textColor="@color/preto"
+                        android:textColorHint="@color/color_cinza_escuro" />
 
-                 <ImageView
-                     android:id="@+id/imgSenha"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:src="@drawable/ic_action_nao_visivel">
+                    <ImageView
+                        android:id="@+id/imgSenha"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_action_nao_visivel">
 
-                 </ImageView>
-             </LinearLayout>
+                    </ImageView>
+                </LinearLayout>
 
-             <TextView
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:layout_marginTop="16dp"
-                 android:text="Confirmar" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Confirmar" />
 
-             <LinearLayout
-                 android:id="@+id/linearConfirmaSenha"
-                 style="@style/EditText"
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:gravity="center"
-                 android:orientation="horizontal">
+                <LinearLayout
+                    android:id="@+id/linearConfirmaSenha"
+                    style="@style/EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                 <EditText
-                     android:id="@+id/edtConfirmaSenha"
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content"
-                     android:layout_weight="1"
-                     android:background="@drawable/bg_edit_off"
-                     android:text="123456"
-                     android:inputType="textPassword"
-                     android:textColor="@color/preto"
-                     android:textColorHint="@color/color_cinza_escuro" />
+                    <EditText
+                        android:id="@+id/edtConfirmaSenha"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_edit_off"
+                        android:text="123456"
+                        android:inputType="textPassword"
+                        android:textColor="@color/preto"
+                        android:textColorHint="@color/color_cinza_escuro" />
 
-                 <ImageView
-                     android:id="@+id/imgConfirmaSenha"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:src="@drawable/ic_action_nao_visivel">
+                    <ImageView
+                        android:id="@+id/imgConfirmaSenha"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_action_nao_visivel">
 
-                 </ImageView>
-             </LinearLayout>
+                    </ImageView>
+                </LinearLayout>
 
-         </LinearLayout>
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"

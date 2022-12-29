@@ -57,7 +57,7 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
         configSearchView();
         recuperaProdutos();
         binding.floatingActionButton.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), CadastroClienteActivity.class);
+            Intent intent = new Intent(getApplicationContext(), CadastroCliente2Activity.class);
             startActivity(intent);
         });
         binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -294,7 +294,7 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
         if (bCheckout) {
             Intent intent = new Intent();
             intent.putExtra("cliente", cliente);
-            setResult(RESULT_OK, intent);
+            setResult(2, intent);
             finish();
         } else {
             showDialog(cliente);

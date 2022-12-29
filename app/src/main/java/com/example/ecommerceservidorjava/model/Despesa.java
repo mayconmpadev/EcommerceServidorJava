@@ -1,6 +1,7 @@
 package com.example.ecommerceservidorjava.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Despesa implements Serializable {
 
@@ -16,6 +17,7 @@ public class Despesa implements Serializable {
     private String tipoPagamento;
     private String instituicao;
     private String status;
+    private List<Parcela> parcelas;
 
 
     public Despesa() {
@@ -115,5 +117,13 @@ public class Despesa implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public List<Parcela> getParcelas() {
+        return parcelas;
+    }
+
+    public void setParcelas(List<Parcela> parcelas) {
+        this.parcelas = parcelas;
     }
 }

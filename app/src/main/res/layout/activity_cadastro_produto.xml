@@ -195,6 +195,8 @@ android:layout_gravity="center"
                             android:id="@+id/editPrecoCusto"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:maxLength="13"
+
                             android:layout_marginTop="8dp"
                             android:background="@drawable/bg_edit_off"
                             android:padding="16dp" />
@@ -218,6 +220,7 @@ android:layout_gravity="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
+                            android:maxLength="4"
                             android:background="@drawable/bg_edit_off"
                             android:inputType="number"
                             android:padding="16dp" />
@@ -241,6 +244,7 @@ android:layout_gravity="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
+                            android:maxLength="16"
                             android:background="@drawable/bg_edit_off"
                             android:padding="16dp" />
 

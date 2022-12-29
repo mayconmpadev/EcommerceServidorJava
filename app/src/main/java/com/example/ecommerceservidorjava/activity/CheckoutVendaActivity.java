@@ -89,7 +89,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode() == RESULT_OK) {
+                if (result.getResultCode() == 2) {
                     clienteSelecionado = (Cliente) result.getData().getSerializableExtra("cliente");
 
                     binding.edtNome.setText(clienteSelecionado.getNome());
@@ -337,7 +337,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
 
         for (int i = 0; i < itemVendaList.size(); i++) {
             if (itemVendaList.get(i).getQtd() != 0) {
-                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco());
+                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco_venda());
                 preco = preco.divide(new BigDecimal("100"));
 
                 total = total.add(new BigDecimal(itemVendaList.get(i).getQtd()).multiply(preco));
@@ -501,11 +501,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         PdfWriter pdfWriter = PdfWriter.getInstance(document, output);
 
         document.open();
-        // ParagraphBorder border = new ParagraphBorder();
-        //pdfWriter.setPageEvent(border);
-        // Titulo
-
-        Font chapterFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLDITALIC);
         Font chapterFont2 = FontFactory.getFont(FontFactory.HELVETICA, 14, Font.BOLD);
         Font paragraphFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
         Font paragraphFont4 = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
@@ -520,8 +515,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         table.setWidthPercentage(100);
         table.setWidths(headerwidths);
         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
-        //String url;
-        // String url = "/data/data/" + this.getPackageName() + "/mpasistema/foto perfil/" + "perfil" + ".png";
         File baseDir = this.getExternalFilesDir(null);
         String url = baseDir.getAbsolutePath() + File.separator + "ecommercempa/foto perfil/" + "perfil" + ".png";
         Image img = Image.getInstance(url);
@@ -550,7 +543,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         Paragraph p11 = new Paragraph(10, Timestamp.getFormatedDateTime(Long.parseLong(venda.getData()), "dd/MM/yy"), paragraphFont4);
         Paragraph p12 = new Paragraph(25, "Valido por", paragraphFont3);
         Paragraph p13 = new Paragraph(10, "30 dias", paragraphFont4);
-        Paragraph p14 = new Paragraph(23, "Orçamento id:", paragraphFont3);
+        Paragraph p14 = new Paragraph(23, "Venda id:", paragraphFont3);
         Paragraph p15 = new Paragraph(10, venda.getData(), paragraphFont4);
 
         p5.setAlignment(Element.ALIGN_CENTER);
@@ -645,20 +638,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         document.add(new Paragraph("\n", paragraphRodaPe2));
         document.add(table3);
         document.add(new Paragraph("\n", paragraphRodaPe2));
-
-
-        // document.add(new Paragraph("Para:  " + venda.nomeCliente + "\n" + "Tel:  " + venda.telefone1Cliente, paragraphFont));
-
-        // document.add(new Paragraph("Tel:  " + venda.telefone2Cliente, paragraphFont));
-        // Chunk glue2 = new Chunk(new VerticalPositionMark());
-        // Chunk glue2 = new Chunk(data());
-        // glue2.setFont(paragraphFont);
-
-        // Paragraph p2 = new Paragraph("vendedor(a): " + venda.nomeVendedor + "\n", paragraphFont2);
-        // p2.add(new Chunk(glue2));
-        //border.setActive(true);
-        // document.add(p2);
-        // document.add(new Chunk(lineSeparator));
 
         PdfContentByte canvas = pdfWriter.getDirectContent();
         Rectangle rect = new Rectangle(36, 710, 445, 805);
@@ -787,8 +766,8 @@ public class CheckoutVendaActivity extends AppCompatActivity {
             table.addCell(new PdfPCell(new Phrase(venda.getItens().get(i).getCodigo(), paragraphFont2)));
             table.addCell(new PdfPCell(new Phrase(venda.getItens().get(i).getNome(), paragraphFont2)));
             table.addCell(new PdfPCell(new Phrase(String.valueOf(venda.getItens().get(i).getQtd()), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(venda.getItens().get(i).getPreco(), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(NumberFormat.getCurrencyInstance().format(somatoriaDosProdutosIguais(venda.getItens().get(i).getPreco(), String.valueOf(venda.getItens().get(i).getQtd()))), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(venda.getItens().get(i).getPreco_venda(), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(NumberFormat.getCurrencyInstance().format(somatoriaDosProdutosIguais(venda.getItens().get(i).getPreco_venda(), String.valueOf(venda.getItens().get(i).getQtd()))), paragraphFont2)));
         }
 
         document.add(table);

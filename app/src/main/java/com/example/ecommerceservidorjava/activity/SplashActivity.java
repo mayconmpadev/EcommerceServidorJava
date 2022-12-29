@@ -27,7 +27,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        new Handler(getMainLooper()).postDelayed(this::salvarCaminho, 3000);
+        new Handler(getMainLooper()).postDelayed(this::salvarCaminho, 1000);
         caminho = spm.getPreferencia("PREFERENCIAS", "CAMINHO", "");
 
     }

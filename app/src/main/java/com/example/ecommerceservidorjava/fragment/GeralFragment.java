@@ -1,44 +1,54 @@
 package com.example.ecommerceservidorjava.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
 
-import com.example.ecommerceservidorjava.activity.CadastroDespesaActivity;
+import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.activity.ConfiguracaoActivity;
 import com.example.ecommerceservidorjava.activity.ListaCategoriaActivity;
 import com.example.ecommerceservidorjava.activity.ListaClienteActivity;
 import com.example.ecommerceservidorjava.activity.ListaDespesaActivity;
 import com.example.ecommerceservidorjava.activity.ListaOrcamentoActivity;
 import com.example.ecommerceservidorjava.activity.ListaOrdemServicoActivity;
-import com.example.ecommerceservidorjava.activity.ListaUsuarioActivity;
 import com.example.ecommerceservidorjava.activity.ListaProdutoActivity;
+import com.example.ecommerceservidorjava.activity.ListaUsuarioActivity;
 import com.example.ecommerceservidorjava.activity.ListaVendaActivity;
 import com.example.ecommerceservidorjava.activity.PerfilEmpresaActivity;
 import com.example.ecommerceservidorjava.databinding.FragmentGeralBinding;
-import com.example.ecommerceservidorjava.model.Configuracao;
+import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
+import com.example.ecommerceservidorjava.util.SPM;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class GeralFragment extends Fragment {
-
-private FragmentGeralBinding binding;
-
+    private SPM spm;
+    private FragmentGeralBinding binding;
+    boolean a = false;
 //TODO: redesenhar essa tela
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-       configClicks();
+        spm = new SPM(getContext());
+        verificacaoCadastro();
+        configClicks();
 
     }
 
@@ -82,6 +92,7 @@ private FragmentGeralBinding binding;
         });
 
         binding.cardOrcamento.setOnClickListener(view -> {
+
             Intent intent = new Intent(getContext(), ListaOrcamentoActivity.class);
             startActivity(intent);
 
@@ -110,5 +121,44 @@ private FragmentGeralBinding binding;
             startActivity(intent);
 
         });
+    }
+
+    private void verificacaoCadastro() {
+
+        List<String> caminhos = new ArrayList<>();
+        caminhos.add("clientes");
+        caminhos.add("produtos");
+        caminhos.add("categorias");
+        caminhos.add("perfil_empresa");
+
+        for (int i = 0; i < caminhos.size(); i++) {
+
+
+            DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference()
+                    .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                    .child(caminhos.get(i));
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (!snapshot.exists()) {
+                        binding.cardOrcamento.setBackgroundTintList(getContext().getResources().getColorStateList(R.color.color_cinza));
+                        binding.cardPedidos.setBackgroundTintList(getContext().getResources().getColorStateList(R.color.color_cinza));
+                        binding.cardOrcamento.setEnabled(false);
+                        binding.cardPedidos.setEnabled(false);
+                        a = true;
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+            if (a){
+                break;
+            }
+        }
+
     }
 }

@@ -39,7 +39,6 @@ import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.model.Venda;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
-import com.example.ecommerceservidorjava.util.GerarPDFOrcamento;
 import com.example.ecommerceservidorjava.util.GerarPDFVendas;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.google.firebase.database.ChildEventListener;
@@ -71,7 +70,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         setContentView(binding.getRoot());
         recuperarIntent();
         configSearchView();
-        recuperaOrcamento();
+        recuperaVendas();
         binding.floatingActionButton.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CadastroVendaActivity.class);
             startActivity(intent);
@@ -160,7 +159,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         binding.recycler.setAdapter(vendaAdapter);
     }
 
-    private void recuperaOrcamento() {
+    private void recuperaVendas() {
         SPM spm = new SPM(getApplicationContext());
         DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
@@ -199,8 +198,8 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
                 if (snapshot.exists()) {
-                    Venda cliente = snapshot.getValue(Venda.class);
-                    vendaList.add(cliente);
+                    Venda venda = snapshot.getValue(Venda.class);
+                    vendaList.add(venda);
                     binding.progressBar2.setVisibility(View.GONE);
 
                     configRvProdutos(vendaList);
@@ -212,19 +211,19 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Venda orcamento = snapshot.getValue(Venda.class);
+                Venda venda = snapshot.getValue(Venda.class);
 
                 for (int i = 0; i < vendaList.size(); i++) {
-                    if (vendaList.get(i).getId().equals(orcamento.getId())) {
-                        vendaList.set(i, orcamento);
+                    if (vendaList.get(i).getId().equals(venda.getId())) {
+                        vendaList.set(i, venda);
                     }
                 }
 
                 vendaAdapter.notifyDataSetChanged();
                 if (!filtroList.isEmpty()) {
                     for (int i = 0; i < filtroList.size(); i++) {
-                        if (filtroList.get(i).getId().equals(orcamento.getId())) {
-                            filtroList.set(i, orcamento);
+                        if (filtroList.get(i).getId().equals(venda.getId())) {
+                            filtroList.set(i, venda);
                         }
                     }
 
@@ -396,8 +395,13 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         String telefone = "55" + venda.getIdCliente().getTelefone1().replaceAll("\\D", "");
         Intent sendIntent = new Intent("android.intent.action.SEND");
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
-        sendIntent.setPackage(
-                "com.whatsapp");
+        boolean tipowhts = whatsappIntelado("com.whatsapp");
+        if (tipowhts){
+            sendIntent.setPackage("com.whatsapp");
+        }else {
+            sendIntent.setPackage("com.whatsapp.w4b");
+        }
+
         sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sendIntent.setType("application/pdf");
         sendIntent.putExtra(Intent.EXTRA_TEXT, "sample text you want to send along with the image");
@@ -409,6 +413,17 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         binding.progressBar2.setVisibility(View.GONE);
 
 
+    }
+    private boolean whatsappIntelado(String s){
+        PackageManager pm = getPackageManager();
+        boolean app_intalado = false;
+        try{
+            pm.getPackageInfo(s, PackageManager.GET_ACTIVITIES);
+            app_intalado = true;
+        }catch (PackageManager.NameNotFoundException e){
+            app_intalado = false;
+        }
+        return app_intalado;
     }
 
     private void enviarPDFEmeail() {
@@ -584,7 +599,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         });
 
         dialogBinding.llRecibo.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), ReciboActivity.class);
+            Intent intent = new Intent(getApplicationContext(), ReciboVendaActivity.class);
             intent.putExtra("vendaSelecionado", venda);
             startActivity(intent);
             dialog.dismiss();

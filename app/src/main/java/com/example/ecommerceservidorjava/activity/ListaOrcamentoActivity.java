@@ -126,7 +126,12 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     private void recuperarIntent() {
         orcamento = (Orcamento) getIntent().getSerializableExtra("orcamento");
         if (orcamento != null) {
-            enviarPDFWhatsapp();
+            if(isAppInstalled("com.whatsapp")) {
+                enviarPDFWhatsapp();
+            } else {
+                Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 
@@ -197,7 +202,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         produtoRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                Toast.makeText(ListaOrcamentoActivity.this, "onChildAdded", Toast.LENGTH_SHORT).show();
                 if (snapshot.exists()) {
                     Orcamento cliente = snapshot.getValue(Orcamento.class);
                     orcamentoList.add(cliente);
@@ -212,6 +217,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Toast.makeText(ListaOrcamentoActivity.this, "onChildChanged", Toast.LENGTH_SHORT).show();
                 Orcamento orcamento = snapshot.getValue(Orcamento.class);
 
                 for (int i = 0; i < orcamentoList.size(); i++) {
@@ -406,6 +412,18 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
     }
 
+
+
+    private boolean isAppInstalled(String packageName) {
+        try {
+            getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
+        }
+        catch (PackageManager.NameNotFoundException ignored) {
+            return false;
+        }
+    }
+
     private void enviarPDFEmeail() {
         try {
             File pdfFolder = new File(getExternalFilesDir(null)
@@ -579,7 +597,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         });
 
         dialogBinding.llRecibo.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), ReciboActivity.class);
+            Intent intent = new Intent(getApplicationContext(), ReciboOrcamentoActivity.class);
             intent.putExtra("orcamentoSelecionado", orcamento);
             startActivity(intent);
             dialog.dismiss();
@@ -629,7 +647,14 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
 
         dialogBinding.llWhatsapp.setOnClickListener(view -> {
-            enviarPDFWhatsapp();
+            if (orcamento != null) {
+                if(isAppInstalled("com.whatsapp")) {
+                    enviarPDFWhatsapp();
+                } else {
+                    Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();
+                }
+
+            }
             dialog.dismiss();
         });
 

@@ -12,7 +12,8 @@ import android.view.View;
 
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ActivityListaOrcamentoBinding;
-import com.example.ecommerceservidorjava.databinding.ActivityReciboBinding;
+
+import com.example.ecommerceservidorjava.databinding.ActivityReciboOrcamentoBinding;
 import com.example.ecommerceservidorjava.model.Configuracao;
 import com.example.ecommerceservidorjava.model.Orcamento;
 import com.example.ecommerceservidorjava.model.PerfilEmpresa;
@@ -27,8 +28,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 
-public class ReciboActivity extends AppCompatActivity {
-    private ActivityReciboBinding binding;
+public class ReciboOrcamentoActivity extends AppCompatActivity {
+    private ActivityReciboOrcamentoBinding binding;
     private Orcamento orcamentoselecionado;
     private SPM spm = new SPM(this);
     private PerfilEmpresa perfilEmpresa ;
@@ -38,7 +39,7 @@ public class ReciboActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityReciboBinding.inflate(getLayoutInflater());
+        binding = ActivityReciboOrcamentoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         recuperarPerfil();
         binding.imaWhatsapp.setOnClickListener(view -> enviarPDFWhatsapp());
@@ -100,7 +101,7 @@ public class ReciboActivity extends AppCompatActivity {
         for (int i = 0; i < orcamentoselecionado.getItens().size(); i++) {
             produtos = produtos + orcamentoselecionado.getItens().get(i).getQtd() + " x " +
                     orcamentoselecionado.getItens().get(i).getNome()+ "    " +
-                    orcamentoselecionado.getItens().get(i).getPreco() + "\n";
+                    orcamentoselecionado.getItens().get(i).getPreco_venda() + "\n";
 
         }
         String divisao = "--------------------------------------------------------------------";

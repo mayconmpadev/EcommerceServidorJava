@@ -66,6 +66,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
        // recuperaProdutos();
         monitorarLista();
         recuperaCategotia();
+
         binding.floatingActionButton.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CadastroProdutoActivity.class);
             startActivity(intent);
@@ -81,7 +82,6 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                 }
             }
         });
-
     }
 
     private void configSearchView() {
@@ -96,6 +96,13 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                if (newText.equals("")){
+                    binding.textVazio.setVisibility(View.GONE);
+                    pesquisa = "";
+                    ocultaTeclado();
+                    configRvProdutos(filtroProdutoCategoriaList);
+                }
+
                 return false;
             }
         });
@@ -107,14 +114,15 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
             pesquisa = "";
             edtSerachView.clearFocus();
             ocultaTeclado();
-
             configRvProdutos(filtroProdutoCategoriaList);
         });
-
     }
 
 
     private void filtraProdutoNome(String pesquisa) {
+        if (filtroProdutoCategoriaList.isEmpty()){
+            filtraProdutoCategoria();
+        }
 
         filtroProdutoNomeList.clear();
         for (Produto produto : filtroProdutoCategoriaList) {
@@ -166,10 +174,12 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
                         if (categoria.isTodas() && categoriaSelecionada == null) {
                             categoriaSelecionada = categoria;
+
                         }
                     }
                     Collections.reverse(categoriaList);
                     configRvCategoria();
+                    //filtraProdutoCategoria();
                 }
             }
 
@@ -209,7 +219,9 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     }
 
     private void monitorarLista() {
+
         produtoList.clear();
+       
         SPM spm = new SPM(getApplicationContext());
         //String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
         Query produtoRef = FirebaseHelper.getDatabaseReference()
@@ -218,23 +230,25 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         produtoRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Toast.makeText(getApplicationContext(), "onChildAdded", Toast.LENGTH_SHORT).show();
                 if (snapshot.exists()) {
                     Produto produto = snapshot.getValue(Produto.class);
                     produtoList.add(produto);
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.GONE);
 
+
                     configRvProdutos(produtoList);
                 } else {
+
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
+
                 }
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Toast.makeText(getApplicationContext(), "onChildChanged", Toast.LENGTH_SHORT).show();
+
                 Produto produto = snapshot.getValue(Produto.class);
 
                 for (int i = 0; i < produtoList.size(); i++) {
@@ -250,15 +264,21 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                             filtroProdutoNomeList.set(i, produto);
                         }
                     }
-
                     produtoAdapter.notifyDataSetChanged();
                 }
 
+                if (!filtroProdutoCategoriaList.isEmpty()) {
+                    for (int i = 0; i < filtroProdutoCategoriaList.size(); i++) {
+                        if (filtroProdutoCategoriaList.get(i).getId().equals(produto.getId())) {
+                            filtroProdutoCategoriaList.set(i, produto);
+                        }
+                    }
+                    produtoAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                Toast.makeText(getApplicationContext(), "onChildRemoved", Toast.LENGTH_SHORT).show();
                 Produto produto = snapshot.getValue(Produto.class);
 
                 if (produtoList.size() == 0){
@@ -279,24 +299,31 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
                     for (int i = 0; i < filtroProdutoNomeList.size(); i++) {
                         if (filtroProdutoNomeList.get(i).getId().equals(produto.getId())) {
                             filtroProdutoNomeList.remove(i);
-
-
                         }
                     }
                     listVazia();
                     produtoAdapter.notifyDataSetChanged();
                 }
 
+                if (!filtroProdutoCategoriaList.isEmpty()) {
+                    for (int i = 0; i < filtroProdutoCategoriaList.size(); i++) {
+                        if (filtroProdutoCategoriaList.get(i).getId().equals(produto.getId())) {
+                            filtroProdutoCategoriaList.remove(i);
+                        }
+                    }
+                    listVazia();
+                    produtoAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Toast.makeText(getApplicationContext(), "onChildMoved", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getApplicationContext(), "onCancelled", Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -441,7 +468,6 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
             dialog.dismiss();
             showDialogDelete(produto);
             listVazia();
-
         });
 
         dialogBinding.txtNomeProduto.setText(produto.getNome());
@@ -461,17 +487,17 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         dialog = builder.create();
         dialog.show();
         dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
-
     }
 
     private void listVazia() {
         if (produtoList.size() == 0) {
             binding.textVazio.setVisibility(View.VISIBLE);
+            binding.progressBar2.setVisibility(View.GONE);
         } else {
             binding.textVazio.setVisibility(View.GONE);
+            binding.progressBar2.setVisibility(View.GONE);
         }
     }
-
 
     // Oculta o teclado do dispotivo
     private void ocultaTeclado() {
@@ -479,7 +505,6 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         inputMethodManager.hideSoftInputFromWindow(binding.searchView.getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
     }
-
 
     public void onClick(Produto produto) {
         showDialog(produto);
@@ -491,7 +516,6 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     public void onLongClick(Produto produto) {
 
     }
-
 
     @Override
     public void onClick(Categoria categoria) {

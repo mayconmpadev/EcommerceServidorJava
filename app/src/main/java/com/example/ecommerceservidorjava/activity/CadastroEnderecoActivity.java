@@ -73,7 +73,7 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
 
     public void validaDadosSalvar() {
         String nome = binding.edtNome.getText().toString().trim();
-        String cep = binding.edtCep.getUnMasked();
+        String cep = binding.edtCep.getText().toString();
         String uf = binding.edtUf.getText().toString();
         String numero = binding.edtNumero.getText().toString();
         String bairro = binding.edtBairro.getText().toString().trim();
@@ -83,7 +83,7 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
 
 
         if (!nome.isEmpty()) {
-            if (!cep.isEmpty() & cep.length() == 8) {
+            if (!cep.isEmpty() & cep.length() == 9) {
                 if (!uf.isEmpty() & uf.length() == 2) {
                     if (!bairro.isEmpty()) {
                         if (!municipio.isEmpty()) {
@@ -91,7 +91,7 @@ public class CadastroEnderecoActivity extends AppCompatActivity {
 
                                 binding.progressBar.setVisibility(View.VISIBLE);
                                 endereco.setNomeEndereco(nome);
-                                endereco.setCep(binding.edtCep.getMasked());
+                                endereco.setCep(binding.edtCep.getText().toString());
                                 endereco.setUf(uf);
                                 endereco.setNumero(numero);
                                 endereco.setBairro(bairro);

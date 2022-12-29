@@ -54,9 +54,9 @@ public class CarrinhoOrcamentoAdapter extends RecyclerView.Adapter<CarrinhoOrcam
         holder.binding.textNome.setText(itemVenda.getNome().substring(0, 1).toUpperCase().concat(itemVenda.getNome().substring(1)));
         holder.binding.textDescricao.setText(itemVenda.getDescricao());
 
-        holder.binding.textPreco.setText(itemVenda.getPreco());
+        holder.binding.textPreco.setText(itemVenda.getPreco_venda());
         holder.binding.textQuantidade.setText(String.valueOf(itemVenda.getQtd()));
-        BigDecimal preco = Util.convertMoneEmBigDecimal(itemVenda.getPreco());
+        BigDecimal preco = Util.convertMoneEmBigDecimal(itemVenda.getPreco_venda());
         BigDecimal total = new BigDecimal("0");
         preco = preco.divide(new BigDecimal("100"));
         total = total.add(new BigDecimal(itemVenda.getQtd()).multiply(preco));

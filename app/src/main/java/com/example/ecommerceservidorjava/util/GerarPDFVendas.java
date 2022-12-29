@@ -122,7 +122,7 @@ public class GerarPDFVendas extends AppCompatActivity {
 
         for (int i = 0; i < venda.getItens().size(); i++) {
             if (venda.getItens().get(i).getQtd() != 0) {
-                BigDecimal preco = Util.convertMoneEmBigDecimal(venda.getItens().get(i).getPreco());
+                BigDecimal preco = Util.convertMoneEmBigDecimal(venda.getItens().get(i).getPreco_venda());
                 preco = preco.divide(new BigDecimal("100"));
 
                 total = total.add(new BigDecimal(venda.getItens().get(i).getQtd()).multiply(preco));
@@ -304,7 +304,7 @@ public class GerarPDFVendas extends AppCompatActivity {
         Paragraph p11 = new Paragraph(10, Timestamp.getFormatedDateTime(Long.parseLong(venda.getData()), "dd/MM/yy"), paragraphFont4);
         Paragraph p12 = new Paragraph(25, "Valido por", paragraphFont3);
         Paragraph p13 = new Paragraph(10, "30 dias", paragraphFont4);
-        Paragraph p14 = new Paragraph(23, "Orçamento id:", paragraphFont3);
+        Paragraph p14 = new Paragraph(23, "Venda id:", paragraphFont3);
         Paragraph p15 = new Paragraph(10, venda.getData(), paragraphFont4);
 
         p5.setAlignment(Element.ALIGN_CENTER);
@@ -542,8 +542,8 @@ public class GerarPDFVendas extends AppCompatActivity {
             table.addCell(new PdfPCell(new Phrase(venda.getItens().get(i).getCodigo(), paragraphFont2)));
             table.addCell(new PdfPCell(new Phrase(venda.getItens().get(i).getNome(), paragraphFont2)));
             table.addCell(new PdfPCell(new Phrase(String.valueOf(venda.getItens().get(i).getQtd()), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(venda.getItens().get(i).getPreco(), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(NumberFormat.getCurrencyInstance().format(somatoriaDosProdutosIguais(venda.getItens().get(i).getPreco(), String.valueOf(venda.getItens().get(i).getQtd()))), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(venda.getItens().get(i).getPreco_venda(), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(NumberFormat.getCurrencyInstance().format(somatoriaDosProdutosIguais(venda.getItens().get(i).getPreco_venda(), String.valueOf(venda.getItens().get(i).getQtd()))), paragraphFont2)));
         }
 
         document.add(table);

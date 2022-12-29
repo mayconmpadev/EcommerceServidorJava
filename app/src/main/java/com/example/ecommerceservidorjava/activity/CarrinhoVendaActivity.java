@@ -2,11 +2,17 @@ package com.example.ecommerceservidorjava.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.adapter.CarrinhoVendaAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityCarrinhoVendaBinding;
+import com.example.ecommerceservidorjava.databinding.DialogPadraoOkCancelarValorBinding;
 import com.example.ecommerceservidorjava.model.ItemVenda;
 import com.example.ecommerceservidorjava.util.Util;
 
@@ -20,6 +26,7 @@ public class CarrinhoVendaActivity extends AppCompatActivity implements Carrinho
     private CarrinhoVendaAdapter carrinhoVendaAdapter;
     private ArrayList<ItemVenda> itemVendaList;
     private int quantidade = 0;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +34,7 @@ public class CarrinhoVendaActivity extends AppCompatActivity implements Carrinho
         binding = ActivityCarrinhoVendaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         recuperarIntent();
-        configRvProdutos(itemVendaList);
+
         binding.include.textTitulo.setText("Carrinho");
         binding.includeSheet.btnContinue.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CheckoutVendaActivity.class);
@@ -45,7 +52,7 @@ public class CarrinhoVendaActivity extends AppCompatActivity implements Carrinho
 
         }
         binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
-
+        configRvProdutos(itemVendaList);
     }
 
 
@@ -81,13 +88,23 @@ public class CarrinhoVendaActivity extends AppCompatActivity implements Carrinho
 
     }
 
+    private void preco(int position, ItemVenda itemVenda, String preco) {
+
+        itemVenda.setPreco_venda(preco);
+        binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
+        carrinhoVendaAdapter.notifyItemChanged(position);
+        binding.lytCartSheet.setVisibility(View.VISIBLE);
+        binding.includeSheet.tvTotalCart.setText(total());
+
+    }
+
 
     private String total() {
         BigDecimal total = new BigDecimal("0");
 
         for (int i = 0; i < itemVendaList.size(); i++) {
             if (itemVendaList.get(i).getQtd() != 0) {
-                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco());
+                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco_venda());
                 preco = preco.divide(new BigDecimal("100"));
                 total = total.add(new BigDecimal(itemVendaList.get(i).getQtd()).multiply(preco));
             }
@@ -100,13 +117,37 @@ public class CarrinhoVendaActivity extends AppCompatActivity implements Carrinho
         quantidade = quantidade - itemVenda.getQtd();
         binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
         itemVendaList.remove(itemVenda);
-        if (itemVendaList.size() == 0){
+        if (itemVendaList.size() == 0) {
             binding.lytCartSheet.setVisibility(View.GONE);
         }
         binding.includeSheet.tvTotalCart.setText(total());
         carrinhoVendaAdapter.notifyDataSetChanged();
 
 
+    }
+
+    private void showDialogPreco(ItemVenda itemVenda, int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                CarrinhoVendaActivity.this, R.style.CustomAlertDialog2);
+
+        DialogPadraoOkCancelarValorBinding precoBinding = DialogPadraoOkCancelarValorBinding
+                .inflate(LayoutInflater.from(CarrinhoVendaActivity.this));
+        precoBinding.editPreco.setText(itemVenda.getPreco_venda());
+        precoBinding.dialogPadraoBtnDireita.setOnClickListener(v -> {
+            preco(position, itemVenda, precoBinding.editPreco.getText().toString());
+            dialog.dismiss();
+        });
+
+        precoBinding.dialogPadraoBtnEsquerda.setOnClickListener(v -> {
+            dialog.dismiss();
+
+        });
+
+        builder.setView(precoBinding.getRoot());
+
+        dialog = builder.create();
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
     }
 
 
@@ -122,5 +163,23 @@ public class CarrinhoVendaActivity extends AppCompatActivity implements Carrinho
         if (operacao.equals("excluir")) {
             excluir(position, itemVenda);
         }
+
+        if (operacao.equals("preco")) {
+            showDialogPreco(itemVenda, position);
+        }
+    }
+
+    private void selecionarItems() {
+
+
+        Intent intent = new Intent(getApplicationContext(), CadastroVendaActivity.class);
+        intent.putExtra("itemVenda2", itemVendaList);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+      selecionarItems();
     }
 }

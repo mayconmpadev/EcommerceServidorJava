@@ -8,12 +8,11 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/ll_editar"
+            android:id="@+id/ll_analise"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
@@ -28,8 +27,8 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:scaleType="center"
-                    android:src="@drawable/ic_edit"
-                    app:tint="@color/color_verde">
+                    android:src="@drawable/ic_analise"
+                    app:tint="@color/ouro">
 
                 </ImageView>
 
@@ -38,7 +37,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:text="Editar"
+                    android:text="Em analise"
                     android:textSize="18sp">
 
                 </TextView>
@@ -55,7 +54,6 @@
 
     </LinearLayout>
 
-
     <LinearLayout
         android:layout_width="match_parent"
 
@@ -63,7 +61,7 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/ll_pagar_prestacao"
+            android:id="@+id/ll_orcada"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
@@ -78,18 +76,57 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:scaleType="center"
-                    android:src="@drawable/ic_card_boleto"
+                    android:src="@drawable/ic_aprovado"
                     app:tint="@color/color_verde">
 
                 </ImageView>
 
                 <TextView
-                    android:id="@+id/textPagar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:text="Pagar "
+                    android:text="Orçada, esperando aprovação"
+                    android:textSize="18sp">
+
+                </TextView>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/color_cinza">
+
+            </View>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_aprovado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_aprovado"
+                    app:tint="@color/color_verde">
+
+                </ImageView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:text="Aprovada pelo Cliente"
                     android:textSize="18sp">
 
                 </TextView>
@@ -104,9 +141,8 @@
         </LinearLayout>
 
 
+
     </LinearLayout>
-
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -114,7 +150,7 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/ll_status"
+            android:id="@+id/ll_recusado"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
@@ -129,56 +165,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:scaleType="center"
-                    android:src="@drawable/ic_estatus"
-                    app:tint="@color/color_verde">
-
-                </ImageView>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:text="Alterar Status  "
-                    android:textSize="18sp">
-
-                </TextView>
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/color_cinza">
-
-            </View>
-        </LinearLayout>
-
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/ll_deletar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:scaleType="center"
-                    android:src="@drawable/ic_delete"
+                    android:src="@drawable/ic_recusado"
                     app:tint="@color/red">
 
                 </ImageView>
@@ -188,7 +175,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:text="Excluir"
+                    android:text="Orçamento não aprovado"
                     android:textSize="18sp">
 
                 </TextView>
@@ -203,7 +190,48 @@
         </LinearLayout>
 
 
-
-
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_sem_reparo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:scaleType="center"
+                android:src="@drawable/ic_recusado"
+                app:tint="@color/red">
+
+            </ImageView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="Sem reparo"
+                android:textSize="18sp">
+
+            </TextView>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/color_cinza">
+
+        </View>
+    </LinearLayout>
+
+
+
 </LinearLayout>

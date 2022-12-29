@@ -25,7 +25,6 @@ import com.bumptech.glide.request.target.Target;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.adapter.CategoriaDialogAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityCadastroProdutoBinding;
-import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogFormProdutoCategoriaBinding;
 import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.model.Configuracao;
@@ -87,7 +86,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         recuperarConfiguracao();
         clicks();
         recuperaCategotia();
-        gerarCodigo();
+        //gerarCodigo();
 
         binding.editLucro.addTextChangedListener(new TextWatcher() {
             @Override
@@ -205,14 +204,17 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
     private void porcentagem2(String string) {
         BigDecimal divisor = new BigDecimal("100");
-        BigDecimal a = Util.convertMoneEmBigDecimal(binding.editPrecoCusto.getText().toString());
-        BigDecimal b = Util.convertMoneEmBigDecimal(string).add(new BigDecimal("0"));
-        BigDecimal d = b.subtract(a);
-        BigDecimal c = d;
-        c = c.divide(a, 2, RoundingMode.HALF_UP);
-        c = c.multiply(new BigDecimal("100"));
-        binding.editLucro.setText(String.valueOf(c.intValue()));
-        bLucro = true;
+        String custo = binding.editPrecoCusto.getText().toString();
+        if (!custo.replaceAll("[^0-9]", "").equals("000")) {
+            BigDecimal a = Util.convertMoneEmBigDecimal(custo);
+            BigDecimal b = Util.convertMoneEmBigDecimal(string).add(new BigDecimal("0"));
+            BigDecimal d = b.subtract(a);
+            BigDecimal c = d;
+            c = c.divide(a, 2, RoundingMode.HALF_UP);
+            c = c.multiply(new BigDecimal("100"));
+            binding.editLucro.setText(String.valueOf(c.intValue()));
+            bLucro = true;
+        }
     }
 
     private void recuperarIntent() {
@@ -233,20 +235,20 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
             recuperarCategotia(produtoSelecionado.getIdsCategorias());
 
-            if (produtoSelecionado.getUrlImagem0() != null){
+            if (produtoSelecionado.getUrlImagem0() != null) {
                 binding.imageFake0.setVisibility(View.GONE);
                 Glide.with(this).load(produtoSelecionado.getUrlImagem0()).into(binding.imagemProduto0);
                 caminhoImagens.add(produtoSelecionado.getUrlImagem0());
                 binding.cardViewImage1.setVisibility(View.VISIBLE);
             }
 
-            if (produtoSelecionado.getUrlImagem1() != null){
+            if (produtoSelecionado.getUrlImagem1() != null) {
                 binding.imageFake1.setVisibility(View.GONE);
                 Glide.with(this).load(produtoSelecionado.getUrlImagem1()).into(binding.imagemProduto1);
                 caminhoImagens.add(produtoSelecionado.getUrlImagem1());
                 binding.cardViewImage2.setVisibility(View.VISIBLE);
             }
-            if (produtoSelecionado.getUrlImagem2() != null){
+            if (produtoSelecionado.getUrlImagem2() != null) {
                 binding.imageFake2.setVisibility(View.GONE);
                 Glide.with(this).load(produtoSelecionado.getUrlImagem2()).into(binding.imagemProduto2);
                 caminhoImagens.add(produtoSelecionado.getUrlImagem2());
@@ -280,7 +282,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
             DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
             produto = new Produto();
             produto.setId(databaseReference.push().getKey());
-            if (configuracao!= null){
+            if (configuracao != null) {
                 binding.editLucro.setText(String.valueOf(configuracao.getLucro()));
             }
 
@@ -394,7 +396,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
         if (imagemUri_0 == null & !editar) {
             Toast.makeText(getApplicationContext(), "Selecione todas as imagens", Toast.LENGTH_SHORT).show();
-        }  else if (nome.isEmpty()) {
+        } else if (nome.isEmpty()) {
             binding.editNome.setError("preencha o campo");
             binding.editNome.requestFocus();
         } else if (descricao.isEmpty()) {
@@ -406,10 +408,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
         } else if (precoVenda.replaceAll("[^0-9]", "").equals("000")) {
             binding.editPrecoVenda.setError("preencha o campo");
             binding.editPrecoVenda.requestFocus();
-        } else if (codigo.isEmpty()) {
-            binding.editCodigo.setError("preencha o campo");
-            binding.editCodigo.requestFocus();
-        } else if (quantidadeEstoque.isEmpty()) {
+        }  else if (quantidadeEstoque.isEmpty()) {
             binding.editQuantidadeEstoque.setError("preencha o campo");
             binding.editQuantidadeEstoque.requestFocus();
         } else if (quantidadeMinima.isEmpty()) {
@@ -451,8 +450,8 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                 caminhoImagens.set(2, "");
                 salvarDadosImagem(produto, imagemUri_2, 2);
             }
-            if (imagemUri_0 == null ) {
-                salvarDados();
+            if (imagemUri_0 == null) {
+                gerarCodigo();
             }
         }
     }
@@ -495,7 +494,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                                 caminhoImagens.set(index, uri.toString());
 
                                 if (!caminhoImagens.contains("")) {
-                                    salvarDados();
+                                    gerarCodigo();
                                 }
 
 
@@ -514,11 +513,11 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
     public void salvarDados() {
 
-            produto.setUrlImagem0(caminhoImagens.get(0));
-            if (caminhoImagens.size() > 1 ){
-                produto.setUrlImagem1(caminhoImagens.get(1));
-            }
-        if (caminhoImagens.size() > 2 ){
+        produto.setUrlImagem0(caminhoImagens.get(0));
+        if (caminhoImagens.size() > 1) {
+            produto.setUrlImagem1(caminhoImagens.get(1));
+        }
+        if (caminhoImagens.size() > 2) {
             produto.setUrlImagem2(caminhoImagens.get(2));
         }
 
@@ -532,7 +531,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
             if (task1.isSuccessful()) {
                 finish();
-            }else {
+            } else {
                 Toast.makeText(getApplicationContext(), "erro de foto", Toast.LENGTH_SHORT).show();
             }
 
@@ -572,7 +571,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
     public void gerarCodigo() {
         Query produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""))).child("produtos").orderByChild("codigo");
-        produtoRef.addValueEventListener(new ValueEventListener() {
+        produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -585,11 +584,15 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
 
                     if (!editar) {
                         binding.editCodigo.setText(String.format("%05d", Integer.parseInt(Collections.max(codigoList)) + 1));
+                        produto.setCodigo(binding.editCodigo.getText().toString());
+                        salvarDados();
+                    }else {
+                        salvarDados();
                     }
 
 
                 } else {
-                    binding.editCodigo.setText(String.format("%05d", 1));
+                   // binding.editCodigo.setText(String.format("%05d", 1));
                 }
 
             }
@@ -642,7 +645,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                     configuracao = snapshot.getValue(Configuracao.class);
                     recuperarIntent();
 
-                }else {
+                } else {
                     recuperarIntent();
                 }
             }
@@ -688,7 +691,7 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                     binding.imagemProduto0.setImageURI(imagemUri_0);
                     binding.imageFake0.setVisibility(View.GONE);
                     binding.cardViewImage1.setVisibility(View.VISIBLE);
-                    if (caminhoImagens.size() == 0){
+                    if (caminhoImagens.size() == 0) {
                         caminhoImagens.add("");
                     }
 
@@ -697,14 +700,14 @@ public class CadastroProdutoActivity extends AppCompatActivity implements Catego
                     binding.imagemProduto1.setImageURI(imagemUri_1);
                     binding.imageFake1.setVisibility(View.GONE);
                     binding.cardViewImage2.setVisibility(View.VISIBLE);
-                    if (caminhoImagens.size() == 1){
+                    if (caminhoImagens.size() == 1) {
                         caminhoImagens.add("");
                     }
                 } else {
                     imagemUri_2 = result.getUri();
                     binding.imagemProduto2.setImageURI(imagemUri_2);
                     binding.imageFake2.setVisibility(View.GONE);
-                    if (caminhoImagens.size() == 2){
+                    if (caminhoImagens.size() == 2) {
                         caminhoImagens.add("");
                     }
                 }

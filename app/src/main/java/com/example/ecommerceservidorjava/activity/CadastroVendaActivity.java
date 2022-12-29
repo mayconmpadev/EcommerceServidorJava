@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,10 +39,10 @@ import java.util.Locale;
 
 public class CadastroVendaActivity extends AppCompatActivity implements CadastroVendaAdapter.OnClickLister, ListaCategoriaHorizontalAdapter.OnClickLister {
     ActivityCadastroVendaBinding binding;
-    CadastroVendaAdapter produtoAdapter;
+    CadastroVendaAdapter vendaAdapter;
 
     private final List<Produto> produtoList = new ArrayList<>();
-    private final List<ItemVenda> itemVendaList = new ArrayList<>();
+    private List<ItemVenda> itemVendaList = new ArrayList<>();
     private final List<Categoria> categoriaList = new ArrayList<>();
     private final List<Produto> filtroList = new ArrayList<>();
     private final List<ItemVenda> filtroItemVendaList = new ArrayList<>();
@@ -57,6 +58,7 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
         super.onCreate(savedInstanceState);
         binding = ActivityCadastroVendaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
         configSearchView();
         recuperaProdutos();
         recuperaCategotia();
@@ -65,6 +67,29 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
             selecionarItems();
 
         });
+
+    }
+
+    private void recuperarIntent() {
+
+        List<ItemVenda> itemVendaList2;
+        itemVendaList2 = (ArrayList<ItemVenda>) getIntent().getSerializableExtra("itemVenda2");
+
+        if (itemVendaList2 != null) {
+            for (int i = 0; i < itemVendaList2.size(); i++) {
+                for (int j = 0; j < itemVendaList.size(); j++) {
+                    if (itemVendaList.get(j).getIdProduto().equals(itemVendaList2.get(i).getIdProduto())) {
+                        itemVendaList.get(j).setQtd(itemVendaList2.get(i).getQtd());
+                    }
+                }
+
+            }
+            binding.lytCartSheet.setVisibility(View.VISIBLE);
+            binding.includeSheet.tvTotalCart.setText(total());
+
+            binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
+        }
+
 
     }
 
@@ -132,9 +157,10 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
     private void configRvProdutos(List<Produto> produtoList, List<ItemVenda> itemVendaList) {
         binding.recycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
         binding.recycler.setHasFixedSize(true);
-        produtoAdapter = new CadastroVendaAdapter(produtoList, itemVendaList, getApplicationContext(), this);
-        binding.recycler.setAdapter(produtoAdapter);
+        vendaAdapter = new CadastroVendaAdapter(produtoList, itemVendaList, getApplicationContext(), this);
+        binding.recycler.setAdapter(vendaAdapter);
     }
+
 
     private void configRvCategoria() {
         binding.rvCategorias.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -197,7 +223,8 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
                         itemVenda.setIdsCategorias(produto.getIdsCategorias());
                         itemVenda.setCodigo(produto.getCodigo());
                         itemVenda.setNome(produto.getNome());
-                        itemVenda.setPreco(produto.getPrecoVenda());
+                        itemVenda.setPreco_venda(produto.getPrecoVenda());
+                        itemVenda.setPreco_custo(produto.getPrecoCusto());
                         itemVenda.setDescricao(produto.getDescricao());
                         itemVenda.setFoto(produto.getUrlImagem0());
                         itemVendaList.add(itemVenda);
@@ -208,6 +235,7 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
                         binding.textVazio.setVisibility(View.GONE);
                     }
                     configRvProdutos(produtoList, itemVendaList);
+                    recuperarIntent();
                 } else {
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
@@ -274,7 +302,7 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
         quantidade = quantidade + 1;
         binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
 
-        produtoAdapter.notifyItemChanged(position);
+        vendaAdapter.notifyItemChanged(position);
         binding.lytCartSheet.setVisibility(View.VISIBLE);
 
         binding.includeSheet.tvTotalCart.setText(total());
@@ -284,7 +312,7 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
         itemVenda.setQtd(itemVenda.getQtd() - 1);
         quantidade = quantidade - 1;
         binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
-        produtoAdapter.notifyItemChanged(position);
+        vendaAdapter.notifyItemChanged(position);
         binding.includeSheet.tvTotalCart.setText(total());
         if (quantidade == 0) {
             binding.lytCartSheet.setVisibility(View.GONE);
@@ -297,12 +325,12 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
 
         for (int i = 0; i < itemVendaList.size(); i++) {
             if (itemVendaList.get(i).getQtd() != 0) {
-                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco());
+                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco_venda());
                 preco = preco.divide(new BigDecimal("100"));
                 total = total.add(new BigDecimal(itemVendaList.get(i).getQtd()).multiply(preco));
             }
-
         }
+
         return NumberFormat.getCurrencyInstance().format(total);
     }
 
@@ -317,6 +345,7 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
         Intent intent = new Intent(getApplicationContext(), CarrinhoVendaActivity.class);
         intent.putExtra("itemVenda", arrayList);
         startActivity(intent);
+        finish();
     }
 
     // Oculta o teclado do dispotivo
@@ -348,6 +377,13 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
             subtrair(position, itemVenda);
         }
 
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Toast.makeText(this, "onRestart()", Toast.LENGTH_SHORT).show();
+        //recuperarIntent();
     }
 }
 

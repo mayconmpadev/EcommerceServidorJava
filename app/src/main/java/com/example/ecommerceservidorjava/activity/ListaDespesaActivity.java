@@ -2,8 +2,6 @@ package com.example.ecommerceservidorjava.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,7 +24,6 @@ import com.example.ecommerceservidorjava.databinding.ActivityListaDespesaBinding
 import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoDespesaBinding;
-import com.example.ecommerceservidorjava.databinding.DialogOpcaoEnviarBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusDespesaBinding;
 import com.example.ecommerceservidorjava.model.Despesa;
 import com.example.ecommerceservidorjava.util.Base64Custom;
@@ -60,8 +57,7 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
         setContentView(binding.getRoot());
         recuperarIntent();
         configSearchView();
-       // recuperaOrcamento();
-        monitorarLista();
+        recuperaOrcamento();
         binding.floatingActionButton.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CadastroDespesaActivity.class);
             startActivity(intent);
@@ -371,7 +367,11 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
         DialogOpcaoDespesaBinding dialogBinding = DialogOpcaoDespesaBinding
                 .inflate(LayoutInflater.from(this));
 
-        if (despesa.getTipoPagamento().equals("Cartão de crédito") || despesa.getTipoPagamento().equals("Boleto")){
+        if (despesa.getTipoPagamento().equals("Cartão de crédito") & !despesa.getStatus().equals("Pago")){
+            dialogBinding.llPagarPrestacao.setVisibility(View.VISIBLE);
+            dialogBinding.textPagar.setText("Pagar parcela " + despesa.getParcela_paga() + "/" + despesa.getQtd_parcelas() + "?");
+        } else if(despesa.getTipoPagamento().equals("Boleto") & !despesa.getStatus().equals("Pago")){
+            dialogBinding.textPagar.setText("Pagar Boleto de " + despesa.getValor());
             dialogBinding.llPagarPrestacao.setVisibility(View.VISIBLE);
         }else {
             dialogBinding.llPagarPrestacao.setVisibility(View.GONE);
@@ -388,9 +388,12 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
 
         dialogBinding.llPagarPrestacao.setOnClickListener(view -> {
 
-            Intent intent = new Intent(getApplicationContext(), ParcelasActivity.class);
-            intent.putExtra("despesaSelecionado", despesa);
-            startActivity(intent);
+            if (despesa.getParcela_paga() == despesa.getQtd_parcelas()) {
+                despesa.setStatus("Pago");
+            }else {
+                despesa.setParcela_paga(despesa.getParcela_paga() + 1);
+            }
+            salvarDados(despesa);
             dialog.dismiss();
         });
 
@@ -410,6 +413,25 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
         builder.setView(dialogBinding.getRoot());
         dialog = builder.create();
         dialog.show();
+    }
+
+    public void salvarDados(Despesa despesa) {
+
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("despesas").child(despesa.getId());
+
+        databaseReference.setValue(despesa).addOnCompleteListener(task1 -> {
+
+            if (task1.isSuccessful()) {
+                //finish();
+            } else {
+                Toast.makeText(getApplicationContext(), "erro de foto", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
     }
 
     private void showDialogStatus(Despesa despesa, int position) {
@@ -440,7 +462,6 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
         dialog = builder.create();
         dialog.show();
     }
-
 
 
     // Oculta o teclado do dispotivo

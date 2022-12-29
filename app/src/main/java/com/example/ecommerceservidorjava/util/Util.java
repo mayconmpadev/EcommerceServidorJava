@@ -15,8 +15,10 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.math.BigDecimal;
 
@@ -132,10 +134,13 @@ public class Util {
             vazia = vazia.replace("\u00A0", "");
             vazia = vazia.replace(",", "");
             vazia = vazia.replace(".", "");
-
+            vazia = vazia.trim();
+            Log.i("bigdecimal", vazia);
             bigDecimal = new java.math.BigDecimal(vazia);
         } catch (Exception e) {
             bigDecimal = new BigDecimal("0.00");
+            Log.i("bigdecimal", vazia);
+
         }
         return bigDecimal;
     }

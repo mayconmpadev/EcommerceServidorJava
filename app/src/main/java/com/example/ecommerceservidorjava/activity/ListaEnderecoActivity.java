@@ -38,7 +38,8 @@ public class ListaEnderecoActivity extends AppCompatActivity implements ListaEnd
     ListaEnderecoAdapter enderecoAdapter;
     private AlertDialog dialog;
     private Cliente clienteSelecionado;
-private SPM spm = new SPM(this);
+    private SPM spm = new SPM(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -58,7 +59,7 @@ private SPM spm = new SPM(this);
     private void configRvProdutos(List<Endereco> enderecoList) {
         binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         binding.recycler.setHasFixedSize(true);
-       enderecoAdapter = new ListaEnderecoAdapter(R.layout.item_lista_usuario, enderecoList, getApplicationContext(), true, this, this);
+        enderecoAdapter = new ListaEnderecoAdapter(R.layout.item_lista_usuario, enderecoList, getApplicationContext(), true, this, this);
         binding.recycler.setAdapter(enderecoAdapter);
     }
 
@@ -99,7 +100,7 @@ private SPM spm = new SPM(this);
 
         DialogClienteOpcoesBinding dialogBinding = DialogClienteOpcoesBinding
                 .inflate(LayoutInflater.from(this));
-
+        dialogBinding.imagemProduto.setImageResource(R.drawable.ic_endereco);
         dialogBinding.btnEndereco.setOnClickListener(view -> {
 
         });
@@ -115,7 +116,13 @@ private SPM spm = new SPM(this);
         dialogBinding.btnRemover.setOnClickListener(v -> {
 
             dialog.dismiss();
-           showDialogDelete(endereco);
+            showDialogDelete(endereco);
+
+        });
+
+        dialogBinding.btnFechar.setOnClickListener(v -> {
+
+            dialog.dismiss();
 
         });
 
@@ -124,6 +131,7 @@ private SPM spm = new SPM(this);
         dialog = builder.create();
         dialog.show();
     }
+
     //---------------------------------------------------- DIALOGO DE DELETAR -----------------------------------------------------------------
     private void showDialogDelete(Endereco endereco) {
         AlertDialog.Builder builder = new AlertDialog.Builder(
@@ -134,7 +142,7 @@ private SPM spm = new SPM(this);
 
         deleteBinding.btnFechar.setOnClickListener(v -> {
             dialog.dismiss();
-           // listaCategoriaAdapter.notifyDataSetChanged();
+            // listaCategoriaAdapter.notifyDataSetChanged();
         });
 
         deleteBinding.textTitulo.setText("Deseja remover esta categoria ?");
@@ -181,7 +189,8 @@ private SPM spm = new SPM(this);
             }
         });
     }
-    private void configClicks(){
+
+    private void configClicks() {
         binding.include.textTitulo.setText("Endereços");
         binding.include.include.ibVoltar.setOnClickListener(view -> finish());
 

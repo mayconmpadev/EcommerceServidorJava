@@ -89,7 +89,7 @@ public class CarrinhoOrcamentoActivity extends AppCompatActivity implements Carr
 
         for (int i = 0; i < itemVendaList.size(); i++) {
             if (itemVendaList.get(i).getQtd() != 0) {
-                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco());
+                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco_venda());
                 preco = preco.divide(new BigDecimal("100"));
                 total = total.add(new BigDecimal(itemVendaList.get(i).getQtd()).multiply(preco));
             }

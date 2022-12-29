@@ -1,6 +1,7 @@
 package com.example.ecommerceservidorjava.activity;
 
 import android.app.DatePickerDialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,6 +20,7 @@ import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ActivityCadastroDespesaBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDespesaCategoriaBinding;
 import com.example.ecommerceservidorjava.model.Despesa;
+import com.example.ecommerceservidorjava.model.Parcela;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
@@ -29,6 +32,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -43,10 +47,10 @@ public class CadastroDespesaActivity extends AppCompatActivity {
     private Despesa despesaSelecionado;
     long timestap;
     private SPM spm = new SPM(this);
-    private boolean bPagas = true;
+    private boolean bPagas = false;
     private boolean bLucro = true;
     private boolean bValor = true;
-    ArrayList<String> teste = new ArrayList<>();
+    private ArrayList<Parcela> listPaecela = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +167,7 @@ public class CadastroDespesaActivity extends AppCompatActivity {
 
         } else {
             DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
+            bLucro = false;
             despesa = new Despesa();
             despesa.setId(databaseReference.push().getKey());
             Calendar calendar = Calendar.getInstance();
@@ -187,7 +192,7 @@ public class CadastroDespesaActivity extends AppCompatActivity {
         adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerParcelasPagas.setAdapter(adaptador);
         if (b) {
-          binding.spinnerParcelasPagas.setSelection(despesaSelecionado.getParcela_paga() -1);
+            binding.spinnerParcelasPagas.setSelection(despesaSelecionado.getParcela_paga() - 1);
         }
         bPagas = false;
 
@@ -214,14 +219,20 @@ public class CadastroDespesaActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void validaDados() {
 
         String descricao = binding.editDescricao.getText().toString();
+        String instituicao = binding.editInstituicao.getText().toString();
 
         String valor = binding.editValor.getText().toString();
         String tipoPagamento = binding.spinnerFPagamento.getSelectedItem().toString();
         String qtdParcelas = binding.spinnerParcelas.getSelectedItem().toString().replace("x", "");
-        int proximaParcela = Integer.parseInt(binding.spinnerParcelasPagas.getSelectedItem().toString());
+        int proximaParcela = 0;
+        if (binding.spinnerParcelasPagas.getSelectedItem() != null) {
+            proximaParcela = Integer.parseInt(binding.spinnerParcelasPagas.getSelectedItem().toString());
+        }
+
 
         String status = binding.spinnerStatus.getSelectedItem().toString();
         String parcela = binding.editparcela.getText().toString();
@@ -246,8 +257,18 @@ public class CadastroDespesaActivity extends AppCompatActivity {
 
             binding.progressBar.setVisibility(View.VISIBLE);
             despesa.setDescricao(descricao);
+            despesa.setInstituicao(instituicao);
             despesa.setValor(valor);
             despesa.setQtd_parcelas(Integer.parseInt(qtdParcelas));
+
+            for (int i = 0; i < despesa.getQtd_parcelas(); i++) {
+                Parcela parcela1 = new Parcela();
+                parcela1.setQtd(i);
+                parcela1.setData(Timestamp.convertPoximoMes(this, data, i));
+                parcela1.setStatus(false);
+                listPaecela.add(parcela1);
+            }
+            despesa.setParcelas(listPaecela);
             despesa.setStatus(status);
             despesa.setTipoPagamento(tipoPagamento);
             despesa.setValor_parcela(parcela);
@@ -365,6 +386,7 @@ public class CadastroDespesaActivity extends AppCompatActivity {
 
     }
 
+
     private void tipoParcela(int position) {
 
         if (position <= 2) {
@@ -372,14 +394,19 @@ public class CadastroDespesaActivity extends AppCompatActivity {
             binding.spinnerParcelas.setEnabled(false);
             binding.spinnerParcelasPagas.setSelection(0);
             binding.spinnerParcelasPagas.setEnabled(false);
+            binding.spinnerStatus.setSelection(2);
+            binding.spinnerStatus.setEnabled(false);
         } else {
             binding.spinnerParcelas.setEnabled(true);
             binding.spinnerParcelasPagas.setEnabled(true);
+            binding.spinnerStatus.setSelection(0);
+            binding.spinnerStatus.setEnabled(false);
         }
 
     }
 
     public void clicks() {
+
         binding.include.include.ibVoltar.setOnClickListener(view -> finish());
         if (editar) {
             binding.include.textTitulo.setText("Editar");
@@ -409,4 +436,5 @@ public class CadastroDespesaActivity extends AppCompatActivity {
 
         });
     }
+
 }

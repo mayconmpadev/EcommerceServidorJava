@@ -4,7 +4,6 @@ import static com.itextpdf.text.Rectangle.NO_BORDER;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,7 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
+
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -95,7 +94,7 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode() == RESULT_OK) {
+                if (result.getResultCode() == 2) {
                     clienteSelecionado = (Cliente) result.getData().getSerializableExtra("cliente");
 
                     binding.edtNome.setText(clienteSelecionado.getNome());
@@ -344,7 +343,7 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
 
         for (int i = 0; i < itemVendaList.size(); i++) {
             if (itemVendaList.get(i).getQtd() != 0) {
-                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco());
+                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco_venda());
                 preco = preco.divide(new BigDecimal("100"));
 
                 total = total.add(new BigDecimal(itemVendaList.get(i).getQtd()).multiply(preco));
@@ -758,14 +757,14 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
         (c1).setBackgroundColor(BaseColor.BLACK);
         table.addCell(c1);
         table.setHeaderRows(1);
-//l
+
         for (int i = 0; i < orcamento.getItens().size(); i++) {
 
             table.addCell(new PdfPCell(new Phrase(orcamento.getItens().get(i).getCodigo(), paragraphFont2)));
             table.addCell(new PdfPCell(new Phrase(orcamento.getItens().get(i).getNome(), paragraphFont2)));
             table.addCell(new PdfPCell(new Phrase(String.valueOf(orcamento.getItens().get(i).getQtd()), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(orcamento.getItens().get(i).getPreco(), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(NumberFormat.getCurrencyInstance().format(somatoriaDosProdutosIguais(orcamento.getItens().get(i).getPreco(), String.valueOf(orcamento.getItens().get(i).getQtd()))), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(orcamento.getItens().get(i).getPreco_venda(), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(NumberFormat.getCurrencyInstance().format(somatoriaDosProdutosIguais(orcamento.getItens().get(i).getPreco_venda(), String.valueOf(orcamento.getItens().get(i).getQtd()))), paragraphFont2)));
         }
 
         document.add(table);

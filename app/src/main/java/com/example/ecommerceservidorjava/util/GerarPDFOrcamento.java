@@ -125,7 +125,7 @@ public class GerarPDFOrcamento extends AppCompatActivity {
 
         for (int i = 0; i < orcamento.getItens().size(); i++) {
             if (orcamento.getItens().get(i).getQtd() != 0) {
-                BigDecimal preco = Util.convertMoneEmBigDecimal(orcamento.getItens().get(i).getPreco());
+                BigDecimal preco = Util.convertMoneEmBigDecimal(orcamento.getItens().get(i).getPreco_venda());
                 preco = preco.divide(new BigDecimal("100"));
 
                 total = total.add(new BigDecimal(orcamento.getItens().get(i).getQtd()).multiply(preco));
@@ -545,8 +545,8 @@ public class GerarPDFOrcamento extends AppCompatActivity {
             table.addCell(new PdfPCell(new Phrase(orcamento.getItens().get(i).getCodigo(), paragraphFont2)));
             table.addCell(new PdfPCell(new Phrase(orcamento.getItens().get(i).getNome(), paragraphFont2)));
             table.addCell(new PdfPCell(new Phrase(String.valueOf(orcamento.getItens().get(i).getQtd()), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(orcamento.getItens().get(i).getPreco(), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(NumberFormat.getCurrencyInstance().format(somatoriaDosProdutosIguais(orcamento.getItens().get(i).getPreco(), String.valueOf(orcamento.getItens().get(i).getQtd()))), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(orcamento.getItens().get(i).getPreco_venda(), paragraphFont2)));
+            table.addCell(new PdfPCell(new Phrase(NumberFormat.getCurrencyInstance().format(somatoriaDosProdutosIguais(orcamento.getItens().get(i).getPreco_venda(), String.valueOf(orcamento.getItens().get(i).getQtd()))), paragraphFont2)));
         }
 
         document.add(table);

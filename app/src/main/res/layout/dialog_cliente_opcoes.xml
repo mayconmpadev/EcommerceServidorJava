@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_fechar"
         android:clickable="true"
+        android:padding="5dp"
         android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -43,6 +44,8 @@
         android:layout_marginTop="16dp"
         android:ellipsize="end"
         android:maxLines="1"
+        android:textSize="18sp"
+        android:textStyle="bold"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

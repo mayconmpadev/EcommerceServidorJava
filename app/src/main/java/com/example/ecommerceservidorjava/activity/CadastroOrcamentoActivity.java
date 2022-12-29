@@ -197,7 +197,8 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
                         itemVenda.setIdsCategorias(produto.getIdsCategorias());
                         itemVenda.setCodigo(produto.getCodigo());
                         itemVenda.setNome(produto.getNome());
-                        itemVenda.setPreco(produto.getPrecoVenda());
+                        itemVenda.setPreco_venda(produto.getPrecoVenda());
+                        itemVenda.setPreco_custo(produto.getPrecoCusto());
                         itemVenda.setDescricao(produto.getDescricao());
                         itemVenda.setFoto(produto.getUrlImagem0());
                         itemVendaList.add(itemVenda);
@@ -297,7 +298,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
 
         for (int i = 0; i < itemVendaList.size(); i++) {
             if (itemVendaList.get(i).getQtd() != 0) {
-                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco());
+                BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco_venda());
                 preco = preco.divide(new BigDecimal("100"));
                 total = total.add(new BigDecimal(itemVendaList.get(i).getQtd()).multiply(preco));
             }

@@ -11,7 +11,8 @@ public class ItemVenda implements Serializable {
     private String nome;
     private String descricao;
     private String foto;
-    private String preco;
+    private String preco_venda;
+    private String preco_custo;
     private int qtd = 0;
     private List<String> idsCategorias = new ArrayList<>();
     public ItemVenda() {
@@ -65,12 +66,20 @@ public class ItemVenda implements Serializable {
         this.foto = foto;
     }
 
-    public String getPreco() {
-        return preco;
+    public String getPreco_venda() {
+        return preco_venda;
     }
 
-    public void setPreco(String preco) {
-        this.preco = preco;
+    public void setPreco_venda(String preco_venda) {
+        this.preco_venda = preco_venda;
+    }
+
+    public String getPreco_custo() {
+        return preco_custo;
+    }
+
+    public void setPreco_custo(String preco_custo) {
+        this.preco_custo = preco_custo;
     }
 
     public int getQtd() {
