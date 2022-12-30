@@ -208,16 +208,17 @@ public class CadastroCliente2Activity extends AppCompatActivity {
 
     //---------------------------------------------------- SALVAR IMAGEM E DADOS -----------------------------------------------------------------
     public void salvarDadosImagem(Cliente cliente) {
+        cliente.setId(Base64Custom.codificarBase64(cliente.getTelefone1()));
         if (resultUri == null) {
             resultUri = Uri.parse("android.resource://com.example.ecommerceservidorjava/drawable/user_123");
         }
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         StorageReference storageReferencere = FirebaseHelper.getStorageReference().child("empresas")
-                .child(caminho).child("imagens").child("clientes").child(Base64Custom.codificarBase64(cliente.getTelefone1()));
+                .child(caminho).child("imagens").child("clientes").child(cliente.getId());
 
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
-                .child("clientes").child(Base64Custom.codificarBase64(cliente.getTelefone1()));
+                .child("clientes").child(cliente.getId());
 
         Glide.with(this).asBitmap().load(resultUri).apply(new RequestOptions().override(1024, 768))
                 .listener(new RequestListener<Bitmap>() {
@@ -376,31 +377,6 @@ public class CadastroCliente2Activity extends AppCompatActivity {
                     }
                 }).submit();
 
-
-    }
-
-
-    //---------------------------------------------------- ENVIA UM EMAIL PARA O EMAIL CADASTRADO -----------------------------------------------------------------
-    private void verificarEmail(Cliente cliente) {
-        try {
-
-            final FirebaseUser user = FirebaseHelper.getAuth().getCurrentUser();
-            if (user != null) {
-                user.sendEmailVerification().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        if (FirebaseHelper.getAuth().getCurrentUser() != null) {
-                            salvarDadosImagem(cliente);
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Verifique se o email cadastrado esta correto!", Toast.LENGTH_SHORT).show();
-                        binding.progressBar.setVisibility(View.INVISIBLE);
-                    }
-                });
-            }
-
-        } catch (Exception e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
 
     }
 
