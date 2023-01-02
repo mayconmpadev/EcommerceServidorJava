@@ -202,7 +202,6 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         produtoRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Toast.makeText(ListaOrcamentoActivity.this, "onChildAdded", Toast.LENGTH_SHORT).show();
                 if (snapshot.exists()) {
                     Orcamento cliente = snapshot.getValue(Orcamento.class);
                     orcamentoList.add(cliente);
@@ -217,7 +216,6 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Toast.makeText(ListaOrcamentoActivity.this, "onChildChanged", Toast.LENGTH_SHORT).show();
                 Orcamento orcamento = snapshot.getValue(Orcamento.class);
 
                 for (int i = 0; i < orcamentoList.size(); i++) {
@@ -264,12 +262,10 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Toast.makeText(getApplicationContext(), "onChildMoved", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getApplicationContext(), "onCancelled", Toast.LENGTH_SHORT).show();
             }
         });
 
