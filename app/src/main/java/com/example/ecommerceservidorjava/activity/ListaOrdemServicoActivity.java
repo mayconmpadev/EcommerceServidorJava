@@ -33,16 +33,12 @@ import com.example.ecommerceservidorjava.databinding.ActivityListaOrdemServicoBi
 import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoEnviarBinding;
-import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrcamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrdemServicoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
-
 import com.example.ecommerceservidorjava.model.OrdemServico;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
-import com.example.ecommerceservidorjava.util.GerarPDFOrcamento;
 import com.example.ecommerceservidorjava.util.GerarPDFOrdenServico;
-import com.example.ecommerceservidorjava.util.GerarPDFVendas;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -556,7 +552,11 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
                 .inflate(LayoutInflater.from(this));
 
 
-
+        if (ordemServico.getStatus().equals("Em analise")) {
+            dialogBinding.llStatus.setVisibility(View.GONE);
+        } else {
+            dialogBinding.llStatus.setVisibility(View.VISIBLE);
+        }
 
         dialogBinding.llEditar.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CadastroOrdemServicoActivity.class);
@@ -567,11 +567,18 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
         });
 
 
-
         dialogBinding.llStatus.setOnClickListener(view -> {
 
             dialog.dismiss();
             showDialogStatus(this.ordemServico, position);
+
+        });
+
+        dialogBinding.llOrcar.setOnClickListener(view -> {
+
+            dialog.dismiss();
+            Intent intent = new Intent(this, OrcarActivity.class);
+            startActivity(intent);
 
         });
 
@@ -580,7 +587,6 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
             dialog.dismiss();
 
         });
-
 
 
         builder.setView(dialogBinding.getRoot());
@@ -716,7 +722,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
     @Override
     public void onLongClick(OrdemServico ordemServico) {
-       // showDialogDelete(ordemServico);
+        // showDialogDelete(ordemServico);
         GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(ordemServico, this);
         exibirPDF();
     }

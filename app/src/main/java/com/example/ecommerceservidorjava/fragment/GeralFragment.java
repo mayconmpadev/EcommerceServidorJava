@@ -126,7 +126,8 @@ public class GeralFragment extends Fragment {
     private void verificacaoCadastro() {
 
         List<String> caminhos = new ArrayList<>();
-        caminhos.add("clientes");
+        caminhos.add("" +
+                "");
         caminhos.add("produtos");
         caminhos.add("categorias");
         caminhos.add("perfil_empresa");
