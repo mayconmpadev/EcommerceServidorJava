@@ -14,6 +14,12 @@
         <item>ouro</item>
     </string-array>
 
+    <string-array name="tipo_servico">
+        <item>resoldagem</item>
+        <item>troca de componente</item>
+        <item>limpesa</item>
+    </string-array>
+
     <string-array name="status_produto">
         <item>em estoque</item>
         <item>chegara em breve</item>

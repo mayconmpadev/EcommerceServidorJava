@@ -41,21 +41,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Equipamento:" />
+                android:text="Equipamento: " />
 
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Garantia:" />
+                android:text="Garantia: " />
 
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Defeito relatado:" />
+                android:text="Defeito relatado: " />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Garantia: " />
 
 
             <TextView
@@ -63,6 +69,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Defeito Encontrado:" />
+
             <EditText
                 android:id="@+id/edtObservacao"
                 style="@style/EditText"
@@ -73,12 +80,11 @@
                 android:inputType="textPersonName" />
 
 
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Perfil" />
+                android:text="Serviços" />
 
             <LinearLayout
                 android:id="@+id/linearPerfil"
@@ -93,22 +99,11 @@
                     android:id="@+id/spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:entries="@array/perfil_cliente"
+                    android:entries="@array/tipo_servico"
                     android:theme="@style/Spinner" />
 
             </LinearLayout>
 
-
-            <CheckBox
-                android:id="@+id/checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/color_verde"
-                android:checked="true"
-                android:text="Garantia"
-                android:textSize="8sp">
-
-            </CheckBox>
 
             <android.widget.Button
                 android:id="@+id/btnCriarConta"
