@@ -152,7 +152,7 @@ public class InicioFragment extends Fragment {
                 if (!snapshot.exists()) {
                     binding.progressBar.setVisibility(View.GONE);
                     binding.textReceita.setText("R$ 0,00");
-                    receita = Util.convertMoneEmBigDecimal("R$ 0,00");
+                    totalVendas();
                 }
             }
 
@@ -221,8 +221,7 @@ public class InicioFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
                     binding.progressBar.setVisibility(View.GONE);
-                    binding.textReceita.setText("R$ 0,00");
-                   receita = Util.convertMoneEmBigDecimal("R$ 0,00");
+                  totalVendas();
                 }
             }
 
