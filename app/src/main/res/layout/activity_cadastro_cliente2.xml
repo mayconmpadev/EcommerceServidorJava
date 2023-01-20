@@ -30,6 +30,7 @@
             android:paddingHorizontal="16dp">
 
 
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardFoto"
                 android:layout_width="180dp"
@@ -63,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Nome" />
+
 
             <EditText
                 android:id="@+id/edtNome"

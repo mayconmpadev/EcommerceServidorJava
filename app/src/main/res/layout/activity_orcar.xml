@@ -37,6 +37,8 @@
                 android:text="Nome:" />
 
 
+
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -70,23 +72,21 @@
                 android:layout_marginTop="8dp"
                 android:text="Defeito Encontrado:" />
 
+
             <EditText
                 android:id="@+id/edtObservacao"
                 style="@style/EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:hint="defeito"
                 android:inputType="textPersonName" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Peças" />
+
+
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 tools:listitem="@layout/item_pecas_0rdem"
                 android:layout_weight="1">
 
