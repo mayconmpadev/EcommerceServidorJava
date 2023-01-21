@@ -37,8 +37,6 @@
                 android:text="Nome:" />
 
 
-
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -81,14 +79,35 @@
                 android:hint="defeito"
                 android:inputType="textPersonName" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:text="Peças:" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/floatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    app:fabSize="mini"
+                    app:backgroundTint="@color/color_verde"
+                    app:srcCompat="@drawable/ic_add"
+                    app:tint="@color/branco" />
+            </LinearLayout>
 
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                tools:listitem="@layout/item_pecas_0rdem"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                tools:listitem="@layout/item_pecas_0rdem">
 
             </androidx.recyclerview.widget.RecyclerView>
 

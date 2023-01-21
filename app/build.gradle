@@ -8,7 +8,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.ecommerceservidorjava"// oi
+        applicationId "com.example.ecommerceservidorjava"
         minSdk 23
         targetSdk 33
         versionCode 1
