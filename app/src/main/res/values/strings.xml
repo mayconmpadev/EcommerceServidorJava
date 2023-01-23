@@ -17,7 +17,15 @@
     <string-array name="tipo_servico">
         <item>resoldagem</item>
         <item>troca de componente</item>
-        <item>limpesa</item>
+        <item>limpeza</item>
+        <item>montagem</item>
+        <item>substituição de tela</item>
+        <item>substituição de conector</item>
+        <item>resoldagem, troca de componente</item>
+        <item>resoldagem, limpeza</item>
+        <item>toca de componente, limpeza</item>
+        <item>resoldagem, montagem</item>
+        <item>resoldagem, montagem, limpeza</item>
     </string-array>
 
     <string-array name="status_produto">

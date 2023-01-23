@@ -6,7 +6,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.example.ecommerceservidorjava.R;
@@ -14,6 +18,7 @@ import com.example.ecommerceservidorjava.adapter.ListaPecasAdapter;
 import com.example.ecommerceservidorjava.adapter.ListaProdutoAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityOrcarBinding;
 import com.example.ecommerceservidorjava.model.ItemVenda;
+import com.example.ecommerceservidorjava.model.OrdemServico;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Util;
 
@@ -24,6 +29,7 @@ import java.util.List;
 
 public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapter.OnClickLister, ListaPecasAdapter.OnLongClickLister {
     private ActivityOrcarBinding binding;
+    private OrdemServico ordemServico;
     ListaPecasAdapter produtoAdapter;
     private ArrayList<ItemVenda> itemVendaList;
 
@@ -38,15 +44,56 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
             startActivity(intent);
         });
 
+        binding.editValorServico.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                BigDecimal total = Util.convertMoneEmBigDecimal(total());
+                total = total.divide(new BigDecimal("100"));
+                BigDecimal preco = Util.convertMoneEmBigDecimal(binding.editValorServico.getText().toString());
+                preco = preco.divide(new BigDecimal("100"));
+                total = total.add(preco);
+                binding.textValorTotal.setText(NumberFormat.getCurrencyInstance().format(total));
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
     }
 
     private void recuperarIntent() {
 
         itemVendaList = (ArrayList<ItemVenda>) getIntent().getSerializableExtra("itemVenda");
+        ordemServico = (OrdemServico) getIntent().getSerializableExtra("ordemServiçoSelecionada");
 
         if (itemVendaList != null) {
             configRvProdutos(itemVendaList);
             binding.textValorPecas.setText(total());
+
+            BigDecimal total = Util.convertMoneEmBigDecimal(total());
+            total = total.divide(new BigDecimal("100"));
+            BigDecimal preco = Util.convertMoneEmBigDecimal(binding.editValorServico.getText().toString());
+            preco = preco.divide(new BigDecimal("100"));
+            total = total.add(preco);
+            binding.textValorTotal.setText(NumberFormat.getCurrencyInstance().format(total));
+
+        }
+        if (ordemServico != null){
+            binding.textNome.setText(binding.textNome.getText() + "  " + ordemServico.getIdCliente().getNome());
+            binding.textEquipamento.setText(binding.textEquipamento.getText() + "  " + ordemServico.getEquipamento());
+            binding.textDefeito.setText(binding.textDefeito.getText() + "  " + ordemServico.getDefeitoRelatado());
+            if (ordemServico.isGarantia()){
+                binding.textGarantia.setText(binding.textGarantia.getText() + "  " + "sim");
+            }else {
+                binding.textGarantia.setText(binding.textGarantia.getText() + "  " + "não");
+            }
         }
 
 

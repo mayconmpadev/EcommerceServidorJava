@@ -578,6 +578,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
             dialog.dismiss();
             Intent intent = new Intent(this, OrcarActivity.class);
+            intent.putExtra("ordemServiçoSelecionada", ordemServico);
             startActivity(intent);
 
         });

@@ -53,7 +53,11 @@
         <item name="android:textColor">@color/preto</item>
         <item name="android:textSize">18sp</item>
 
+    </style>
 
+    <style name="Spinner2" parent="@style/Theme.EcommerceServidorJava">
+        <item name="android:textColor">@color/preto</item>
+        <item name="android:textSize">14sp</item>
 
     </style>
 
