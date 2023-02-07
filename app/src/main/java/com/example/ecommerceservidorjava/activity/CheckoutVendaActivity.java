@@ -277,6 +277,11 @@ public class CheckoutVendaActivity extends AppCompatActivity {
                 credito();
                 break;
             }
+
+            case R.id.ib_boleto: {
+                boleto();
+                break;
+            }
         }
     }
 
@@ -297,8 +302,10 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         binding.ibDinheiro.setBackgroundResource(R.drawable.borda);
         binding.ibDebito.setBackgroundResource(R.drawable.borda_2);
         binding.ibCredito.setBackgroundResource(R.drawable.borda);
+        binding.ibBoleto.setBackgroundResource(R.drawable.borda);
         binding.textDinheiro.setTextColor(getResources().getColor(R.color.grey_40));
         binding.textDebito.setTextColor(getResources().getColor(R.color.preto));
+        binding.textBoleto.setTextColor(getResources().getColor(R.color.grey_40));
         binding.textCredito.setTextColor(getResources().getColor(R.color.grey_40));
         pagamento = "debito";
         binding.includeSheet.tvTotalCart.setText(total(pagamento, configuracao.getDesconto_debito()));
@@ -308,11 +315,27 @@ public class CheckoutVendaActivity extends AppCompatActivity {
     private void credito() {
         binding.ibDinheiro.setBackgroundResource(R.drawable.borda);
         binding.ibDebito.setBackgroundResource(R.drawable.borda);
+        binding.ibBoleto.setBackgroundResource(R.drawable.borda);
         binding.ibCredito.setBackgroundResource(R.drawable.borda_2);
         binding.textDinheiro.setTextColor(getResources().getColor(R.color.grey_40));
         binding.textDebito.setTextColor(getResources().getColor(R.color.grey_40));
+        binding.textBoleto.setTextColor(getResources().getColor(R.color.grey_40));
         binding.textCredito.setTextColor(getResources().getColor(R.color.preto));
         pagamento = "credito";
+        binding.includeSheet.tvTotalCart.setText(total(pagamento, 0));
+        desconto = 0;
+    }
+
+    private void boleto() {
+        binding.ibDinheiro.setBackgroundResource(R.drawable.borda);
+        binding.ibDebito.setBackgroundResource(R.drawable.borda);
+        binding.ibCredito.setBackgroundResource(R.drawable.borda);
+        binding.ibBoleto.setBackgroundResource(R.drawable.borda_2);
+        binding.textDinheiro.setTextColor(getResources().getColor(R.color.grey_40));
+        binding.textDebito.setTextColor(getResources().getColor(R.color.grey_40));
+        binding.textCredito.setTextColor(getResources().getColor(R.color.grey_40));
+        binding.textBoleto.setTextColor(getResources().getColor(R.color.preto));
+        pagamento = "boleto";
         binding.includeSheet.tvTotalCart.setText(total(pagamento, 0));
         desconto = 0;
     }
@@ -364,6 +387,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         binding.ibDinheiro.setOnClickListener(view -> formaDePagamento(view));
         binding.ibDebito.setOnClickListener(view -> formaDePagamento(view));
         binding.ibCredito.setOnClickListener(view -> formaDePagamento(view));
+        binding.ibBoleto.setOnClickListener(view -> formaDePagamento(view));
         binding.includeSheet.btnContinue.setOnClickListener(view -> finalizar());
         binding.include.include.ibVoltar.setOnClickListener(view -> finish());
     }
