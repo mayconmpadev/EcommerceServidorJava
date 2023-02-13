@@ -63,6 +63,12 @@ public class ListaVendaAdapter extends RecyclerView.Adapter<ListaVendaAdapter.My
             holder.binding.viewStatus.setBackgroundResource(R.color.red);
         }
 
+        if (venda.getTipoPagamento().equals("boleto")){
+            holder.binding.root.setBackgroundResource(R.color.color_cinza_claro);
+        }else {
+            holder.binding.root.setBackgroundResource(R.color.branco);
+        }
+
         holder.binding.textData.setText(Timestamp.getFormatedDateTime(Long.parseLong(venda.getData()),"dd/MM/yyyy - HH:mm"));
 
 

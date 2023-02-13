@@ -25,28 +25,50 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchView"
+        app:layout_constraintTop_toBottomOf="@id/linear"
 
         tools:listitem="@layout/item_lista_usuario">
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
+  <LinearLayout
+      android:id="@+id/linear"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginHorizontal="16dp"
+      android:orientation="horizontal"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:queryBackground="@android:color/transparent">
 
-        android:background="@drawable/bg_pesquisa"
-        android:inputType="textCapSentences"
-        app:iconifiedByDefault="false"
-        android:theme="@style/Search_View_Theme"
-        android:textColorHint="@color/branco"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:queryBackground="@android:color/transparent"
-        app:queryHint="Bermudas, camisas, sapatos e etc..." />
+      <androidx.appcompat.widget.SearchView
+          android:id="@+id/searchView"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:layout_marginRight="8dp"
+
+          android:background="@drawable/bg_pesquisa"
+          android:inputType="textCapSentences"
+          app:iconifiedByDefault="false"
+          android:theme="@style/Search_View_Theme"
+          android:textColorHint="@color/branco"
+
+          app:queryHint="Bermudas, camisas, sapatos e etc..." />
+
+      <ImageButton
+          android:id="@+id/ibFiltro"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="@drawable/borda"
+          android:layout_gravity="center"
+          android:src="@drawable/filter_list_24">
+
+      </ImageButton>
+
+  </LinearLayout>
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
@@ -84,7 +106,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/recycler"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/searchView" />
+        app:layout_constraintTop_toTopOf="@+id/linear" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

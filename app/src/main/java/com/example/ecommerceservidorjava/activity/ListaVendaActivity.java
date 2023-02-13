@@ -86,6 +86,8 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
                 }
             }
         });
+
+        binding.ibFiltro.setOnClickListener(view -> filtraProdutoPagamento("boleto"));
     }
 
     private void configSearchView() {
@@ -136,7 +138,28 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
         for (Venda venda : vendaList) {
             if (venda.getIdCliente().getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
-                filtroList.add(this.venda);
+                filtroList.add(venda);
+            }
+        }
+
+
+        configRvProdutos(filtroList);
+
+
+        if (filtroList.isEmpty()) {
+            binding.textVazio.setVisibility(View.VISIBLE);
+            binding.textVazio.setText("Nenhum produto encontrado.");
+        } else {
+            binding.textVazio.setVisibility(View.GONE);
+        }
+    }
+
+    private void filtraProdutoPagamento(String pesquisa) {
+        filtroList.clear();
+
+        for (Venda venda : vendaList) {
+            if (venda.getTipoPagamento().equals("boleto")) {
+                filtroList.add(venda);
             }
         }
 
@@ -396,9 +419,9 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         Intent sendIntent = new Intent("android.intent.action.SEND");
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
         boolean tipowhts = whatsappIntelado("com.whatsapp");
-        if (tipowhts){
+        if (tipowhts) {
             sendIntent.setPackage("com.whatsapp");
-        }else {
+        } else {
             sendIntent.setPackage("com.whatsapp.w4b");
         }
 
@@ -414,13 +437,14 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
 
     }
-    private boolean whatsappIntelado(String s){
+
+    private boolean whatsappIntelado(String s) {
         PackageManager pm = getPackageManager();
         boolean app_intalado = false;
-        try{
+        try {
             pm.getPackageInfo(s, PackageManager.GET_ACTIVITIES);
             app_intalado = true;
-        }catch (PackageManager.NameNotFoundException e){
+        } catch (PackageManager.NameNotFoundException e) {
             app_intalado = false;
         }
         return app_intalado;
