@@ -34,6 +34,7 @@ import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoEnviarBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrcamentoBinding;
+import com.example.ecommerceservidorjava.databinding.DialogOpcaoPagamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.model.Venda;
@@ -87,7 +88,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
             }
         });
 
-        binding.ibFiltro.setOnClickListener(view -> filtraProdutoPagamento("boleto"));
+        binding.ibFiltro.setOnClickListener(view -> showDialogPagamento());
     }
 
     private void configSearchView() {
@@ -158,7 +159,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         filtroList.clear();
 
         for (Venda venda : vendaList) {
-            if (venda.getTipoPagamento().equals("boleto")) {
+            if (venda.getTipoPagamento().equals(pesquisa)) {
                 filtroList.add(venda);
             }
         }
@@ -656,6 +657,41 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         dialogBinding.llRecusado.setOnClickListener(view -> {
             dialog.dismiss();
             alterarStatus(venda, position, "Recusado");
+
+        });
+
+
+        builder.setView(dialogBinding.getRoot());
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showDialogPagamento() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
+
+        DialogOpcaoPagamentoBinding dialogBinding = DialogOpcaoPagamentoBinding
+                .inflate(LayoutInflater.from(this));
+
+
+        dialogBinding.llDinheiro.setOnClickListener(view -> {
+            dialog.dismiss();
+            filtraProdutoPagamento("dinheiro");
+        });
+
+        dialogBinding.llDebito.setOnClickListener(view -> {
+            dialog.dismiss();
+            filtraProdutoPagamento("debito");
+        });
+
+        dialogBinding.llCredito.setOnClickListener(view -> {
+            dialog.dismiss();
+            filtraProdutoPagamento("credito");
+
+        });
+
+        dialogBinding.llBoleto.setOnClickListener(view -> {
+            dialog.dismiss();
+            filtraProdutoPagamento("boleto");
 
         });
 
