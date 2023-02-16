@@ -55,15 +55,15 @@ public class ListaVendaAdapter extends RecyclerView.Adapter<ListaVendaAdapter.My
         holder.binding.textNome.setText(venda.getIdCliente().getNome().substring(0, 1).toUpperCase().concat(venda.getIdCliente().getNome().substring(1)));
         holder.binding.textEmeil.setText(venda.getIdCliente().getTelefone1());
         holder.binding.textTotal.setText(venda.getTotal());
-        if (venda.getStatus().equals("Em analise")){
+        if (venda.getStatus().equals("Aguardando retirada")){
             holder.binding.viewStatus.setBackgroundResource(R.color.ouro);
-        }else if(venda.getStatus().equals("Aprovado")){
+        }else if(venda.getStatus().equals("Finalizada")){
             holder.binding.viewStatus.setBackgroundResource(R.color.color_verde);
         }else {
             holder.binding.viewStatus.setBackgroundResource(R.color.red);
         }
 
-        if (venda.getTipoPagamento().equals("boleto")){
+        if (venda.getTipoPagamento().equals("Cancelada")){
             holder.binding.root.setBackgroundResource(R.color.color_cinza_claro);
         }else {
             holder.binding.root.setBackgroundResource(R.color.branco);

@@ -36,6 +36,7 @@ import com.example.ecommerceservidorjava.databinding.DialogOpcaoEnviarBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrcamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoPagamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
+import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusVendasBinding;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.model.Venda;
 import com.example.ecommerceservidorjava.util.Base64Custom;
@@ -640,23 +641,23 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
     private void showDialogStatus(Venda venda, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
-        DialogOpcaoStatusBinding dialogBinding = DialogOpcaoStatusBinding
+        DialogOpcaoStatusVendasBinding dialogBinding = DialogOpcaoStatusVendasBinding
                 .inflate(LayoutInflater.from(this));
 
 
-        dialogBinding.llAnalise.setOnClickListener(view -> {
+        dialogBinding.llRetirada.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(venda, position, "Em analise");
+            alterarStatus(venda, position, "Aguardando retirada");
         });
 
-        dialogBinding.llAprovado.setOnClickListener(view -> {
+        dialogBinding.llFinalizada.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(venda, position, "Aprovado");
+            alterarStatus(venda, position, "Finalizada");
         });
 
-        dialogBinding.llRecusado.setOnClickListener(view -> {
+        dialogBinding.llCancelada.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(venda, position, "Recusado");
+            alterarStatus(venda, position, "Cancelada");
 
         });
 
