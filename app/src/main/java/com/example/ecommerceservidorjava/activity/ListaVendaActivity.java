@@ -588,13 +588,15 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         }
     };
 
-    private void showDialog(Venda cliente, int position) {
+    private void showDialog(Venda venda, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogOpcaoOrcamentoBinding dialogBinding = DialogOpcaoOrcamentoBinding
                 .inflate(LayoutInflater.from(this));
 
-
+        if (!venda.getTipoPagamento().equals("boleto")) {
+            dialogBinding.llEditar.setVisibility(View.GONE);
+        }
         dialogBinding.llEnviar.setOnClickListener(view -> {
             dialog.dismiss();
             showDialogEnviar();

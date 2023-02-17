@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EcommerceServidorJava">
         <activity
+            android:name=".BoletoActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.CarrinhoPecasActivity"
             android:exported="false" />
         <activity
