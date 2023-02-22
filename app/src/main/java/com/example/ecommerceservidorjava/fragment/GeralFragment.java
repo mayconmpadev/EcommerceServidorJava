@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.activity.ConfiguracaoActivity;
+import com.example.ecommerceservidorjava.activity.ListaBoletoActivity;
 import com.example.ecommerceservidorjava.activity.ListaCategoriaActivity;
 import com.example.ecommerceservidorjava.activity.ListaClienteActivity;
 import com.example.ecommerceservidorjava.activity.ListaDespesaActivity;
@@ -118,6 +119,12 @@ public class GeralFragment extends Fragment {
 
         binding.ordenServico.setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), ListaOrdemServicoActivity.class);
+            startActivity(intent);
+
+        });
+
+        binding.boletos.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), ListaBoletoActivity.class);
             startActivity(intent);
 
         });

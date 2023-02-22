@@ -16,6 +16,7 @@ public class OrdemServico implements Serializable {
     private String defeitoEncontrado;
     private String status;
     private String tecnico;
+
     private String observacao;
     private boolean garantia;
 

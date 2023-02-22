@@ -43,7 +43,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView4"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="82dp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="8dp"
         app:cardCornerRadius="5dp"
@@ -57,6 +57,7 @@
             android:id="@+id/rvCategorias"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+
             tools:listitem="@layout/item_categoria_horizontal" />
 
     </androidx.cardview.widget.CardView>

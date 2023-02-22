@@ -20,7 +20,11 @@ import com.example.ecommerceservidorjava.databinding.ActivityOrcarBinding;
 import com.example.ecommerceservidorjava.model.ItemVenda;
 import com.example.ecommerceservidorjava.model.OrdemServico;
 import com.example.ecommerceservidorjava.model.Produto;
+import com.example.ecommerceservidorjava.util.Base64Custom;
+import com.example.ecommerceservidorjava.util.FirebaseHelper;
+import com.example.ecommerceservidorjava.util.SPM;
 import com.example.ecommerceservidorjava.util.Util;
+import com.google.firebase.database.DatabaseReference;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -32,7 +36,7 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
     private OrdemServico ordemServico;
     ListaPecasAdapter produtoAdapter;
     private ArrayList<ItemVenda> itemVendaList;
-
+    private SPM spm = new SPM(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +44,16 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
         setContentView(binding.getRoot());
         recuperarIntent();
         binding.floatingActionButton.setOnClickListener(v -> {
+            if (!binding.editDefeito.getText().toString().isEmpty()){
+                ordemServico.setDefeitoEncontrado(binding.editDefeito.getText().toString());
+            }
             Intent intent = new Intent(getApplicationContext(), OrcarPecasActivity.class);
+            intent.putExtra("ordemServiçoSelecionada", ordemServico);
             startActivity(intent);
+        });
+
+        binding.btnSalvar.setOnClickListener(v -> {
+           salvar();
         });
 
         binding.editValorServico.addTextChangedListener(new TextWatcher() {
@@ -68,6 +80,36 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
 
     }
 
+    private void salvar() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        ordemServico.setItens(itemVendaList);
+        ordemServico.setStatus("orçado");
+        ordemServico.setMaoDeObra(binding.spinner.getSelectedItem().toString());
+        ordemServico.setValorMaoDeObra(binding.editValorServico.getText().toString());
+        ordemServico.setDefeitoEncontrado(binding.editDefeito.getText().toString());
+        ordemServico.setTotal(binding.textValorTotal.getText().toString());
+
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("ordens_servicos").child(ordemServico.getId());
+
+        databaseReference.setValue(ordemServico).addOnCompleteListener(task1 -> {
+
+            if (task1.isSuccessful()) {
+                binding.progressBar.setVisibility(View.GONE);
+                finishAffinity();
+                Intent intent = new Intent(getApplicationContext(), ListaOrdemServicoActivity.class);
+
+                startActivity(intent);
+            } else {
+                binding.progressBar.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), "erro de foto", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+    }
+
     private void recuperarIntent() {
 
         itemVendaList = (ArrayList<ItemVenda>) getIntent().getSerializableExtra("itemVenda");
@@ -89,6 +131,7 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
             binding.textNome.setText(binding.textNome.getText() + "  " + ordemServico.getIdCliente().getNome());
             binding.textEquipamento.setText(binding.textEquipamento.getText() + "  " + ordemServico.getEquipamento());
             binding.textDefeito.setText(binding.textDefeito.getText() + "  " + ordemServico.getDefeitoRelatado());
+            binding.editDefeito.setText( ordemServico.getDefeitoEncontrado());
             if (ordemServico.isGarantia()){
                 binding.textGarantia.setText(binding.textGarantia.getText() + "  " + "sim");
             }else {

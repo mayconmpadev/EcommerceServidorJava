@@ -15,7 +15,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="4dp"
         android:layout_gravity="center"
-        android:padding="8dp"
+        android:padding="6dp"
         tools:src="@drawable/placeholder_form_categorias"/>
 
     <TextView
@@ -29,6 +29,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cardView2"
         app:layout_constraintTop_toTopOf="@+id/cardView2"
-        tools:text="Calçados" />
+        tools:text="Calçpdos" />
 
 </LinearLayout>

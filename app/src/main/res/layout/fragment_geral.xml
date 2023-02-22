@@ -409,7 +409,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:text="Despesa"
+                    android:text="Despesas"
                     android:textStyle="bold">
 
                 </TextView>
@@ -510,7 +510,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/a2"
+            android:id="@+id/boletos"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginTop="8dp"
@@ -543,7 +543,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:text="Despesa"
+                    android:text="Boletos"
                     android:textStyle="bold">
 
                 </TextView>

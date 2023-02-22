@@ -12,6 +12,7 @@ import com.example.ecommerceservidorjava.adapter.CarrinhoOrcamentoAdapter;
 import com.example.ecommerceservidorjava.databinding.ActivityCarrinhoOrcamentoBinding;
 import com.example.ecommerceservidorjava.databinding.ActivityCarrinhoPecasBinding;
 import com.example.ecommerceservidorjava.model.ItemVenda;
+import com.example.ecommerceservidorjava.model.OrdemServico;
 import com.example.ecommerceservidorjava.util.Util;
 
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ public class CarrinhoPecasActivity extends AppCompatActivity implements Carrinho
     private CarrinhoOrcamentoAdapter carrinhoOrcamentoAdapter;
     private ArrayList<ItemVenda> itemVendaList;
     private int quantidade = 0;
+    OrdemServico ordemServico;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +37,7 @@ public class CarrinhoPecasActivity extends AppCompatActivity implements Carrinho
         binding.include.textTitulo.setText("Carrinho");
         binding.includeSheet.btnContinue.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), OrcarActivity.class);
-
+            intent.putExtra("ordemServiçoSelecionada", ordemServico);
             intent.putExtra("itemVenda", itemVendaList);
             startActivity(intent);
         });
@@ -44,6 +46,7 @@ public class CarrinhoPecasActivity extends AppCompatActivity implements Carrinho
     private void recuperarIntent() {
 
         itemVendaList = (ArrayList<ItemVenda>) getIntent().getSerializableExtra("itemVenda");
+        ordemServico = (OrdemServico) getIntent().getSerializableExtra("ordemServiçoSelecionada");
         binding.includeSheet.tvTotalCart.setText(total());
         for (int i = 0; i < itemVendaList.size(); i++) {
             quantidade = quantidade + itemVendaList.get(i).getQtd();
@@ -105,7 +108,7 @@ public class CarrinhoPecasActivity extends AppCompatActivity implements Carrinho
         quantidade = quantidade - itemVenda.getQtd();
         binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
         itemVendaList.remove(itemVenda);
-        if (itemVendaList.size() == 0){
+        if (itemVendaList.size() == 0) {
             binding.lytCartSheet.setVisibility(View.GONE);
         }
         binding.includeSheet.tvTotalCart.setText(total());

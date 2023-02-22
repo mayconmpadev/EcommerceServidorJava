@@ -28,20 +28,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.ecommerceservidorjava.R;
-import com.example.ecommerceservidorjava.adapter.ListaVendaAdapter;
-import com.example.ecommerceservidorjava.databinding.ActivityListaVendaBinding;
+import com.example.ecommerceservidorjava.adapter.ListaBoletoAdapter;
+import com.example.ecommerceservidorjava.databinding.ActivityListaBoletoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoEnviarBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrcamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoPagamentoBinding;
-import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusVendasBinding;
+import com.example.ecommerceservidorjava.model.Boleto;
 import com.example.ecommerceservidorjava.model.Produto;
-import com.example.ecommerceservidorjava.model.Venda;
+
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
-import com.example.ecommerceservidorjava.util.GerarPDFVendas;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -55,20 +54,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ListaVendaActivity extends AppCompatActivity implements ListaVendaAdapter.OnClickLister, ListaVendaAdapter.OnLongClickLister {
-    ActivityListaVendaBinding binding;
-    ListaVendaAdapter vendaAdapter;
-    private final List<Venda> vendaList = new ArrayList<>();
-    List<Venda> filtroList = new ArrayList<>();
+public class ListaBoletoActivity extends AppCompatActivity implements ListaBoletoAdapter.OnClickLister, ListaBoletoAdapter.OnLongClickLister {
+    ActivityListaBoletoBinding binding;
+    ListaBoletoAdapter boletoAdapter;
+    private final List<Boleto> boletoList = new ArrayList<>();
+    List<Boleto> filtroList = new ArrayList<>();
     SPM spm = new SPM(this);
     private AlertDialog dialog;
-    private Venda venda;
+    private Boleto boleto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        binding = ActivityListaVendaBinding.inflate(getLayoutInflater());
+        binding = ActivityListaBoletoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         recuperarIntent();
         configSearchView();
@@ -109,7 +108,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
                     binding.textVazio.setVisibility(View.GONE);
                     ocultaTeclado();
                     filtroList.clear();
-                    configRvProdutos(vendaList);
+                    configRvProdutos(boletoList);
                 }
                 return false;
             }
@@ -122,14 +121,14 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
             edtSerachView.clearFocus();
             ocultaTeclado();
             filtroList.clear();
-            configRvProdutos(vendaList);
+            configRvProdutos(boletoList);
         });
 
     }
 
     private void recuperarIntent() {
-        venda = (Venda) getIntent().getSerializableExtra("venda");
-        if (venda != null) {
+        boleto = (Boleto) getIntent().getSerializableExtra("venda");
+        if (boleto != null) {
             enviarPDFWhatsapp();
         }
     }
@@ -138,9 +137,9 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
     private void filtraProdutoNome(String pesquisa) {
 
 
-        for (Venda venda : vendaList) {
-            if (venda.getIdCliente().getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
-                filtroList.add(venda);
+        for (Boleto boleto : boletoList) {
+            if (boleto.getIdVenda().getIdCliente().getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+                filtroList.add(boleto);
             }
         }
 
@@ -159,9 +158,9 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
     private void filtraProdutoPagamento(String pesquisa) {
         filtroList.clear();
 
-        for (Venda venda : vendaList) {
-            if (venda.getTipoPagamento().equals(pesquisa)) {
-                filtroList.add(venda);
+        for (Boleto boleto : boletoList) {
+            if (boleto.getIdVenda().getTipoPagamento().equals(pesquisa)) {
+                filtroList.add(boleto);
             }
         }
 
@@ -177,18 +176,18 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         }
     }
 
-    private void configRvProdutos(List<Venda> vendaList) {
+    private void configRvProdutos(List<Boleto> vendaList) {
         binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         binding.recycler.setHasFixedSize(true);
-        vendaAdapter = new ListaVendaAdapter(R.layout.item_lista_usuario, vendaList, getApplicationContext(), true, this, this);
-        binding.recycler.setAdapter(vendaAdapter);
+        boletoAdapter = new ListaBoletoAdapter(R.layout.item_lista_usuario, vendaList, getApplicationContext(), true, this, this);
+        binding.recycler.setAdapter(boletoAdapter);
     }
 
     private void recuperaVendas() {
         SPM spm = new SPM(getApplicationContext());
         DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                .child("vendas");
+                .child("boletos");
         produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -212,22 +211,22 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
     }
 
     private void monitorarLista() {
-        vendaList.clear();
+        boletoList.clear();
         SPM spm = new SPM(getApplicationContext());
         //String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
         Query produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
-                .child("vendas").orderByChild("data");
+                .child("boletos").orderByChild("data");
         produtoRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
                 if (snapshot.exists()) {
-                    Venda venda = snapshot.getValue(Venda.class);
-                    vendaList.add(venda);
+                    Boleto boleto = snapshot.getValue(Boleto.class);
+                    boletoList.add(boleto);
                     binding.progressBar2.setVisibility(View.GONE);
 
-                    configRvProdutos(vendaList);
+                    configRvProdutos(boletoList);
                 } else {
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
@@ -236,38 +235,38 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Venda venda = snapshot.getValue(Venda.class);
+                Boleto boleto = snapshot.getValue(Boleto.class);
 
-                for (int i = 0; i < vendaList.size(); i++) {
-                    if (vendaList.get(i).getId().equals(venda.getId())) {
-                        vendaList.set(i, venda);
+                for (int i = 0; i < boletoList.size(); i++) {
+                    if (boletoList.get(i).getId().equals(boleto.getId())) {
+                        boletoList.set(i, boleto);
                     }
                 }
 
-                vendaAdapter.notifyDataSetChanged();
+                boletoAdapter.notifyDataSetChanged();
                 if (!filtroList.isEmpty()) {
                     for (int i = 0; i < filtroList.size(); i++) {
-                        if (filtroList.get(i).getId().equals(venda.getId())) {
-                            filtroList.set(i, venda);
+                        if (filtroList.get(i).getId().equals(boleto.getId())) {
+                            filtroList.set(i, boleto);
                         }
                     }
 
-                    vendaAdapter.notifyDataSetChanged();
+                    boletoAdapter.notifyDataSetChanged();
                 }
 
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                Venda orcamento = snapshot.getValue(Venda.class);
+                Boleto orcamento = snapshot.getValue(Boleto.class);
 
-                for (int i = 0; i < vendaList.size(); i++) {
-                    if (vendaList.get(i).getId().equals(orcamento.getId())) {
-                        vendaList.remove(i);
+                for (int i = 0; i < boletoList.size(); i++) {
+                    if (boletoList.get(i).getId().equals(orcamento.getId())) {
+                        boletoList.remove(i);
                     }
                 }
 
-                vendaAdapter.notifyDataSetChanged();
+                boletoAdapter.notifyDataSetChanged();
                 if (!filtroList.isEmpty()) {
                     for (int i = 0; i < filtroList.size(); i++) {
                         if (filtroList.get(i).getId().equals(orcamento.getId())) {
@@ -275,7 +274,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
                         }
                     }
 
-                    vendaAdapter.notifyDataSetChanged();
+                    boletoAdapter.notifyDataSetChanged();
                 }
 
             }
@@ -294,7 +293,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
     }
 
-    private void showDialog(Venda cliente) {
+    private void showDialog(Boleto boleto) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogClienteOpcoesBinding dialogBinding = DialogClienteOpcoesBinding
@@ -302,13 +301,13 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
 
         Glide.with(getApplicationContext())
-                .load(cliente.getIdCliente().getUrlImagem())
+                .load(boleto.getIdVenda().getIdCliente().getUrlImagem())
                 .into(dialogBinding.imagemProduto);
 
 
         dialogBinding.btnEndereco.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), ListaEnderecoActivity.class);
-            intent.putExtra("clienteSelecionado", cliente);
+            intent.putExtra("clienteSelecionado", boleto);
             startActivity(intent);
             dialog.dismiss();
             dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
@@ -316,7 +315,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
         dialogBinding.btnEditar.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), CadastroClienteActivity.class);
-            intent.putExtra("clienteSelecionado", cliente);
+            intent.putExtra("clienteSelecionado", boleto);
             startActivity(intent);
             dialog.dismiss();
         });
@@ -324,12 +323,12 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         dialogBinding.btnRemover.setOnClickListener(v -> {
 
             dialog.dismiss();
-            showDialogDelete(cliente);
+            showDialogDelete(boleto);
 
 
         });
 
-        dialogBinding.txtNomeProduto.setText(cliente.getIdCliente().getNome());
+        dialogBinding.txtNomeProduto.setText(boleto.getIdVenda().getIdCliente().getNome());
 
 
         builder.setView(dialogBinding.getRoot());
@@ -338,28 +337,28 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         dialog.show();
     }
 
-    private void showDialogDelete(Venda venda) {
+    private void showDialogDelete(Boleto boleto) {
         AlertDialog.Builder builder = new AlertDialog.Builder(
-                ListaVendaActivity.this, R.style.CustomAlertDialog2);
+                ListaBoletoActivity.this, R.style.CustomAlertDialog2);
 
         DialogDeleteBinding deleteBinding = DialogDeleteBinding
-                .inflate(LayoutInflater.from(ListaVendaActivity.this));
-        deleteBinding.textTitulo.setText("Deseja remover o produto " + venda.getIdCliente().getNome() + "?");
+                .inflate(LayoutInflater.from(ListaBoletoActivity.this));
+        deleteBinding.textTitulo.setText("Deseja remover o produto " + boleto.getIdVenda().getIdCliente().getNome() + "?");
         deleteBinding.btnFechar.setOnClickListener(v -> {
             dialog.dismiss();
-            vendaAdapter.notifyDataSetChanged();
+            boletoAdapter.notifyDataSetChanged();
         });
 
         deleteBinding.btnSim.setOnClickListener(v -> {
-            vendaList.remove(venda);
+            boletoList.remove(boleto);
 
-            if (vendaList.isEmpty()) {
+            if (boletoList.isEmpty()) {
                 binding.textVazio.setText("Sua lista esta vazia.");
             } else {
                 binding.textVazio.setText("");
             }
             dialog.dismiss();
-            excluir(venda);
+            excluir(boleto);
 
         });
 
@@ -371,11 +370,11 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void excluir(Venda venda) {
+    public void excluir(Boleto boleto) {
         binding.progressBar2.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
-                .child(caminho).child("vendas").child(venda.getId());
+                .child(caminho).child("vendas").child(boleto.getId());
         databaseReference.removeValue();
 
 
@@ -384,7 +383,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
     }
 
-    private void alterarStatus(Venda venda, int position, String status) {
+    private void alterarStatus(Boleto venda, int position, String status) {
         SPM spm = new SPM(getApplicationContext());
         String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference()
@@ -396,11 +395,11 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
             if (filtroList.size() > 0) {
                 filtroList.get(position).setStatus(status);
             } else {
-                vendaList.get(position).setStatus(status);
+                boletoList.get(position).setStatus(status);
             }
 
 
-            vendaAdapter.notifyItemChanged(position);
+            boletoAdapter.notifyItemChanged(position);
         });
 
     }
@@ -417,7 +416,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
             pdfFolder.mkdirs();
         }
         File myFile = new File(pdfFolder + File.separator + "venda" + ".pdf");
-        String telefone = "55" + venda.getIdCliente().getTelefone1().replaceAll("\\D", "");
+        String telefone = "55" + boleto.getIdVenda().getIdCliente().getTelefone1().replaceAll("\\D", "");
         Intent sendIntent = new Intent("android.intent.action.SEND");
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
         boolean tipowhts = whatsappIntelado("com.whatsapp");
@@ -466,7 +465,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
             email.setType("message/rfc822");
             email.putExtra(Intent.EXTRA_SUBJECT, "Orcamento em anexo");
             email.putExtra(Intent.EXTRA_TEXT, "obrigado pela preferencia");
-            email.putExtra(Intent.EXTRA_EMAIL, new String[]{venda.getIdCliente().getEmail()});
+            email.putExtra(Intent.EXTRA_EMAIL, new String[]{boleto.getIdVenda().getIdCliente().getEmail()});
 
             Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
             email.putExtra(Intent.EXTRA_STREAM, uri);
@@ -529,7 +528,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
                 pdfFolder.mkdirs();
             }
             File myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
-            String telefone = "55" + venda.getIdCliente().getTelefone1().replaceAll("\\D", "");
+            String telefone = "55" + boleto.getIdVenda().getIdCliente().getTelefone1().replaceAll("\\D", "");
             Intent sendIntent = new Intent("android.intent.action.SEND");
             Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
             sendIntent.setComponent(new ComponentName("com.whatsapp", "com.whatsapp.ContactPicker"));
@@ -560,7 +559,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
                 email.setType("message/rfc822");
                 email.putExtra(Intent.EXTRA_SUBJECT, "Orcamento em anexo");
                 email.putExtra(Intent.EXTRA_TEXT, "obrigado pela preferencia");
-                email.putExtra(Intent.EXTRA_EMAIL, new String[]{venda.getIdCliente().getEmail()});
+                email.putExtra(Intent.EXTRA_EMAIL, new String[]{boleto.getIdVenda().getIdCliente().getEmail()});
 
                 Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
                 email.putExtra(Intent.EXTRA_STREAM, uri);
@@ -588,13 +587,13 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         }
     };
 
-    private void showDialog(Venda venda, int position) {
+    private void showDialog(Boleto boleto, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogOpcaoOrcamentoBinding dialogBinding = DialogOpcaoOrcamentoBinding
                 .inflate(LayoutInflater.from(this));
 
-        if (!venda.getTipoPagamento().equals("boleto")) {
+        if (!boleto.getIdVenda().getTipoPagamento().equals("boleto")) {
             dialogBinding.llEditar.setVisibility(View.GONE);
         }
         dialogBinding.llEnviar.setOnClickListener(view -> {
@@ -617,7 +616,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         dialogBinding.llStatus.setOnClickListener(view -> {
 
             dialog.dismiss();
-            showDialogStatus(venda, position);
+            showDialogStatus(boleto, position);
 
         });
 
@@ -629,7 +628,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
         dialogBinding.llRecibo.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), ReciboVendaActivity.class);
-            intent.putExtra("vendaSelecionado", venda);
+            intent.putExtra("vendaSelecionado", boleto);
             startActivity(intent);
             dialog.dismiss();
 
@@ -641,7 +640,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         dialog.show();
     }
 
-    private void showDialogStatus(Venda venda, int position) {
+    private void showDialogStatus(Boleto boleto, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogOpcaoStatusVendasBinding dialogBinding = DialogOpcaoStatusVendasBinding
@@ -650,17 +649,17 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
         dialogBinding.llRetirada.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(venda, position, "Aguardando retirada");
+            alterarStatus(boleto, position, "Aguardando retirada");
         });
 
         dialogBinding.llFinalizada.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(venda, position, "Finalizada");
+            alterarStatus(boleto, position, "Finalizada");
         });
 
         dialogBinding.llCancelada.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(venda, position, "Cancelada");
+            alterarStatus(boleto, position, "Cancelada");
 
         });
 
@@ -788,11 +787,11 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
     }
 
     @Override
-    public void onClick(Venda usuario, int position) {
-        venda = usuario;
+    public void onClick(Boleto boleto, int position) {
+        this.boleto = boleto;
 
-        showDialog(usuario, position);
-        GerarPDFVendas gerarPDFOrcamento = new GerarPDFVendas(venda, this);
+      //  showDialog(boleto, position);
+      //  GerarPDFVendas gerarPDFOrcamento = new GerarPDFVendas(this.boleto, this);
         // while (Parametro.bPdf){
         // Toast.makeText(getApplicationContext(), "teste", Toast.LENGTH_SHORT).show();
         // break;
@@ -803,7 +802,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
 
     @Override
-    public void onLongClick(Venda venda) {
-        showDialogDelete(venda);
+    public void onLongClick(Boleto boleto) {
+        showDialogDelete(boleto);
     }
 }

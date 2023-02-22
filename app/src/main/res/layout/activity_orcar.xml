@@ -72,7 +72,7 @@
 
 
             <EditText
-                android:id="@+id/edtObservacao"
+                android:id="@+id/editDefeito"
                 style="@style/EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -215,12 +215,12 @@
 
 
             <android.widget.Button
-                android:id="@+id/btnCriarConta"
+                android:id="@+id/btnSalvar"
                 style="@style/Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:text="Criar conta" />
+                android:text="Salvar" />
 
         </LinearLayout>
 

@@ -20,6 +20,7 @@ import com.example.ecommerceservidorjava.databinding.ActivityCadastroOrcamentoBi
 import com.example.ecommerceservidorjava.databinding.ActivityOrcarPecasBinding;
 import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.model.ItemVenda;
+import com.example.ecommerceservidorjava.model.OrdemServico;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
@@ -40,7 +41,7 @@ import java.util.Locale;
 public class OrcarPecasActivity extends AppCompatActivity implements CadastroOrcamentoAdapter.OnClickLister, ListaCategoriaHorizontalAdapter.OnClickLister {
     ActivityOrcarPecasBinding binding;
     CadastroOrcamentoAdapter produtoAdapter;
-
+    OrdemServico ordemServico;
     private final List<Produto> produtoList = new ArrayList<>();
     private final List<ItemVenda> itemVendaList = new ArrayList<>();
     private final List<Categoria> categoriaList = new ArrayList<>();
@@ -61,6 +62,7 @@ public class OrcarPecasActivity extends AppCompatActivity implements CadastroOrc
         configSearchView();
         recuperaProdutos();
         recuperaCategotia();
+        recuperarIntent();
 
         binding.includeSheet.btnContinue.setOnClickListener(view -> {
             selecionarItems();
@@ -100,6 +102,11 @@ public class OrcarPecasActivity extends AppCompatActivity implements CadastroOrc
 
     }
 
+    private void recuperarIntent() {
+
+
+        ordemServico = (OrdemServico) getIntent().getSerializableExtra("ordemServiçoSelecionada");
+    }
 
     private void filtraProdutoNome(String pesquisa) {
 
@@ -142,6 +149,8 @@ public class OrcarPecasActivity extends AppCompatActivity implements CadastroOrc
         binding.rvCategorias.setHasFixedSize(true);
         ListaCategoriaHorizontalAdapter listaCategoriaAdapter = new ListaCategoriaHorizontalAdapter(R.layout.item_lista_usuario, categoriaList, getApplicationContext(), true, this, true);
         binding.rvCategorias.setAdapter(listaCategoriaAdapter);
+        this.categoriaSelecionada = categoriaList.get(0);
+        filtraProdutoCategoria();
     }
 
 
@@ -149,7 +158,7 @@ public class OrcarPecasActivity extends AppCompatActivity implements CadastroOrc
         SPM spm = new SPM(getApplicationContext());
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         Query produtoRef = FirebaseHelper.getDatabaseReference()
-                .child("empresas").child(caminho).child("categorias").orderByChild("todas");
+                .child("empresas").child(caminho).child("categorias").orderByChild("Componente");
         produtoRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -318,6 +327,7 @@ public class OrcarPecasActivity extends AppCompatActivity implements CadastroOrc
 
         Intent intent = new Intent(getApplicationContext(), CarrinhoPecasActivity.class);
         intent.putExtra("itemVenda", arrayList);
+        intent.putExtra("ordemServiçoSelecionada", ordemServico);
         startActivity(intent);
     }
 

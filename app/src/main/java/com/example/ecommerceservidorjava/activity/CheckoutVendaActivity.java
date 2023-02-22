@@ -21,6 +21,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ActivityCheckoutVendaBinding;
+import com.example.ecommerceservidorjava.model.Boleto;
 import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.model.Configuracao;
 import com.example.ecommerceservidorjava.model.Endereco;
@@ -418,6 +419,9 @@ public class CheckoutVendaActivity extends AppCompatActivity {
                     .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
                     .child("vendas").child(venda.getId());
             produtoRef.setValue(venda).addOnSuccessListener(unused -> {
+                if (venda.getTipoPagamento().equals("boleto")){
+                    criarBoleto();
+                }
                 baixaEstoque();
 
 
@@ -439,6 +443,25 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    private void criarBoleto() {
+        Boleto boleto = new Boleto();
+        boleto.setId(venda.getId());
+        boleto.setData(venda.getData());
+        boleto.setIdVenda(venda);
+        boleto.setStatus("Pendente");
+        boleto.setTipo("venda");
+        SPM spm = new SPM(getApplicationContext());
+        DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
+                .child("empresas")
+                .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                .child("boletos").child(boleto.getId());
+        produtoRef.setValue(boleto).addOnSuccessListener(unused -> {
+
+
+
+        });
     }
 
     private void baixaEstoque() {
