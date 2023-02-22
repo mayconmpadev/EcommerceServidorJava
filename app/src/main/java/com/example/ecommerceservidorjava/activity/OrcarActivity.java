@@ -47,6 +47,9 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
             if (!binding.editDefeito.getText().toString().isEmpty()){
                 ordemServico.setDefeitoEncontrado(binding.editDefeito.getText().toString());
             }
+            if (!binding.editValorServico.getText().toString().isEmpty()){
+                ordemServico.setValorMaoDeObra(binding.editValorServico.getText().toString());
+            }
             Intent intent = new Intent(getApplicationContext(), OrcarPecasActivity.class);
             intent.putExtra("ordemServiçoSelecionada", ordemServico);
             startActivity(intent);
@@ -64,7 +67,13 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                BigDecimal total = Util.convertMoneEmBigDecimal(total());
+                BigDecimal total;
+                if (itemVendaList != null){
+                   total = Util.convertMoneEmBigDecimal(total());
+                }else{
+                   total = Util.convertMoneEmBigDecimal("R$0,00");
+                }
+
                 total = total.divide(new BigDecimal("100"));
                 BigDecimal preco = Util.convertMoneEmBigDecimal(binding.editValorServico.getText().toString());
                 preco = preco.divide(new BigDecimal("100"));
@@ -132,6 +141,7 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
             binding.textEquipamento.setText(binding.textEquipamento.getText() + "  " + ordemServico.getEquipamento());
             binding.textDefeito.setText(binding.textDefeito.getText() + "  " + ordemServico.getDefeitoRelatado());
             binding.editDefeito.setText( ordemServico.getDefeitoEncontrado());
+            binding.editValorServico.setText( ordemServico.getValorMaoDeObra());
             if (ordemServico.isGarantia()){
                 binding.textGarantia.setText(binding.textGarantia.getText() + "  " + "sim");
             }else {

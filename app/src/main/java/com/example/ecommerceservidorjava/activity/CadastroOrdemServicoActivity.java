@@ -89,6 +89,7 @@ public class CadastroOrdemServicoActivity extends AppCompatActivity {
     private void recuperarIntent() {
         ordemServicoSelecionado = (OrdemServico) getIntent().getSerializableExtra("ordemServiçoSelecionada");
         if (ordemServicoSelecionado != null) {
+            ordemServico = ordemServicoSelecionado;
             binding.btnSalvar.setText("Salvar");
             editar = true;
             binding.edtCliente.setText(ordemServicoSelecionado.getIdCliente().getNome());
@@ -125,6 +126,7 @@ public class CadastroOrdemServicoActivity extends AppCompatActivity {
         } else {
             DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference();
             ordemServico = new OrdemServico();
+            ordemServico.setStatus("Em analise");
             ordemServico.setId(databaseReference.push().getKey());
         }
     }
@@ -173,7 +175,7 @@ public class CadastroOrdemServicoActivity extends AppCompatActivity {
             ordemServico.setDefeitoRelatado(defeitoRelatado);
             ordemServico.setObservacao(observação);
             ordemServico.setGarantia(binding.checkGarantia.isChecked());
-            ordemServico.setStatus("Em analise");
+            ordemServico.setStatus(ordemServico.getStatus());
             ordemServico.setDataEntrada(String.valueOf(Timestamp.getUnixTimestamp()));
             if (imagemUri_0 != null) {
                 caminhoImagens.set(0, "");
