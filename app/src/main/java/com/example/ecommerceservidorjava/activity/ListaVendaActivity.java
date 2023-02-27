@@ -37,6 +37,7 @@ import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrcamentoBinding
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoPagamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusVendasBinding;
+import com.example.ecommerceservidorjava.model.Orcamento;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.model.Venda;
 import com.example.ecommerceservidorjava.util.Base64Custom;
@@ -129,8 +130,14 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
     private void recuperarIntent() {
         venda = (Venda) getIntent().getSerializableExtra("venda");
+
         if (venda != null) {
-            enviarPDFWhatsapp();
+            if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")) {
+                enviarPDFWhatsapp();
+            } else {
+                Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 
@@ -420,7 +427,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         String telefone = "55" + venda.getIdCliente().getTelefone1().replaceAll("\\D", "");
         Intent sendIntent = new Intent("android.intent.action.SEND");
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
-        boolean tipowhts = whatsappIntelado("com.whatsapp");
+        boolean tipowhts = isAppInstalled("com.whatsapp");
         if (tipowhts) {
             sendIntent.setPackage("com.whatsapp");
         } else {
@@ -440,16 +447,14 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
     }
 
-    private boolean whatsappIntelado(String s) {
-        PackageManager pm = getPackageManager();
-        boolean app_intalado = false;
+    private boolean isAppInstalled(String packageName) {
         try {
-            pm.getPackageInfo(s, PackageManager.GET_ACTIVITIES);
-            app_intalado = true;
-        } catch (PackageManager.NameNotFoundException e) {
-            app_intalado = false;
+            getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
         }
-        return app_intalado;
+        catch (PackageManager.NameNotFoundException ignored) {
+            return false;
+        }
     }
 
     private void enviarPDFEmeail() {
@@ -598,8 +603,15 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
             dialogBinding.llEditar.setVisibility(View.GONE);
         }
         dialogBinding.llEnviar.setOnClickListener(view -> {
+            if (venda != null) {
+                if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")) {
+                    enviarPDFWhatsapp();
+                } else {
+                    Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();
+                }
+
+            }
             dialog.dismiss();
-            showDialogEnviar();
 
         });
 
@@ -628,7 +640,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         });
 
         dialogBinding.llRecibo.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), ReciboVendaActivity.class);
+            Intent intent = new Intent(getApplicationContext(), ReciboOrcamentoActivity.class);
             intent.putExtra("vendaSelecionado", venda);
             startActivity(intent);
             dialog.dismiss();

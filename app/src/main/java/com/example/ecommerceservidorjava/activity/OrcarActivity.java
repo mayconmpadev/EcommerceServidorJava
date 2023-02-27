@@ -124,6 +124,39 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
         itemVendaList = (ArrayList<ItemVenda>) getIntent().getSerializableExtra("itemVenda");
         ordemServico = (OrdemServico) getIntent().getSerializableExtra("ordemServiçoSelecionada");
 
+
+        if (ordemServico != null){
+
+            Util.textoNegrito(binding.textNome.getText() + "  *" + ordemServico.getIdCliente().getNome()+ "*",binding.textNome , null );
+            Util.textoNegrito(binding.textEquipamento.getText() + "  *" + ordemServico.getEquipamento()+ "*",binding.textEquipamento, null);
+            Util.textoNegrito(binding.textDefeito.getText() + "  *" + ordemServico.getDefeitoRelatado()+ "*",binding.textDefeito, null);
+            binding.editDefeito.setText( ordemServico.getDefeitoEncontrado());
+
+
+                binding.editValorServico.setText( ordemServico.getValorMaoDeObra());
+                if (binding.editValorServico.getText().toString().isEmpty()){
+                    binding.editValorServico.setText("0,00");
+                }
+
+
+            if (ordemServico.isGarantia()){
+
+                Util.textoNegrito(binding.textGarantia.getText() + "  " + "*sim*",binding.textGarantia, null);
+
+            }else {
+                Util.textoNegrito(binding.textGarantia.getText() + "  " + "*não*",binding.textGarantia, null);
+            }
+
+            String sUnidade = ordemServico.getMaoDeObra();
+            String[] arrayUnidade = getResources().getStringArray(R.array.tipo_servico);
+            for (int i = 0; i < arrayUnidade.length; i++) {
+                if (arrayUnidade[i].equals(sUnidade)) {
+                    binding.spinner.setSelection(i);
+                    break;
+                }
+            }
+        }
+
         if (itemVendaList != null) {
             configRvProdutos(itemVendaList);
             binding.textValorPecas.setText(total());
@@ -135,18 +168,17 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
             total = total.add(preco);
             binding.textValorTotal.setText(NumberFormat.getCurrencyInstance().format(total));
 
-        }
-        if (ordemServico != null){
-            binding.textNome.setText(binding.textNome.getText() + "  " + ordemServico.getIdCliente().getNome());
-            binding.textEquipamento.setText(binding.textEquipamento.getText() + "  " + ordemServico.getEquipamento());
-            binding.textDefeito.setText(binding.textDefeito.getText() + "  " + ordemServico.getDefeitoRelatado());
-            binding.editDefeito.setText( ordemServico.getDefeitoEncontrado());
-            binding.editValorServico.setText( ordemServico.getValorMaoDeObra());
-            if (ordemServico.isGarantia()){
-                binding.textGarantia.setText(binding.textGarantia.getText() + "  " + "sim");
-            }else {
-                binding.textGarantia.setText(binding.textGarantia.getText() + "  " + "não");
-            }
+        }else if(ordemServico.getItens() != null){
+            itemVendaList = new ArrayList<>(ordemServico.getItens());
+            configRvProdutos(itemVendaList);
+            binding.textValorPecas.setText(total());
+
+            BigDecimal total = Util.convertMoneEmBigDecimal(total());
+            total = total.divide(new BigDecimal("100"));
+            BigDecimal preco = Util.convertMoneEmBigDecimal(binding.editValorServico.getText().toString());
+            preco = preco.divide(new BigDecimal("100"));
+            total = total.add(preco);
+            binding.textValorTotal.setText(NumberFormat.getCurrencyInstance().format(total));
         }
 
 

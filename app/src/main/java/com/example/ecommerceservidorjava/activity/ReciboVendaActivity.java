@@ -3,6 +3,7 @@ package com.example.ecommerceservidorjava.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
@@ -23,7 +24,7 @@ public class ReciboVendaActivity extends AppCompatActivity {
     private ActivityReciboVendaBinding binding;
     private Venda vendaSelecionada;
     private SPM spm = new SPM(this);
-    private PerfilEmpresa perfilEmpresa ;
+    private PerfilEmpresa perfilEmpresa;
     private Configuracao configuracao;
     private String recibo;
 
@@ -86,32 +87,32 @@ public class ReciboVendaActivity extends AppCompatActivity {
         });
     }
 
-    private void criarRecibo(){
+    private void criarRecibo() {
         vendaSelecionada = (Venda) getIntent().getSerializableExtra("vendaSelecionado");
         String produtos = "";
         for (int i = 0; i < vendaSelecionada.getItens().size(); i++) {
             produtos = produtos + vendaSelecionada.getItens().get(i).getQtd() + " x " +
-                    vendaSelecionada.getItens().get(i).getNome()+ "    " +
+                    vendaSelecionada.getItens().get(i).getNome() + "    " +
                     vendaSelecionada.getItens().get(i).getPreco_venda() + "\n";
 
         }
         String divisao = "--------------------------------------------------------------------";
 
-
-        recibo =  "*" +perfilEmpresa.getNome() + "*" +"\n"+
-                "CNPJ: " +perfilEmpresa.getDocumento()+ "\n"+
-                perfilEmpresa.getEndereco().getLogradouro()+"\n"+
-                perfilEmpresa.getEndereco().getBairro()+"\n"+
-                perfilEmpresa.getEndereco().getLocalidade()+"\n"+
-                divisao+"\n"+
-                "Cliente: " + vendaSelecionada.getIdCliente().getNome()+"\n"+
-                "Telefone: " + vendaSelecionada.getIdCliente().getTelefone1()+"\n"+
-                divisao + "\n"+
-                produtos+
-                divisao + "\n"+
-                "Subtotal:   " + vendaSelecionada.getSubTotal()+ "\n"+
-                "Desconto:   " + vendaSelecionada.getDesconto() + "%"+ "\n"+
-                "Total:   " + vendaSelecionada.getTotal()+ "\n"
+        recibo = "*VENDA*" + "\n" +
+                "*" + perfilEmpresa.getNome() + "*" + "\n" +
+                "CNPJ: " + perfilEmpresa.getDocumento() + "\n" +
+                perfilEmpresa.getEndereco().getLogradouro() + "\n" +
+                perfilEmpresa.getEndereco().getBairro() + "\n" +
+                perfilEmpresa.getEndereco().getLocalidade() + "\n" +
+                divisao + "\n" +
+                "Cliente: " + vendaSelecionada.getIdCliente().getNome() + "\n" +
+                "Telefone: " + vendaSelecionada.getIdCliente().getTelefone1() + "\n" +
+                divisao + "\n" +
+                produtos +
+                divisao + "\n" +
+                "Subtotal:   " + vendaSelecionada.getSubTotal() + "\n" +
+                "Desconto:   " + vendaSelecionada.getDesconto() + "%" + "\n" +
+                "Total:   " + vendaSelecionada.getTotal() + "\n"
         ;
         binding.editRecibo.setText(recibo);
 
@@ -133,7 +134,6 @@ public class ReciboVendaActivity extends AppCompatActivity {
         //sendIntent.putExtra(Intent.EXTRA_STREAM, recibo);
         sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         sendIntent.putExtra("jid", PhoneNumberUtils.stripSeparators(telefone) + "@s.whatsapp.net");
-
         startActivity(sendIntent);
         // binding.progressBar2.setVisibility(View.GONE);
 

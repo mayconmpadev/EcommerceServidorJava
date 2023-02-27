@@ -385,17 +385,20 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
         File pdfFolder = new File(getExternalFilesDir(null)
                 + File.separator
-                + "ecommercempa/ordens_servicos"
+                + "ecommercempa/ordemServico"
                 + File.separator);
         if (!pdfFolder.exists()) {
             pdfFolder.mkdirs();
         }
-        File myFile = new File(pdfFolder + File.separator + "venda" + ".pdf");
+        File myFile = new File(pdfFolder + File.separator + "ordemServico" + ".pdf");
         String telefone = "55" + ordemServico.getIdCliente().getTelefone1().replaceAll("\\D", "");
         Intent sendIntent = new Intent("android.intent.action.SEND");
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
-        sendIntent.setPackage(
-                "com.whatsapp");
+        if(isAppInstalled("com.whatsapp")) {
+            sendIntent.setPackage("com.whatsapp");
+        }else {
+            sendIntent.setPackage("com.whatsapp.w4b");
+        }
         sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sendIntent.setType("application/pdf");
         sendIntent.putExtra(Intent.EXTRA_TEXT, "sample text you want to send along with the image");
@@ -413,12 +416,12 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
         try {
             File pdfFolder = new File(getExternalFilesDir(null)
                     + File.separator
-                    + "ecommercempa/ordens_servicos"
+                    + "ecommercempa/ordemServico"
                     + File.separator);
             if (!pdfFolder.exists()) {
                 pdfFolder.mkdirs();
             }
-            File myFile = new File(pdfFolder + File.separator + "venda" + ".pdf");
+            File myFile = new File(pdfFolder + File.separator + "ordemServico" + ".pdf");
             Intent email = new Intent(Intent.ACTION_SENDTO);
             email.setType("message/rfc822");
             email.putExtra(Intent.EXTRA_SUBJECT, "Orcamento em anexo");
@@ -485,7 +488,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
             if (!pdfFolder.exists()) {
                 pdfFolder.mkdirs();
             }
-            File myFile = new File(pdfFolder + File.separator + "orcamento" + ".pdf");
+            File myFile = new File(pdfFolder + File.separator + "ordemServico" + ".pdf");
             String telefone = "55" + ordemServico.getIdCliente().getTelefone1().replaceAll("\\D", "");
             Intent sendIntent = new Intent("android.intent.action.SEND");
             Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
@@ -558,6 +561,12 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
             dialogBinding.llStatus.setVisibility(View.VISIBLE);
         }
 
+        dialogBinding.llEnviar.setOnClickListener(view -> {
+            dialog.dismiss();
+            showDialogEnviar();
+
+        });
+
         dialogBinding.llEditar.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CadastroOrdemServicoActivity.class);
             intent.putExtra("ordemServiçoSelecionada", ordemServico);
@@ -580,6 +589,21 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
             Intent intent = new Intent(this, OrcarActivity.class);
             intent.putExtra("ordemServiçoSelecionada", ordemServico);
             startActivity(intent);
+
+        });
+
+        dialogBinding.llPdf.setOnClickListener(view -> {
+            dialog.dismiss();
+            GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(ordemServico, this);
+            exibirPDF();
+
+        });
+
+        dialogBinding.llRecibo.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), ReciboOrcamentoActivity.class);
+            intent.putExtra("ordemServicoSelecionado", ordemServico);
+            startActivity(intent);
+            dialog.dismiss();
 
         });
 
@@ -625,6 +649,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
     }
 
     private void showDialogEnviar() {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogOpcaoEnviarBinding dialogBinding = DialogOpcaoEnviarBinding
@@ -632,7 +657,14 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
 
         dialogBinding.llWhatsapp.setOnClickListener(view -> {
-            enviarPDFWhatsapp();
+            if (ordemServico != null) {
+                if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")) {
+                    enviarPDFWhatsapp();
+                } else {
+                    Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();
+                }
+
+            }
             dialog.dismiss();
         });
 
@@ -651,6 +683,16 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
         builder.setView(dialogBinding.getRoot());
         dialog = builder.create();
         dialog.show();
+    }
+
+    private boolean isAppInstalled(String packageName) {
+        try {
+            getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
+        }
+        catch (PackageManager.NameNotFoundException ignored) {
+            return false;
+        }
     }
 
 
@@ -724,7 +766,6 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
     @Override
     public void onLongClick(OrdemServico ordemServico) {
         // showDialogDelete(ordemServico);
-        GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(ordemServico, this);
-        exibirPDF();
+
     }
 }

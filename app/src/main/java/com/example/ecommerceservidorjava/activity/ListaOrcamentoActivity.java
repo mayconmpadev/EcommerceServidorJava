@@ -126,7 +126,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     private void recuperarIntent() {
         orcamento = (Orcamento) getIntent().getSerializableExtra("orcamento");
         if (orcamento != null) {
-            if(isAppInstalled("com.whatsapp")) {
+            if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")) {
                 enviarPDFWhatsapp();
             } else {
                 Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();
@@ -393,8 +393,11 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         String telefone = "55" + orcamento.getIdCliente().getTelefone1().replaceAll("\\D", "");
         Intent sendIntent = new Intent("android.intent.action.SEND");
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
-        sendIntent.setPackage(
-                "com.whatsapp");
+        if(isAppInstalled("com.whatsapp")) {
+            sendIntent.setPackage("com.whatsapp");
+        }else {
+            sendIntent.setPackage("com.whatsapp.w4b");
+        }
         sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sendIntent.setType("application/pdf");
         sendIntent.putExtra(Intent.EXTRA_TEXT, "sample text you want to send along with the image");
@@ -407,8 +410,6 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
 
     }
-
-
 
     private boolean isAppInstalled(String packageName) {
         try {
@@ -644,7 +645,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
         dialogBinding.llWhatsapp.setOnClickListener(view -> {
             if (orcamento != null) {
-                if(isAppInstalled("com.whatsapp")) {
+                if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")) {
                     enviarPDFWhatsapp();
                 } else {
                     Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();

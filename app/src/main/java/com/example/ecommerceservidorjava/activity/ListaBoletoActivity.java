@@ -72,23 +72,6 @@ public class ListaBoletoActivity extends AppCompatActivity implements ListaBolet
         recuperarIntent();
         configSearchView();
         recuperaVendas();
-        binding.floatingActionButton.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), CadastroVendaActivity.class);
-            startActivity(intent);
-        });
-        binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0 && binding.floatingActionButton.getVisibility() == View.VISIBLE) {
-                    binding.floatingActionButton.hide();
-                } else if (dy < 0 && binding.floatingActionButton.getVisibility() != View.VISIBLE) {
-                    binding.floatingActionButton.show();
-                }
-            }
-        });
-
-        binding.ibFiltro.setOnClickListener(view -> showDialogPagamento());
     }
 
     private void configSearchView() {

@@ -48,6 +48,8 @@ public class Util {
 
     }
 
+
+
     public static void textoNegrito(final String texto, final TextView textView, EditText editText) {
 
         final SpannableString text = new SpannableString(texto.toString().replace("+", "").replace("/", "").replace("*", ""));
