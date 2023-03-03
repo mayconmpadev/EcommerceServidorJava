@@ -290,10 +290,11 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         binding.ibDinheiro.setBackgroundResource(R.drawable.borda_2);
         binding.ibDebito.setBackgroundResource(R.drawable.borda);
         binding.ibCredito.setBackgroundResource(R.drawable.borda);
+        binding.ibBoleto.setBackgroundResource(R.drawable.borda);
         binding.textDinheiro.setTextColor(getResources().getColor(R.color.preto));
-        //binding.textDinheiro.setTypeface(Typeface.DEFAULT_BOLD);
         binding.textDebito.setTextColor(getResources().getColor(R.color.grey_40));
         binding.textCredito.setTextColor(getResources().getColor(R.color.grey_40));
+        binding.textBoleto.setTextColor(getResources().getColor(R.color.grey_40));
         pagamento = "dinheiro";
         binding.includeSheet.tvTotalCart.setText(total(pagamento, configuracao.getDesconto_dinheiro()));
         desconto = configuracao.getDesconto_dinheiro();

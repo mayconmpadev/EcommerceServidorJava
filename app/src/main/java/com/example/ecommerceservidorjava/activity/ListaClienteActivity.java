@@ -192,7 +192,7 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
         });
 
         dialogBinding.btnEditar.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), CadastroClienteActivity.class);
+            Intent intent = new Intent(getApplicationContext(), CadastroCliente2Activity.class);
             intent.putExtra("clienteSelecionado", cliente);
             startActivity(intent);
             dialog.dismiss();
