@@ -51,6 +51,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Maria Silva Nogueira"
+                    android:enabled="false"
                     android:inputType="textCapSentences" />
 
                 <TextView
@@ -65,6 +66,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="JFOFJFKDKDJF"
+                    android:enabled="false"
                     android:inputType="textCapSentences" />
 
                 <LinearLayout
@@ -101,13 +103,14 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Valor Total:" />
+                        android:text="Total a pagar:" />
 
                     <com.blackcat.currencyedittext.CurrencyEditText
                         android:id="@+id/editValor"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        android:enabled="false"
                         android:background="@drawable/bg_edit_off"
                         android:padding="16dp" />
 
@@ -129,10 +132,13 @@
                     android:text="Parcela:" />
 
                 <LinearLayout
+                    android:id="@+id/ll_parcela1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:orientation="horizontal">
+                    android:background="@drawable/borda_red"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -146,14 +152,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_edit_off"
-                        android:padding="16dp" />
+                        android:padding="12dp" />
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_parcela2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:orientation="horizontal">
+                    android:background="@drawable/borda_red"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -167,13 +176,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_edit_off"
-                        android:padding="16dp" />
+                        android:padding="12dp" />
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_parcela3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:background="@drawable/borda_red"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:padding="8dp">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -187,8 +200,35 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_edit_off"
-                        android:padding="16dp" />
+                        android:padding="12dp" />
                 </LinearLayout>
+
+             <LinearLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1"
+                 android:layout_marginHorizontal="4dp"
+                 android:layout_gravity="top"
+                 android:orientation="horizontal">
+
+                 <TextView
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:textSize="16sp"
+                     android:textStyle="bold"
+                     android:layout_weight="1"
+                     android:text="Valor pago" />
+
+                 <TextView
+                     android:id="@+id/textValorPago"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:textSize="16sp"
+                     android:textStyle="bold"
+                     android:gravity="right"
+                     android:layout_weight="1"
+                     android:text="R$ 0,00" />
+             </LinearLayout>
 
                 <android.widget.Button
                     android:id="@+id/btnSalvar"

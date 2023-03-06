@@ -617,6 +617,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
         dialogBinding.llEditar.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), BoletoActivity.class);
+            intent.putExtra("vendaSelecionado", venda);
             startActivity(intent);
 
         });

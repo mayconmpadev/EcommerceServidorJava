@@ -587,6 +587,7 @@ public class ListaBoletoActivity extends AppCompatActivity implements ListaBolet
 
         dialogBinding.llEditar.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), BoletoActivity.class);
+            intent.putExtra("boletoSelecionado", boleto);
             startActivity(intent);
 
         });
@@ -773,12 +774,9 @@ public class ListaBoletoActivity extends AppCompatActivity implements ListaBolet
     public void onClick(Boleto boleto, int position) {
         this.boleto = boleto;
 
-      //  showDialog(boleto, position);
-      //  GerarPDFVendas gerarPDFOrcamento = new GerarPDFVendas(this.boleto, this);
-        // while (Parametro.bPdf){
-        // Toast.makeText(getApplicationContext(), "teste", Toast.LENGTH_SHORT).show();
-        // break;
-        //   }
+        showDialog(boleto, position);
+        //GerarPDFVendas gerarPDFOrcamento = new GerarPDFVendas(this.boleto, this);
+
 
 
     }
