@@ -518,13 +518,12 @@ public class InicioFragment extends Fragment {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
                 Despesa despesa = snapshot.getValue(Despesa.class);
-                for (int i = 0; i < despesa.getParcelas().size(); i++) {
-                    if (Timestamp.getFormatedDateTime(Long.parseLong(despesa.getParcelas().get(i).getData()), "MMyyyy").equals(String.format("%02d", mes) + ano)) {
-                        despesaList.add(despesa);
-
+                if (snapshot.exists()){
+                    for (int i = 0; i < despesa.getParcelas().size(); i++) {
+                        if (Timestamp.getFormatedDateTime(Long.parseLong(despesa.getParcelas().get(i).getData()), "MMyyyy").equals(String.format("%02d", mes) + ano)) {
+                            despesaList.add(despesa);
+                        }
                     }
-
-
                 }
 
                 totalDespesas();

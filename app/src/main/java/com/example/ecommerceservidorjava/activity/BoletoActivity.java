@@ -59,7 +59,12 @@ public class BoletoActivity extends AppCompatActivity {
             if (boletoSelecionado.getParcela1() != null) {
                 if (!boletoSelecionado.getParcela1().replaceAll("[^0-9]", "").equals("000")){
                     binding.editParcela1.setText(boletoSelecionado.getParcela1());
-                    binding.llParcela1.setBackgroundResource(R.drawable.borda);
+                    int pL = binding.llParcela1.getPaddingLeft();
+                    int pT = binding.llParcela1.getPaddingTop();
+                    int pR = binding.llParcela1.getPaddingRight();
+                    int pB = binding.llParcela1.getPaddingBottom();
+                    binding.llParcela1.setBackground(getDrawable(R.drawable.borda));
+                    binding.llParcela1.setPadding(pL,pT,pR,pB);
                 }
 
             }
