@@ -18,8 +18,11 @@ import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.example.ecommerceservidorjava.util.Timestamp;
+import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.DatabaseReference;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -88,6 +91,7 @@ public class BoletoActivity extends AppCompatActivity {
 
             // binding.btnCategorias.setText(boletoSelecionado.getCategoria());
             timestap = Long.parseLong(boletoSelecionado.getData());
+            somarParcelas();
         }
     }
 
@@ -136,5 +140,25 @@ public class BoletoActivity extends AppCompatActivity {
             }
 
         });
+    }
+
+    private void somarParcelas(){
+        BigDecimal parcela1 = new  BigDecimal("0");
+        BigDecimal parcela2 = new  BigDecimal("0");
+        BigDecimal parcela3 = new  BigDecimal("0");
+        BigDecimal dividir = new  BigDecimal("100");
+        BigDecimal total = new  BigDecimal("0");
+        if (boletoSelecionado.getParcela1() != null){
+            parcela1 =Util.convertMoneEmBigDecimal(boletoSelecionado.getParcela1());
+        }
+        if (boletoSelecionado.getParcela2() != null){
+            parcela2 =Util.convertMoneEmBigDecimal(boletoSelecionado.getParcela2());
+        }
+        if (boletoSelecionado.getParcela3() != null){
+            parcela3 =Util.convertMoneEmBigDecimal(boletoSelecionado.getParcela3());
+        }
+        total = parcela1.add(parcela2.add(parcela3));
+        total = total.divide(dividir);
+        binding.textValorPago.setText(NumberFormat.getCurrencyInstance().format(total));
     }
 }

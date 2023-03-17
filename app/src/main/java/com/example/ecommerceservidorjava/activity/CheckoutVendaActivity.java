@@ -408,7 +408,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
             venda.setIdUsuario(usuario);
             venda.setData(String.valueOf(Timestamp.getUnixTimestamp()));
             venda.setItens(itemVendaList);
-            venda.setStatus("Em analise");
+            venda.setStatus("Finalizada");
             venda.setDesconto(String.valueOf(desconto));
             venda.setTipoPagamento(pagamento);
             venda.setTotal(binding.includeSheet.tvTotalCart.getText().toString());
