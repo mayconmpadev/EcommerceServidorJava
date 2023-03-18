@@ -147,7 +147,7 @@ public class BoletoActivity extends AppCompatActivity {
         BigDecimal parcela2 = new  BigDecimal("0");
         BigDecimal parcela3 = new  BigDecimal("0");
         BigDecimal dividir = new  BigDecimal("100");
-        BigDecimal total = new  BigDecimal("0");
+        BigDecimal total ;
         if (boletoSelecionado.getParcela1() != null){
             parcela1 =Util.convertMoneEmBigDecimal(boletoSelecionado.getParcela1());
         }
