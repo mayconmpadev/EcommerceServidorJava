@@ -98,23 +98,19 @@ public class BoletoActivity extends AppCompatActivity {
     private void setDateTimeField() {
 
         final Calendar newCalendar = Calendar.getInstance();
-        fromDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+        fromDatePickerDialog = new DatePickerDialog(this, (view, year, monthOfYear, dayOfMonth) -> {
+            // Calendar newDate = Calendar.getInstance();
+            //newDate.set(year, monthOfYear, dayOfMonth);
+            // culto.setText(dateFormatter.format(newDate.getTime()));
 
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                // Calendar newDate = Calendar.getInstance();
-                //newDate.set(year, monthOfYear, dayOfMonth);
-                // culto.setText(dateFormatter.format(newDate.getTime()));
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, monthOfYear);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            long date_ship_millis = calendar.getTimeInMillis();
+            timestap = date_ship_millis / 1000;
+            binding.editData.setText(Timestamp.getFormatedDateTime(timestap, "dd/MM/yyyy"));
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH, monthOfYear);
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                long date_ship_millis = calendar.getTimeInMillis();
-                timestap = date_ship_millis / 1000;
-                binding.editData.setText(Timestamp.getFormatedDateTime(timestap, "dd/MM/yyyy"));
-
-
-            }
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
 
@@ -129,7 +125,7 @@ public class BoletoActivity extends AppCompatActivity {
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
-                .child("boletos").child(boletoSelecionado.getId());
+                .child("vendas").child(boletoSelecionado.getId());
 
         databaseReference.setValue(boletoSelecionado).addOnCompleteListener(task1 -> {
 
@@ -158,7 +154,23 @@ public class BoletoActivity extends AppCompatActivity {
             parcela3 =Util.convertMoneEmBigDecimal(boletoSelecionado.getParcela3());
         }
         total = parcela1.add(parcela2.add(parcela3));
+        int resultado = total.compareTo(Util.convertMoneEmBigDecimal(boletoSelecionado.getTotal()));
+        Toast.makeText(this, total.toString(), Toast.LENGTH_SHORT).show();
         total = total.divide(dividir);
+
         binding.textValorPago.setText(NumberFormat.getCurrencyInstance().format(total));
+
+        Toast.makeText(this, Util.convertMoneEmBigDecimal(boletoSelecionado.getTotal()).toString(), Toast.LENGTH_SHORT).show();
+
+        if (resultado > 0){
+            Toast.makeText(this, resultado + "  O valor pago é maior " + boletoSelecionado.getTotal(), Toast.LENGTH_SHORT).show();
+        }
+        if (resultado < 0){
+            Toast.makeText(this, resultado + "  O valor pago é menor "+ boletoSelecionado.getTotal(), Toast.LENGTH_SHORT).show();
+        }
+
+        if (resultado == 0){
+            Toast.makeText(this, resultado + "  O valor pago esta correto "+ boletoSelecionado.getTotal(), Toast.LENGTH_SHORT).show();
+        }
     }
 }
