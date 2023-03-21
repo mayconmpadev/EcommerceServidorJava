@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ActivityBoletoBinding;
 import com.example.ecommerceservidorjava.databinding.ActivityCadastroDespesaBinding;
-import com.example.ecommerceservidorjava.model.Boleto;
+
 import com.example.ecommerceservidorjava.model.Despesa;
 import com.example.ecommerceservidorjava.model.Venda;
 import com.example.ecommerceservidorjava.util.Base64Custom;
@@ -27,7 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class BoletoActivity extends AppCompatActivity {
-    Boleto boletoSelecionado;
+    Venda boletoSelecionado;
     ActivityBoletoBinding binding;
     private DatePickerDialog fromDatePickerDialog;
     private SimpleDateFormat dateFormatter;
@@ -52,13 +52,13 @@ public class BoletoActivity extends AppCompatActivity {
 
     private void recuperarIntent() {
 
-        boletoSelecionado = (Boleto) getIntent().getSerializableExtra("boletoSelecionado");
+        boletoSelecionado = (Venda) getIntent().getSerializableExtra("vendaSelecionado");
         if (boletoSelecionado != null) {
             binding.btnSalvar.setText("Salvar");
 
-            binding.editCliente.setText(boletoSelecionado.getIdVenda().getIdCliente().getNome());
+            binding.editCliente.setText(boletoSelecionado.getIdCliente().getNome());
             binding.editID.setText(boletoSelecionado.getId());
-            binding.editValor.setText(boletoSelecionado.getIdVenda().getTotal());
+            binding.editValor.setText(boletoSelecionado.getTotal());
             if (boletoSelecionado.getParcela1() != null) {
                 if (!boletoSelecionado.getParcela1().replaceAll("[^0-9]", "").equals("000")){
                     binding.editParcela1.setText(boletoSelecionado.getParcela1());

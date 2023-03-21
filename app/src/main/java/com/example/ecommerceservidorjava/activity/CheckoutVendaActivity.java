@@ -407,13 +407,13 @@ public class CheckoutVendaActivity extends AppCompatActivity {
             }
             venda.setIdUsuario(usuario);
             venda.setData(String.valueOf(Timestamp.getUnixTimestamp()));
+            venda.setDataBoleto(String.valueOf(Timestamp.getUnixTimestamp()));
             venda.setItens(itemVendaList);
+            venda.setTipoPagamento(pagamento);
             venda.setStatus("Finalizada");
             venda.setDesconto(String.valueOf(desconto));
-            venda.setTipoPagamento(pagamento);
             venda.setTotal(binding.includeSheet.tvTotalCart.getText().toString());
             venda.setSubTotal(subTotal);
-
             SPM spm = new SPM(getApplicationContext());
             DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
                     .child("empresas")
