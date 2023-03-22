@@ -414,6 +414,11 @@ public class CheckoutVendaActivity extends AppCompatActivity {
             venda.setDesconto(String.valueOf(desconto));
             venda.setTotal(binding.includeSheet.tvTotalCart.getText().toString());
             venda.setSubTotal(subTotal);
+            if (pagamento.equals("boleto")){
+                venda.setBoletoPago(false);
+            }else {
+                venda.setBoletoPago(true);
+            }
             SPM spm = new SPM(getApplicationContext());
             DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
                     .child("empresas")

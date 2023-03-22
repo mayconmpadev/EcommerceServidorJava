@@ -15,6 +15,7 @@ public class Venda implements Serializable {
     private String subTotal;
     private String tipoPagamento;
     private String dataBoleto;
+    private boolean boletoPago;
     private String parcela1;
     private String parcela2;
     private String parcela3;
@@ -111,6 +112,14 @@ public class Venda implements Serializable {
 
     public void setDataBoleto(String dataBoleto) {
         this.dataBoleto = dataBoleto;
+    }
+
+    public boolean isBoletoPago() {
+        return boletoPago;
+    }
+
+    public void setBoletoPago(boolean boletoPago) {
+        this.boletoPago = boletoPago;
     }
 
     public String getParcela1() {
