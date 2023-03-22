@@ -133,7 +133,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Telefone" />
+                        android:text="Telefone 1" />
 
                     <com.santalu.maskara.widget.MaskEditText
                         android:id="@+id/edtTelefone1"
@@ -159,7 +159,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Telefone" />
+                        android:text="Telefone 2" />
 
                     <com.santalu.maskara.widget.MaskEditText
                         android:id="@+id/edtTelefone2"

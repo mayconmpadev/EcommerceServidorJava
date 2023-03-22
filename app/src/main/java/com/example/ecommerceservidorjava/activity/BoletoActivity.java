@@ -46,7 +46,10 @@ public class BoletoActivity extends AppCompatActivity {
         });
 
         binding.btnSalvar.setOnClickListener(view -> {
-            salvar();
+            if (somarParcelas()){
+                salvar();
+            }
+
         });
     }
 
@@ -117,6 +120,7 @@ public class BoletoActivity extends AppCompatActivity {
     }
 
     private void salvar() {
+        binding.progressBar.setVisibility(View.VISIBLE);
         boletoSelecionado.setParcela1(binding.editParcela1.getText().toString());
         boletoSelecionado.setParcela2(binding.editParcela2.getText().toString());
         boletoSelecionado.setParcela3(binding.editParcela3.getText().toString());
@@ -130,15 +134,18 @@ public class BoletoActivity extends AppCompatActivity {
         databaseReference.setValue(boletoSelecionado).addOnCompleteListener(task1 -> {
 
             if (task1.isSuccessful()) {
+                binding.progressBar.setVisibility(View.GONE);
                 finish();
             } else {
+                binding.progressBar.setVisibility(View.GONE);
                 Toast.makeText(getApplicationContext(), "erro de foto", Toast.LENGTH_SHORT).show();
             }
 
         });
     }
 
-    private void somarParcelas(){
+    private boolean somarParcelas(){
+        boolean a = false;
         BigDecimal parcela1 = new  BigDecimal("0");
         BigDecimal parcela2 = new  BigDecimal("0");
         BigDecimal parcela3 = new  BigDecimal("0");
@@ -160,17 +167,24 @@ public class BoletoActivity extends AppCompatActivity {
 
         binding.textValorPago.setText(NumberFormat.getCurrencyInstance().format(total));
 
-        Toast.makeText(this, Util.convertMoneEmBigDecimal(boletoSelecionado.getTotal()).toString(), Toast.LENGTH_SHORT).show();
 
         if (resultado > 0){
-            Toast.makeText(this, resultado + "  O valor pago é maior " + boletoSelecionado.getTotal(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,  "  O valor pago é maior " , Toast.LENGTH_SHORT).show();
+            boletoSelecionado.setBoletoPago(true);
+            a = true;
         }
         if (resultado < 0){
-            Toast.makeText(this, resultado + "  O valor pago é menor "+ boletoSelecionado.getTotal(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "  O valor pago é menor ", Toast.LENGTH_SHORT).show();
+            boletoSelecionado.setBoletoPago(false);
+            a = false;
         }
 
         if (resultado == 0){
-            Toast.makeText(this, resultado + "  O valor pago esta correto "+ boletoSelecionado.getTotal(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,  "  O valor pago esta correto ", Toast.LENGTH_SHORT).show();
+            boletoSelecionado.setBoletoPago(true);
+            a = true;
         }
+
+        return a;
     }
 }

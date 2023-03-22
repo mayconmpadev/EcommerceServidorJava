@@ -343,7 +343,6 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
 
     private void buscarCEP() {
         String cep = binding.edtCep.getText().toString().replace("-", "").replaceAll("_", "");
-        Toast.makeText(getApplicationContext(), cep, Toast.LENGTH_SHORT).show();
 
         if (cep.length() == 8) {
 
