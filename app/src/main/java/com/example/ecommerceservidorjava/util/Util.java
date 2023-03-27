@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.math.BigDecimal;
+import java.text.Normalizer;
 
 /**
  * Created by mac on 09/05/2018.
@@ -145,6 +146,12 @@ public class Util {
 
         }
         return bigDecimal;
+    }
+
+    public static String removerAcentos(String texto) {
+        String textoSemAcento = Normalizer.normalize(texto, Normalizer.Form.NFD)
+                .replaceAll("[^\\p{ASCII}]", "");
+        return textoSemAcento;
     }
 
 }

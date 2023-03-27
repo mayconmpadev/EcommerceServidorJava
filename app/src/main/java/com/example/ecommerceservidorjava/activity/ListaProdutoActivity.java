@@ -30,6 +30,7 @@ import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -126,7 +127,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
         filtroProdutoNomeList.clear();
         for (Produto produto : filtroProdutoCategoriaList) {
-            if (produto.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+            if (Util.removerAcentos(produto.getNome().toUpperCase(Locale.ROOT)).contains(Util.removerAcentos(pesquisa.toUpperCase(Locale.ROOT)))) {
                 filtroProdutoNomeList.add(produto);
             }
         }
