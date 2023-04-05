@@ -151,15 +151,11 @@ public class BoletoActivity extends AppCompatActivity {
         BigDecimal parcela3 = new  BigDecimal("0");
         BigDecimal dividir = new  BigDecimal("100");
         BigDecimal total ;
-        if (boletoSelecionado.getParcela1() != null){
-            parcela1 =Util.convertMoneEmBigDecimal(boletoSelecionado.getParcela1());
-        }
-        if (boletoSelecionado.getParcela2() != null){
-            parcela2 =Util.convertMoneEmBigDecimal(boletoSelecionado.getParcela2());
-        }
-        if (boletoSelecionado.getParcela3() != null){
-            parcela3 =Util.convertMoneEmBigDecimal(boletoSelecionado.getParcela3());
-        }
+
+            parcela1 =Util.convertMoneEmBigDecimal(binding.editParcela1.getText().toString());
+            parcela2 =Util.convertMoneEmBigDecimal(binding.editParcela2.getText().toString());
+            parcela3 =Util.convertMoneEmBigDecimal(binding.editParcela3.getText().toString());
+
         total = parcela1.add(parcela2.add(parcela3));
         int resultado = total.compareTo(Util.convertMoneEmBigDecimal(boletoSelecionado.getTotal()));
         Toast.makeText(this, total.toString(), Toast.LENGTH_SHORT).show();
@@ -169,9 +165,14 @@ public class BoletoActivity extends AppCompatActivity {
 
 
         if (resultado > 0){
-            Toast.makeText(this,  "  O valor pago é maior " , Toast.LENGTH_SHORT).show();
-            boletoSelecionado.setBoletoPago(true);
-            a = true;
+            if (parcela1.compareTo(BigDecimal.ZERO) == 0){
+                Toast.makeText(this,  "  A primeira parcela não pode ser R$ 0,00 " , Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(this,  "  O valor pago é maior " , Toast.LENGTH_SHORT).show();
+                boletoSelecionado.setBoletoPago(true);
+                a = true;
+            }
+
         }
         if (resultado < 0){
             Toast.makeText(this, "  O valor pago é menor ", Toast.LENGTH_SHORT).show();
