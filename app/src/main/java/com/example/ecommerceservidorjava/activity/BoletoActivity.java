@@ -33,7 +33,8 @@ public class BoletoActivity extends AppCompatActivity {
     private SimpleDateFormat dateFormatter;
     private long timestap;
     private SPM spm = new SPM(this);
-//ghfghfghf
+
+    //ghfghfghf
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +47,7 @@ public class BoletoActivity extends AppCompatActivity {
         });
 
         binding.btnSalvar.setOnClickListener(view -> {
-            if (somarParcelas()){
+            if (somarParcelas()) {
                 salvar();
             }
 
@@ -63,26 +64,26 @@ public class BoletoActivity extends AppCompatActivity {
             binding.editID.setText(boletoSelecionado.getId());
             binding.editValor.setText(boletoSelecionado.getTotal());
             if (boletoSelecionado.getParcela1() != null) {
-                if (!boletoSelecionado.getParcela1().replaceAll("[^0-9]", "").equals("000")){
+                if (!boletoSelecionado.getParcela1().replaceAll("[^0-9]", "").equals("000")) {
                     binding.editParcela1.setText(boletoSelecionado.getParcela1());
                     int pL = binding.llParcela1.getPaddingLeft();
                     int pT = binding.llParcela1.getPaddingTop();
                     int pR = binding.llParcela1.getPaddingRight();
                     int pB = binding.llParcela1.getPaddingBottom();
                     binding.llParcela1.setBackground(getDrawable(R.drawable.borda));
-                    binding.llParcela1.setPadding(pL,pT,pR,pB);
+                    binding.llParcela1.setPadding(pL, pT, pR, pB);
                 }
 
             }
             if (boletoSelecionado.getParcela2() != null) {
-                if (!boletoSelecionado.getParcela2().replaceAll("[^0-9]", "").equals("000")){
+                if (!boletoSelecionado.getParcela2().replaceAll("[^0-9]", "").equals("000")) {
                     binding.editParcela2.setText(boletoSelecionado.getParcela2());
                     binding.llParcela2.setBackgroundResource(R.drawable.borda);
                 }
 
             }
             if (boletoSelecionado.getParcela3() != null) {
-                if (!boletoSelecionado.getParcela3().replaceAll("[^0-9]", "").equals("000")){
+                if (!boletoSelecionado.getParcela3().replaceAll("[^0-9]", "").equals("000")) {
                     binding.editParcela3.setText(boletoSelecionado.getParcela3());
                     binding.llParcela3.setBackgroundResource(R.drawable.borda);
                 }
@@ -144,17 +145,17 @@ public class BoletoActivity extends AppCompatActivity {
         });
     }
 
-    private boolean somarParcelas(){
+    private boolean somarParcelas() {
         boolean a = false;
-        BigDecimal parcela1 = new  BigDecimal("0");
-        BigDecimal parcela2 = new  BigDecimal("0");
-        BigDecimal parcela3 = new  BigDecimal("0");
-        BigDecimal dividir = new  BigDecimal("100");
-        BigDecimal total ;
+        BigDecimal parcela1 = new BigDecimal("0");
+        BigDecimal parcela2 = new BigDecimal("0");
+        BigDecimal parcela3 = new BigDecimal("0");
+        BigDecimal dividir = new BigDecimal("100");
+        BigDecimal total;
 
-            parcela1 =Util.convertMoneEmBigDecimal(binding.editParcela1.getText().toString());
-            parcela2 =Util.convertMoneEmBigDecimal(binding.editParcela2.getText().toString());
-            parcela3 =Util.convertMoneEmBigDecimal(binding.editParcela3.getText().toString());
+        parcela1 = Util.convertMoneEmBigDecimal(binding.editParcela1.getText().toString());
+        parcela2 = Util.convertMoneEmBigDecimal(binding.editParcela2.getText().toString());
+        parcela3 = Util.convertMoneEmBigDecimal(binding.editParcela3.getText().toString());
 
         total = parcela1.add(parcela2.add(parcela3));
         int resultado = total.compareTo(Util.convertMoneEmBigDecimal(boletoSelecionado.getTotal()));
@@ -164,24 +165,35 @@ public class BoletoActivity extends AppCompatActivity {
         binding.textValorPago.setText(NumberFormat.getCurrencyInstance().format(total));
 
 
-        if (resultado > 0){
-            if (parcela1.compareTo(BigDecimal.ZERO) == 0){
-                Toast.makeText(this,  "  A primeira parcela não pode ser R$ 0,00 " , Toast.LENGTH_SHORT).show();
-            }else {
-                Toast.makeText(this,  "  O valor pago é maior " , Toast.LENGTH_SHORT).show();
+        if (resultado > 0) {
+            if (parcela1.compareTo(BigDecimal.ZERO) == 0) {
+                Toast.makeText(this, "  A primeira parcela não pode ser R$ 0,00 ", Toast.LENGTH_SHORT).show();
+            } else if (parcela1.compareTo(BigDecimal.ZERO) != 0 & parcela2.compareTo(BigDecimal.ZERO) == 0 & parcela3.compareTo(BigDecimal.ZERO) != 0){
+                Toast.makeText(this, "  A Segunda parcela não pode ser R$ 0,00 ", Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(this, "  O valor pago é maior !", Toast.LENGTH_SHORT).show();
                 boletoSelecionado.setBoletoPago(true);
                 a = true;
             }
 
         }
-        if (resultado < 0){
-            Toast.makeText(this, "  O valor pago é menor ", Toast.LENGTH_SHORT).show();
+        if (resultado < 0 & parcela1.compareTo(BigDecimal.ZERO) != 0 & parcela2.compareTo(BigDecimal.ZERO) != 0 & parcela3.compareTo(BigDecimal.ZERO) != 0) {
+            Toast.makeText(this, "  O valor pago é menor 1", Toast.LENGTH_SHORT).show();
             boletoSelecionado.setBoletoPago(false);
             a = false;
+        } else if (resultado < 0 & parcela1.compareTo(BigDecimal.ZERO) != 0 & parcela2.compareTo(BigDecimal.ZERO) != 0 & parcela3.compareTo(BigDecimal.ZERO) == 0) {
+            Toast.makeText(this, "  O valor pago é menor 2", Toast.LENGTH_SHORT).show();
+            boletoSelecionado.setBoletoPago(false);
+            a = true;
+        }else if (resultado < 0 & parcela1.compareTo(BigDecimal.ZERO) != 0 & parcela2.compareTo(BigDecimal.ZERO) == 0 & parcela3.compareTo(BigDecimal.ZERO) == 0){
+            Toast.makeText(this, "  O valor pago é menor 3", Toast.LENGTH_SHORT).show();
+            boletoSelecionado.setBoletoPago(false);
+            a = true;
         }
 
-        if (resultado == 0){
-            Toast.makeText(this,  "  O valor pago esta correto ", Toast.LENGTH_SHORT).show();
+        if (resultado == 0) {
+            Toast.makeText(this, "  O valor pago esta correto ", Toast.LENGTH_SHORT).show();
             boletoSelecionado.setBoletoPago(true);
             a = true;
         }
