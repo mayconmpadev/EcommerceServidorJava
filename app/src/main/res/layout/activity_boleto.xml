@@ -206,7 +206,6 @@
              <LinearLayout
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"
-                 android:layout_weight="1"
                  android:layout_marginHorizontal="4dp"
                  android:layout_gravity="top"
                  android:orientation="horizontal">
@@ -223,12 +222,39 @@
                      android:id="@+id/textValorPago"
                      android:layout_width="match_parent"
                      android:layout_height="wrap_content"
-                     android:textSize="16sp"
-                     android:textStyle="bold"
-                     android:gravity="right"
                      android:layout_weight="1"
-                     android:text="R$ 0,00" />
+                     android:gravity="right"
+                     android:text="R$ 0,00"
+                     android:textSize="16sp"
+                     android:textStyle="bold" />
              </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="4dp"
+                    android:layout_gravity="top"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_weight="1"
+                        android:text="Valor pentende" />
+
+                    <TextView
+                        android:id="@+id/textValorPendente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:gravity="right"
+                        android:layout_weight="1"
+                        android:text="R$ 0,00" />
+                </LinearLayout>
 
                 <android.widget.Button
                     android:id="@+id/btnSalvar"

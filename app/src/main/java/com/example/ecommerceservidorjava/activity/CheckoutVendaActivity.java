@@ -34,7 +34,6 @@ import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.example.ecommerceservidorjava.util.Timestamp;
 import com.example.ecommerceservidorjava.util.Util;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -338,8 +337,8 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         binding.textCredito.setTextColor(getResources().getColor(R.color.grey_40));
         binding.textBoleto.setTextColor(getResources().getColor(R.color.preto));
         pagamento = "boleto";
-        binding.includeSheet.tvTotalCart.setText(total(pagamento, 0));
-        desconto = 0;
+        binding.includeSheet.tvTotalCart.setText(total(pagamento, configuracao.getAcrecimo_boleto()));
+        desconto = configuracao.getAcrecimo_boleto();
     }
 
     private void recuperarIntent() {

@@ -54,6 +54,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
                     configuracao = snapshot.getValue(Configuracao.class);
                     binding.edtDescontoDinheiro.setText(String.valueOf(configuracao.getDesconto_dinheiro()));
                     binding.edtDescontoDebito.setText(String.valueOf(configuracao.getDesconto_debito()));
+                    binding.edtAcrecimoBoleto.setText(String.valueOf(configuracao.getAcrecimo_boleto()));
                     binding.edtParcelas.setText(String.valueOf(configuracao.getQtd_parcelas()));
                     binding.edtRodape.setText(configuracao.getRodape());
                     binding.edtLucro.setText(String.valueOf(configuracao.getLucro()));
@@ -75,6 +76,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
     public void validaDadosSalvar() {
         String dinheiro = binding.edtDescontoDinheiro.getText().toString().trim();
         String debito = binding.edtDescontoDebito.getText().toString().trim();
+        String boleto = binding.edtAcrecimoBoleto.getText().toString().trim();
         String parcelas = binding.edtParcelas.getText().toString().trim();
         String lucro = binding.edtLucro.getText().toString().trim();
 
@@ -82,18 +84,23 @@ public class ConfiguracaoActivity extends AppCompatActivity {
 
         if (!dinheiro.isEmpty()) {
             if (!debito.isEmpty()) {
-                if (!parcelas.isEmpty()) {
-                    if (!lucro.isEmpty()) {
+                if (!boleto.isEmpty()) {
+                    if (!parcelas.isEmpty()) {
+                        if (!lucro.isEmpty()) {
 
-                        salvar();
+                            salvar();
 
+                        } else {
+                            binding.edtLucro.requestFocus();
+                            binding.edtLucro.setError("O campo não pode ser vazio.");
+                        }
                     } else {
-                        binding.edtLucro.requestFocus();
-                        binding.edtLucro.setError("O campo não pode ser vazio.");
+                        binding.edtParcelas.requestFocus();
+                        binding.edtParcelas.setError("O campo não pode ser vazio.");
                     }
                 } else {
-                    binding.edtParcelas.requestFocus();
-                    binding.edtParcelas.setError("O campo não pode ser vazio.");
+                    binding.edtAcrecimoBoleto.requestFocus();
+                    binding.edtAcrecimoBoleto.setError("O campo não pode ser vazio.");
                 }
             } else {
                 binding.edtDescontoDebito.requestFocus();
@@ -112,6 +119,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         binding.progressBar.setVisibility(View.VISIBLE);
         configuracao.setDesconto_dinheiro(Integer.parseInt(binding.edtDescontoDinheiro.getText().toString()));
         configuracao.setDesconto_debito(Integer.parseInt(binding.edtDescontoDebito.getText().toString()));
+        configuracao.setAcrecimo_boleto(Integer.parseInt(binding.edtAcrecimoBoleto.getText().toString()));
         configuracao.setQtd_parcelas(Integer.parseInt(binding.edtParcelas.getText().toString()));
         configuracao.setRodape(binding.edtRodape.getText().toString());
         configuracao.setLucro(Integer.parseInt(binding.edtLucro.getText().toString()));
@@ -136,6 +144,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
     private void configClicks() {
         binding.edtDescontoDinheiro.setTransformationMethod(null);
         binding.edtDescontoDebito.setTransformationMethod(null);
+        binding.edtAcrecimoBoleto.setTransformationMethod(null);
         binding.edtParcelas.setTransformationMethod(null);
         binding.edtLucro.setTransformationMethod(null);
         binding.include.include.ibVoltar.setOnClickListener(view -> finish());

@@ -8,6 +8,7 @@ public class Configuracao implements Serializable {
     // vendas
     private int desconto_dinheiro;
     private int desconto_debito;
+    private int acrecimo_boleto;
     private int qtd_parcelas;
     private int lucro;
     // impressão
@@ -39,6 +40,14 @@ public class Configuracao implements Serializable {
 
     public void setDesconto_debito(int desconto_debito) {
         this.desconto_debito = desconto_debito;
+    }
+
+    public int getAcrecimo_boleto() {
+        return acrecimo_boleto;
+    }
+
+    public void setAcrecimo_boleto(int acrecimo_boleto) {
+        this.acrecimo_boleto = acrecimo_boleto;
     }
 
     public int getQtd_parcelas() {
