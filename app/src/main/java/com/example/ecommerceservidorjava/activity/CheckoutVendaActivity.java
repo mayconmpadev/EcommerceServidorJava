@@ -355,7 +355,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
     }
 
     private String total(String tipo, int valor) {
-        Toast.makeText(getApplicationContext(), String.valueOf(valor), Toast.LENGTH_SHORT).show();
         BigDecimal total = new BigDecimal("0");
         BigDecimal desconto = new BigDecimal("0");
 
@@ -485,7 +484,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
                 String qtd = (String) snapshot.getValue().toString();
                 qtdEstoque = Integer.parseInt(qtd);
                     qtdEstoque = qtdEstoque - venda.getItens().get(a).getQtd();
-                    Toast.makeText(getApplicationContext(), String.valueOf(qtdEstoque), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), String.valueOf(qtdEstoque), Toast.LENGTH_SHORT).show();
                     produtoRef.setValue(String.valueOf(qtdEstoque)).addOnSuccessListener(unused -> {
                         if (a == venda.getItens().size() -1){
                             finishAffinity();

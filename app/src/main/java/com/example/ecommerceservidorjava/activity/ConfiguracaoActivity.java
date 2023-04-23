@@ -76,7 +76,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
     public void validaDadosSalvar() {
         String dinheiro = binding.edtDescontoDinheiro.getText().toString().trim();
         String debito = binding.edtDescontoDebito.getText().toString().trim();
-        String boleto = binding.edtAcrecimoBoleto.getText().toString().trim();
+        String boleto = String.valueOf(-1* Integer.parseInt(binding.edtAcrecimoBoleto.getText().toString().trim()));
         String parcelas = binding.edtParcelas.getText().toString().trim();
         String lucro = binding.edtLucro.getText().toString().trim();
 
@@ -119,7 +119,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         binding.progressBar.setVisibility(View.VISIBLE);
         configuracao.setDesconto_dinheiro(Integer.parseInt(binding.edtDescontoDinheiro.getText().toString()));
         configuracao.setDesconto_debito(Integer.parseInt(binding.edtDescontoDebito.getText().toString()));
-        configuracao.setAcrecimo_boleto(Integer.parseInt(binding.edtAcrecimoBoleto.getText().toString()));
+        configuracao.setAcrecimo_boleto(Integer.parseInt(String.valueOf(-1* Integer.parseInt(binding.edtAcrecimoBoleto.getText().toString().trim()))));
         configuracao.setQtd_parcelas(Integer.parseInt(binding.edtParcelas.getText().toString()));
         configuracao.setRodape(binding.edtRodape.getText().toString());
         configuracao.setLucro(Integer.parseInt(binding.edtLucro.getText().toString()));
