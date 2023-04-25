@@ -58,6 +58,7 @@ public class CadastroCliente2Activity extends AppCompatActivity {
     private boolean editar = false;
     private boolean mascara = true;
     private boolean mascara2 = false;
+    private boolean bCheckout = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,7 @@ public class CadastroCliente2Activity extends AppCompatActivity {
 
     //---------------------------------------------------- RECUPERAR OBJETO -----------------------------------------------------------------
     private void recuperarIntent() {
+        bCheckout = getIntent().getBooleanExtra("checkout", false);
         clienteSelecionado = (Cliente) getIntent().getSerializableExtra("clienteSelecionado");
         if (clienteSelecionado != null) {
             binding.btnCriarConta.setText("Editar conta");
@@ -251,7 +253,7 @@ public class CadastroCliente2Activity extends AppCompatActivity {
                                     if (task1.isSuccessful()) {
                                         binding.imageFake.setVisibility(View.GONE);
                                         binding.imagemFoto.setImageURI(resultUri);
-                                        recuperarLogin();
+                                        finish();
                                     } else {
                                         storageReferencere.delete(); //apaga a imagem previamente salva no banco
                                         Toast.makeText(getApplicationContext(), "Erro ao cadastrar", Toast.LENGTH_SHORT).show();

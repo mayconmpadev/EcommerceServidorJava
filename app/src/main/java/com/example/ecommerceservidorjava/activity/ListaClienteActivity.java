@@ -58,6 +58,7 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
         recuperaProdutos();
         binding.floatingActionButton.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CadastroCliente2Activity.class);
+            intent.putExtra("checkout", true);
             startActivity(intent);
         });
         binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
