@@ -92,7 +92,7 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
     private void salvar() {
         binding.progressBar.setVisibility(View.VISIBLE);
         ordemServico.setItens(itemVendaList);
-        ordemServico.setStatus("orçado");
+        ordemServico.setStatus("Orçada, esperando aprovação");
         ordemServico.setMaoDeObra(binding.spinner.getSelectedItem().toString());
         ordemServico.setValorMaoDeObra(binding.editValorServico.getText().toString());
         ordemServico.setDefeitoEncontrado(binding.editDefeito.getText().toString());

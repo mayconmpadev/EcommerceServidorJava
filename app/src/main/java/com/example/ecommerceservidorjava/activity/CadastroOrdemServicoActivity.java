@@ -175,6 +175,7 @@ public class CadastroOrdemServicoActivity extends AppCompatActivity {
             ordemServico.setDefeitoRelatado(defeitoRelatado);
             ordemServico.setObservacao(observação);
             ordemServico.setGarantia(binding.checkGarantia.isChecked());
+            ordemServico.setEntregue(false);
             ordemServico.setStatus(ordemServico.getStatus());
             ordemServico.setDataEntrada(String.valueOf(Timestamp.getUnixTimestamp()));
             if (imagemUri_0 != null) {

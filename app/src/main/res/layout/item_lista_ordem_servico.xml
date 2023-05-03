@@ -67,16 +67,36 @@
                 android:orientation="vertical"
                 android:padding="6dp">
 
-                <TextView
-                    android:id="@+id/textNome"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:text="Maycon Aleixo"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+             <LinearLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:orientation="horizontal">
 
-                    android:textStyle="bold" />
+                 <TextView
+                     android:id="@+id/textNome"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:maxLines="1"
+                     android:layout_weight="1"
+                     android:singleLine="true"
+                     android:text="Maycon Aleixo"
+                     android:layout_marginRight="8dp"
+                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                     android:textStyle="bold" />
+
+                 <TextView
+                     android:id="@+id/textEntregue"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:maxLines="1"
+                     android:visibility="gone"
+                     android:textColor="@color/color_verde"
+                     android:singleLine="true"
+                     android:text="entregue"
+                    />
+             </LinearLayout>
+
+
 
          <LinearLayout
              android:layout_width="match_parent"

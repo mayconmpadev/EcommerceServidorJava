@@ -3,6 +3,7 @@ package com.example.ecommerceservidorjava.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -57,10 +58,17 @@ public class ListaOrdemServicoAdapter extends RecyclerView.Adapter<ListaOrdemSer
         holder.binding.textNome.setText(ordemServico.getEquipamento());
         holder.binding.textNumeroOs.setText(ordemServico.getNumeroOs());
         holder.binding.textTotal.setText(ordemServico.getTotal());
+        if (ordemServico.isEntregue()){
+            holder.binding.textEntregue.setVisibility(View.VISIBLE);
+        }else {
+            holder.binding.textEntregue.setVisibility(View.GONE);
+        }
         if (ordemServico.getStatus().equals("Em analise")){
             holder.binding.viewStatus.setBackgroundResource(R.color.ouro);
         }else if(ordemServico.getStatus().equals("Aprovado")){
             holder.binding.viewStatus.setBackgroundResource(R.color.color_verde);
+        }else if(ordemServico.getStatus().equals("Orçada, esperando aprovação")) {
+            holder.binding.viewStatus.setBackgroundResource(R.color.color_laranja);
         }else {
             holder.binding.viewStatus.setBackgroundResource(R.color.red);
         }

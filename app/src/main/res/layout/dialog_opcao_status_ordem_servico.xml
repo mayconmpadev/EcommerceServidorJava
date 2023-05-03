@@ -76,8 +76,8 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:scaleType="center"
-                    android:src="@drawable/ic_aprovado"
-                    app:tint="@color/color_verde">
+                    android:src="@drawable/esperando_aprovacao"
+                    app:tint="@color/color_laranja">
 
                 </ImageView>
 
@@ -165,7 +165,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:scaleType="center"
-                    android:src="@drawable/ic_recusado"
+                    android:src="@drawable/ic_reprovado"
                     app:tint="@color/red">
 
                 </ImageView>
@@ -208,8 +208,8 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:scaleType="center"
-                android:src="@drawable/ic_recusado"
-                app:tint="@color/red">
+                android:src="@drawable/ic_sem_reparo"
+                app:tint="@color/preto">
 
             </ImageView>
 

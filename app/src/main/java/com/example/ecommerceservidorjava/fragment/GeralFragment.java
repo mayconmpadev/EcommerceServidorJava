@@ -1,8 +1,10 @@
 package com.example.ecommerceservidorjava.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.print.PrintManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,8 +126,19 @@ public class GeralFragment extends Fragment {
         });
 
         binding.boletos.setOnClickListener(view -> {
-            Intent intent = new Intent(getContext(), ListaBoletoActivity.class);
-            startActivity(intent);
+
+                // Get a PrintManager instance
+                PrintManager printManager = (PrintManager) getActivity()
+                        .getSystemService(Context.PRINT_SERVICE);
+
+                // Set job name, which will be displayed in the print queue
+                String jobName = getActivity().getString(R.string.app_name) + " Document";
+
+                // Start a print job, passing in a PrintDocumentAdapter implementation
+                // to handle the generation of a print document
+
+
+
 
         });
     }

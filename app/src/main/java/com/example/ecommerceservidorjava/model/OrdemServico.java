@@ -19,6 +19,7 @@ public class OrdemServico implements Serializable {
 
     private String observacao;
     private boolean garantia;
+    private boolean entregue;
 
     private String desconto;
     private String maoDeObra;
@@ -148,6 +149,14 @@ public class OrdemServico implements Serializable {
 
     public void setGarantia(boolean garantia) {
         this.garantia = garantia;
+    }
+
+    public boolean isEntregue() {
+        return entregue;
+    }
+
+    public void setEntregue(boolean entregue) {
+        this.entregue = entregue;
     }
 
     public String getDesconto() {

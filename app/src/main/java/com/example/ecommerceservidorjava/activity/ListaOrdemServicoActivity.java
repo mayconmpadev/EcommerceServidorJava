@@ -34,10 +34,11 @@ import com.example.ecommerceservidorjava.databinding.DialogClienteOpcoesBinding;
 import com.example.ecommerceservidorjava.databinding.DialogDeleteBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoEnviarBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrdemServicoBinding;
-import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
+import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusOrdemServicoBinding;
 import com.example.ecommerceservidorjava.model.OrdemServico;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
+import com.example.ecommerceservidorjava.util.GerarPDFOSFinalizada;
 import com.example.ecommerceservidorjava.util.GerarPDFOrdenServico;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.google.firebase.database.ChildEventListener;
@@ -379,6 +380,27 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
     }
 
+    private void entregue(OrdemServico ordemServico, int position, boolean status) {
+        SPM spm = new SPM(getApplicationContext());
+        String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference()
+                .child("empresas")
+                .child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                .child("ordens_servicos")
+                .child(ordemServico.getId()).child("entregue");
+        databaseReference.setValue(status).addOnSuccessListener(unused -> {
+            if (filtroList.size() > 0) {
+                filtroList.get(position).setEntregue(status);
+            } else {
+                ordemServicoList.get(position).setEntregue(status);
+            }
+
+
+            ordemServicoAdapter.notifyItemChanged(position);
+        });
+
+    }
+
     //---------------------------------------------------- ENVIAR PDF WHATSAPP-----------------------------------------------------------------
     private void enviarPDFWhatsapp() {
         binding.progressBar2.setVisibility(View.VISIBLE);
@@ -575,11 +597,21 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
         });
 
+        dialogBinding.llEntregue.setOnClickListener(view -> {
+            if (ordemServico.isEntregue()){
+                entregue(ordemServico, position, false);
+            }else {
+                entregue(ordemServico, position, true);
+            }
 
+            dialog.dismiss();
+
+
+        });
         dialogBinding.llStatus.setOnClickListener(view -> {
 
             dialog.dismiss();
-            showDialogStatus(this.ordemServico, position);
+            showDialogStatus(ordemServico, position);
 
         });
 
@@ -594,8 +626,14 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
         dialogBinding.llPdf.setOnClickListener(view -> {
             dialog.dismiss();
-            GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(ordemServico, this);
-            exibirPDF();
+            if (ordemServico.getStatus().equals("Em analise")){
+                GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(ordemServico, this);
+                exibirPDF();
+            }else {
+                GerarPDFOSFinalizada gerarPDFOSFinalizada = new GerarPDFOSFinalizada(ordemServico, this);
+                exibirPDF();
+            }
+
 
         });
 
@@ -622,9 +660,14 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
     private void showDialogStatus(OrdemServico ordemServico, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
-        DialogOpcaoStatusBinding dialogBinding = DialogOpcaoStatusBinding
+        DialogOpcaoStatusOrdemServicoBinding dialogBinding = DialogOpcaoStatusOrdemServicoBinding
                 .inflate(LayoutInflater.from(this));
 
+
+        dialogBinding.llAnalise.setOnClickListener(view -> {
+            dialog.dismiss();
+            alterarStatus(ordemServico, position, "Em analise");
+        });
 
         dialogBinding.llAnalise.setOnClickListener(view -> {
             dialog.dismiss();
