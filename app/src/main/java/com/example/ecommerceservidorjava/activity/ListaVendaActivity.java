@@ -10,10 +10,17 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintJob;
+import android.print.PrintManager;
 import android.telephony.PhoneNumberUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -38,12 +45,16 @@ import com.example.ecommerceservidorjava.databinding.DialogOpcaoPagamentoBinding
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusVendasBinding;
 import com.example.ecommerceservidorjava.model.Orcamento;
+import com.example.ecommerceservidorjava.model.PerfilEmpresa;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.model.Venda;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.GerarPDFVendas;
+import com.example.ecommerceservidorjava.util.PdfDocumentAdapter;
+import com.example.ecommerceservidorjava.util.PrintJobMonitorService;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.example.ecommerceservidorjava.util.Timestamp;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -59,19 +70,23 @@ import java.util.Locale;
 public class ListaVendaActivity extends AppCompatActivity implements ListaVendaAdapter.OnClickLister, ListaVendaAdapter.OnLongClickLister {
     ActivityListaVendaBinding binding;
     ListaVendaAdapter vendaAdapter;
+    PerfilEmpresa perfilEmpresa;
     private final List<Venda> vendaList = new ArrayList<>();
     List<Venda> filtroList = new ArrayList<>();
     SPM spm = new SPM(this);
     private AlertDialog dialog;
     private Venda venda;
-
+    String recibo;
+    private PrintManager mgr=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         binding = ActivityListaVendaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        mgr=(PrintManager)getSystemService(PRINT_SERVICE);
         recuperarIntent();
+        recuperarPerfil();
         configSearchView();
         recuperaVendas();
         binding.floatingActionButton.setOnClickListener(view -> {
@@ -132,13 +147,38 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         venda = (Venda) getIntent().getSerializableExtra("venda");
 
         if (venda != null) {
-            if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")) {
+            showDialogEnviar();
+          /*  if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")) {
                 enviarPDFWhatsapp();
             } else {
                 Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();
-            }
+            } */
 
         }
+    }
+
+    private void recuperarPerfil() {
+
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+
+
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("perfil_empresa");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    perfilEmpresa = snapshot.getValue(PerfilEmpresa.class);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 
@@ -451,8 +491,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         try {
             getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
             return true;
-        }
-        catch (PackageManager.NameNotFoundException ignored) {
+        } catch (PackageManager.NameNotFoundException ignored) {
             return false;
         }
     }
@@ -603,15 +642,9 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
             dialogBinding.llEditar.setVisibility(View.GONE);
         }
         dialogBinding.llEnviar.setOnClickListener(view -> {
-            if (venda != null) {
-                if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")) {
-                    enviarPDFWhatsapp();
-                } else {
-                    Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();
-                }
-
-            }
             dialog.dismiss();
+            showDialogEnviar();
+
 
         });
 
@@ -636,7 +669,9 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         });
 
         dialogBinding.llPdf.setOnClickListener(view -> {
-            exibirPDF();
+           // exibirPDF();
+            Intent intent = new Intent(getApplicationContext(), AndroidPDFViewer.class);
+            startActivity(intent);
             dialog.dismiss();
 
         });
@@ -737,6 +772,10 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         });
 
         dialogBinding.llImprimir.setOnClickListener(view -> {
+            //imprimir();
+            print("Test PDF",
+                    new PdfDocumentAdapter(getApplicationContext()),
+                    new PrintAttributes.Builder().build());
             dialog.dismiss();
 
 
@@ -791,6 +830,98 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
             }
         });
+    }
+    private PrintJob print(String name, PrintDocumentAdapter adapter, PrintAttributes attrs) {
+        startService(new Intent(this, PrintJobMonitorService.class));
+
+        return(mgr.print(name, adapter, attrs));
+    }
+    private void imprimir() {
+
+        binding.webview.setWebViewClient(new WebViewClient() {
+
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                //if page loaded successfully then show print button
+
+            }
+        });
+        //prepare your html content which will be show in webview
+        String htmlDocument = "<html><body>" +
+                "<h1>Webview Print Test </h1>" +
+                "<h2>I am Webview</h2>" +
+                "<p> By PointOfAndroid</p>" +
+                "<p> This is some sample .</p>" +
+                "<p> By PointOfAndroid</p>" +
+                "<p> This is some sample content.</p>" +
+                "<p> By PointOfAndroid</p>" +
+                "<p> This is some sample content.</p>" +
+                "" +
+                "" +
+                "" + "Put your content here" +
+                "" +
+                "" +
+                "</body></html>";
+
+        //load your html to webview
+        binding.webview.loadData(criarReciboVendas(), "text/HTML", "UTF-8");
+        binding.webview.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
+        createWebPrintJob(binding.webview);
+    }
+
+    private String criarReciboVendas() {
+
+        String produtos = "";
+        for (int i = 0; i < venda.getItens().size(); i++) {
+            produtos = produtos +  "<p>" + venda.getItens().get(i).getQtd() + " x " +
+                    venda.getItens().get(i).getNome() + "    " +
+                    venda.getItens().get(i).getPreco_venda() +  "<p>";
+
+        }
+        String divisao = "--------------------------------------------------------------------";
+
+        recibo = "<html><body>" +
+                "<h2>VENDA</h2>" +
+                "<p>" + perfilEmpresa.getNome() + "<p>" +
+                "<p>CNPJ: " + perfilEmpresa.getDocumento() + "<p>" +
+                "<p>" + perfilEmpresa.getEndereco().getLogradouro() + "<p>" +
+                "<p>" + perfilEmpresa.getEndereco().getBairro() + "<p>" +
+                "<p>" + perfilEmpresa.getEndereco().getLocalidade() + "<p>" +
+                "<p>" + divisao + "<p>" +
+                "<p>" + "Cliente: " + venda.getIdCliente().getNome() + "<p>" +
+                "<p>" + "Telefone: " + venda.getIdCliente().getTelefone1() + "<p>" +
+                "<p>" + "Data: " + Timestamp.getFormatedDateTime(Long.parseLong(venda.getData()), "dd/MM/yy") + "   "
+                + Timestamp.getFormatedDateTime(Long.parseLong(venda.getData()), "HH:mm") + "<p>" +
+
+                "<p>" + divisao + "<p>" +
+                "<p>" + produtos + "<p>" +
+                "<p>" + divisao + "<p>" +
+                "<p>" + "Subtotal:   " + venda.getSubTotal() + "<p>" +
+                "<p>" + "Desconto:   " + venda.getDesconto() + "%" + "<p>" +
+                "<p>" + "Total:   " + venda.getTotal() + "<p>"
+                + "</body></html>";
+
+       return recibo;
+
+    }
+
+    private void createWebPrintJob(WebView webView) {
+
+        //create object of print manager in your device
+        PrintManager printManager = (PrintManager) this.getSystemService(Context.PRINT_SERVICE);
+
+        //create object of print adapter
+        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter();
+
+        //provide name to your newly generated pdf file
+        String jobName = getString(R.string.app_name) + " Print Test";
+
+        //open print dialog
+        printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
     }
 
     @Override

@@ -282,8 +282,8 @@ public class GerarPDFOrcamento extends AppCompatActivity {
         File baseDir = context.getExternalFilesDir(null);
         String url = baseDir.getAbsolutePath() + File.separator + "ecommercempa/foto perfil/" + "perfil" + ".png";
         Image img = Image.getInstance(url);
-        img.scaleAbsoluteWidth(100f);
-        img.scaleAbsoluteHeight(100f);
+        img.scaleAbsoluteWidth(93f);
+        img.scaleAbsoluteHeight(93f);
         img.setAlignment(Element.ALIGN_CENTER);
         PdfPCell c1 = new PdfPCell();
         c1.addElement(img);

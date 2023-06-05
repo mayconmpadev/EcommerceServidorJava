@@ -393,6 +393,14 @@ public class CheckoutVendaActivity extends AppCompatActivity {
     }
 
     private void finalizar() {
+       /* BigDecimal bDesconto = new BigDecimal("0");
+        for (int i = 0; i < itemVendaList.size(); i++) {
+            BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco_venda());
+            preco = preco.divide(new BigDecimal("100"));
+            bDesconto = preco.multiply(new BigDecimal(String.valueOf(desconto)).divide(new BigDecimal(100)));
+            preco = preco.subtract(bDesconto);
+            itemVendaList.get(i).setPreco_venda(NumberFormat.getCurrencyInstance().format(preco));
+        } */
         if (clienteSelecionado != null) {
             clienteSelecionado.setNome(binding.edtNome.getText().toString());
             clienteSelecionado.setTelefone1(binding.edtTelefone.getText().toString());
@@ -569,8 +577,8 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         File baseDir = this.getExternalFilesDir(null);
         String url = baseDir.getAbsolutePath() + File.separator + "ecommercempa/foto perfil/" + "perfil" + ".png";
         Image img = Image.getInstance(url);
-        img.scaleAbsoluteWidth(90);
-        img.scaleAbsoluteHeight(90f);
+        img.scaleAbsoluteWidth(80);
+        img.scaleAbsoluteHeight(80f);
         img.setAlignment(Element.ALIGN_CENTER);
         PdfPCell c1 = new PdfPCell();
         c1.addElement(img);

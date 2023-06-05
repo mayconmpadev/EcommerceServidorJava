@@ -14,7 +14,10 @@ import com.example.ecommerceservidorjava.databinding.ItemListaOrcamentoBinding;
 
 import com.example.ecommerceservidorjava.model.Venda;
 import com.example.ecommerceservidorjava.util.Timestamp;
+import com.example.ecommerceservidorjava.util.Util;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.List;
 
 
@@ -51,10 +54,28 @@ public class ListaVendaAdapter extends RecyclerView.Adapter<ListaVendaAdapter.My
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Venda venda = clienteList.get(position);
+        BigDecimal parcela1 = new BigDecimal("0");
+        BigDecimal parcela2 = new BigDecimal("0");
+        BigDecimal parcela3 = new BigDecimal("0");
+        BigDecimal totalPagar = new BigDecimal("0");
+        BigDecimal dividir = new BigDecimal("100");
+        BigDecimal total = new BigDecimal("0");
 
+        parcela1 = Util.convertMoneEmBigDecimal(venda.getParcela1());
+        parcela2 = Util.convertMoneEmBigDecimal(venda.getParcela2());
+        parcela3 = Util.convertMoneEmBigDecimal(venda.getParcela3());
+        totalPagar = Util.convertMoneEmBigDecimal(venda.getTotal());
+        total = total.add(parcela1).add(parcela2).add(parcela3);
         holder.binding.textNome.setText(venda.getIdCliente().getNome().substring(0, 1).toUpperCase().concat(venda.getIdCliente().getNome().substring(1)));
         holder.binding.textEmeil.setText(venda.getIdCliente().getTelefone1());
-        holder.binding.textTotal.setText(venda.getTotal());
+        if (total.compareTo(BigDecimal.ZERO) == 0){
+            holder.binding.textTotal.setText(venda.getTotal());
+        }else {
+           // totalPagar = totalPagar.subtract(total);
+           // holder.binding.textTotal.setText(NumberFormat.getCurrencyInstance().format(totalPagar.divide(dividir)));
+            holder.binding.textTotal.setText(venda.getTotal());
+        }
+
         if (venda.getStatus().equals("Aguardando retirada")){
             holder.binding.viewStatus.setBackgroundResource(R.color.ouro);
         }else if(venda.getStatus().equals("Finalizada")){

@@ -52,6 +52,10 @@ public class BoletoActivity extends AppCompatActivity {
             }
 
         });
+
+        binding.include.include.ibVoltar.setOnClickListener(v -> {
+            finish();
+        });
     }
 
     private void recuperarIntent() {

@@ -34,7 +34,11 @@ public class CarrinhoVendaActivity extends AppCompatActivity implements Carrinho
         binding = ActivityCarrinhoVendaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         recuperarIntent();
+binding.include.include.ibVoltar.setOnClickListener(v -> {
+    selecionarItems();
+    finish();
 
+});
         binding.include.textTitulo.setText("Carrinho");
         binding.includeSheet.btnContinue.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), CheckoutVendaActivity.class);

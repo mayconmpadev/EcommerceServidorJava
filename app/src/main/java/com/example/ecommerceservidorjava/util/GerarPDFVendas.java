@@ -279,11 +279,13 @@ public class GerarPDFVendas extends AppCompatActivity {
         File baseDir = context.getExternalFilesDir(null);
         String url = baseDir.getAbsolutePath() + File.separator + "ecommercempa/foto perfil/" + "perfil" + ".png";
         Image img = Image.getInstance(url);
-        img.scaleAbsoluteWidth(100f);
-        img.scaleAbsoluteHeight(100f);
+        img.scaleAbsoluteWidth(93f);
+        img.scaleAbsoluteHeight(93f);
         img.setAlignment(Element.ALIGN_CENTER);
+
         PdfPCell c1 = new PdfPCell();
         c1.addElement(img);
+
         PdfPCell c2 = new PdfPCell();
         PdfPCell c3 = new PdfPCell();
 
@@ -454,6 +456,12 @@ public class GerarPDFVendas extends AppCompatActivity {
             Paragraph p2 = new Paragraph("Desconto aplicado nos produtos", paragraphFont3);
             p2.add(new Chunk(glue2));
             p2.add(venda.getDesconto() + "%");
+            document.add(p2);
+        } else if (Integer.parseInt(venda.getDesconto()) < 0) {
+            Chunk glue2 = new Chunk(new VerticalPositionMark());
+            Paragraph p2 = new Paragraph("Acrécimo aplicado nos produtos", paragraphFont3);
+            p2.add(new Chunk(glue2));
+            p2.add(Integer.parseInt(venda.getDesconto()) * -1 + "%");
             document.add(p2);
         }
 
