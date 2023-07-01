@@ -55,6 +55,7 @@ import com.example.ecommerceservidorjava.util.PdfDocumentAdapter;
 import com.example.ecommerceservidorjava.util.PrintJobMonitorService;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.example.ecommerceservidorjava.util.Timestamp;
+import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -184,9 +185,9 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
     private void filtraProdutoNome(String pesquisa) {
 
-
+pesquisa = Util.removerAcentos(pesquisa);
         for (Venda venda : vendaList) {
-            if (venda.getIdCliente().getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+            if (Util.removerAcentos(venda.getIdCliente().getNome()).contains(pesquisa)) {
                 filtroList.add(venda);
             }
         }

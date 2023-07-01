@@ -19,6 +19,7 @@ import com.example.ecommerceservidorjava.databinding.FragmentInicioBinding;
 import com.example.ecommerceservidorjava.model.Despesa;
 import com.example.ecommerceservidorjava.model.Orcamento;
 import com.example.ecommerceservidorjava.model.OrdemServico;
+import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.model.Venda;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
@@ -39,6 +40,7 @@ import java.util.List;
 
 public class InicioFragment extends Fragment {
     private final List<Venda> vendaList = new ArrayList<>();
+    private final List<Produto> produtos = new ArrayList<>();
     private final List<Orcamento> orcamentoList = new ArrayList<>();
     private final List<Despesa> despesaList = new ArrayList<>();
     private final List<OrdemServico> ordemServicoList = new ArrayList<>();
@@ -47,6 +49,7 @@ public class InicioFragment extends Fragment {
     List<TextView> mes = new ArrayList<>();
     FragmentInicioBinding binding;
     String data;
+    int produtosEstoqueBaixo = 0;
     int mesAtual = 0;
 
     @Override
@@ -69,6 +72,7 @@ public class InicioFragment extends Fragment {
         data = Timestamp.getFormatedDateTime(Long.parseLong(data), "dd/MM/yyyy");
         binding.textAno.setText(Timestamp.getFormatedDateTime(Timestamp.getUnixTimestamp(), "yyyy"));
         configClicks();
+        produtosEmFalta();
         recuperarVendasDia(data);
         recuperarOrcamentoDia(data);
         recuperarDespesaDia(data);
@@ -757,6 +761,81 @@ public class InicioFragment extends Fragment {
         BigDecimal lucro;
         lucro = receita.subtract(despesa);
         binding.textLucro.setText(NumberFormat.getCurrencyInstance().format(lucro));
+    }
+
+    private void produtosEmFalta() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        produtos.clear();
+        SPM spm = new SPM(getContext());
+        Query produtoRef = FirebaseHelper.getDatabaseReference()
+                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                .child("produtos");
+        produtoRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.textReceita.setText("R$ 0,00");
+                    
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        produtoRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Produto produto = snapshot.getValue(Produto.class);
+                if (Integer.parseInt(produto.getQuantidadeMinima()) > Integer.parseInt(produto.getQuantidadeEtoque())){
+                    produtos.add(produto);
+                }
+
+                binding.textProdutosBaixo.setText(String.valueOf(produtos.size()));
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Produto produto = snapshot.getValue(Produto.class);
+                for (int i = 0; i < produtos.size(); i++) {
+                    if (Integer.parseInt(produtos.get(i).getQuantidadeMinima()) >= Integer.parseInt(produtos.get(i).getQuantidadeEtoque())){
+                        produtosEstoqueBaixo++;
+                    }
+                }
+
+
+
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                Venda venda = snapshot.getValue(Venda.class);
+
+                for (int i = 0; i < vendaList.size(); i++) {
+                    if (vendaList.get(i).getId().equals(venda.getId())) {
+                        vendaList.remove(i);
+
+                    }
+                }
+                totalVendas();
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                makeText(getContext(), "onChildMoved", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                makeText(getContext(), "onCancelled", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
 

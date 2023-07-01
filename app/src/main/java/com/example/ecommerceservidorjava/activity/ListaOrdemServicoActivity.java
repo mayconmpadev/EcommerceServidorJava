@@ -41,6 +41,7 @@ import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.GerarPDFOSFinalizada;
 import com.example.ecommerceservidorjava.util.GerarPDFOrdenServico;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -135,7 +136,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
 
         for (OrdemServico ordemServico : ordemServicoList) {
-            if (ordemServico.getIdCliente().getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+            if (Util.removerAcentos(ordemServico.getIdCliente().getNome()).contains(Util.removerAcentos(pesquisa))) {
                 filtroList.add(ordemServico);
             }
         }

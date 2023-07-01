@@ -14,11 +14,11 @@
         android:name="com.example.ecommerceservidorjava.fragment.PedidosFragment"
         android:label="fragment_pedidos"
         tools:layout="@layout/fragment_pedidos" />
-    <fragment
+    <activity
         android:id="@+id/menu_vendas"
-        android:name="com.example.ecommerceservidorjava.fragment.VendasFragment"
+        android:name="com.example.ecommerceservidorjava.activity.CadastroVendaActivity"
         android:label="fragment_vendas"
-        tools:layout="@layout/fragment_vendas" />
+        tools:layout="@layout/activity_cadastro_venda" />
     <fragment
         android:id="@+id/menu_geral"
         android:name="com.example.ecommerceservidorjava.fragment.GeralFragment"

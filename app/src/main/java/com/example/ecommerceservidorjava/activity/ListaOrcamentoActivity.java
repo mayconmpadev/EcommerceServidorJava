@@ -41,6 +41,7 @@ import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.GerarPDFOrcamento;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -140,8 +141,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
 
         for (Orcamento orcamento : orcamentoList) {
-            if (orcamento.getIdCliente().getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
-                filtroList.add(orcamento);
+            if (Util.removerAcentos(orcamento.getIdCliente().getNome()).contains(Util.removerAcentos(pesquisa))) {                filtroList.add(orcamento);
             }
         }
 

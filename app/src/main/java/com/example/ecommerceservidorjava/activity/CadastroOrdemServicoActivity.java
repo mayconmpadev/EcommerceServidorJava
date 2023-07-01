@@ -143,9 +143,7 @@ public class CadastroOrdemServicoActivity extends AppCompatActivity {
         String observação = binding.editObservacao.getText().toString();
 
 
-        if (imagemUri_0 == null & !editar) {
-            Toast.makeText(getApplicationContext(), "Selecione todas as imagens", Toast.LENGTH_SHORT).show();
-        } else if (cliente.isEmpty()) {
+     if (cliente.isEmpty()) {
             binding.edtCliente.setError("preencha o campo");
             binding.edtCliente.requestFocus();
         } else if (equipamento.isEmpty()) {
@@ -252,8 +250,10 @@ public class CadastroOrdemServicoActivity extends AppCompatActivity {
     }
 
     public void salvarDados() {
+if (caminhoImagens.size() > 0){
+    ordemServico.setUrlImagem0(caminhoImagens.get(0));
+}
 
-        ordemServico.setUrlImagem0(caminhoImagens.get(0));
         if (caminhoImagens.size() > 1) {
             ordemServico.setUrlImagem1(caminhoImagens.get(1));
         }

@@ -443,6 +443,19 @@ public class GerarPDFOSFinalizada extends AppCompatActivity {
         document.add(new Paragraph("\n", paragraphRodaPe2));
         document.add(lineSeparator);
         createTable(ordemServico);
+
+        Chunk glue4 = new Chunk(new VerticalPositionMark());
+        Paragraph p4 = new Paragraph("Mão de obra", paragraphFont3);
+        p4.add(new Chunk(glue4));
+        p4.add(ordemServico.getValorMaoDeObra());
+        document.add(p4);
+
+        Chunk glue5 = new Chunk(new VerticalPositionMark());
+        Paragraph p5 = new Paragraph("Total", paragraphFont3);
+        p5.add(new Chunk(glue5));
+        p5.add(ordemServico.getTotal());
+        document.add(p5);
+
         document.add(ppp);
         document.add(condicao);
 
@@ -512,7 +525,7 @@ public class GerarPDFOSFinalizada extends AppCompatActivity {
         (c1).setBackgroundColor(BaseColor.BLACK);
         table.addCell(c1);
         table.setHeaderRows(1);
-//l
+
         for (int i = 0; i < ordemServico.getItens().size(); i++) {
 
             table.addCell(new PdfPCell(new Phrase(ordemServico.getItens().get(i).getCodigo(), paragraphFont2)));
@@ -523,6 +536,8 @@ public class GerarPDFOSFinalizada extends AppCompatActivity {
         }
 
         document.add(table);
+
+
     }
 
     private BigDecimal somatoriaDosProdutosIguais(String sPreco, String sQtd) {

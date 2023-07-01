@@ -29,6 +29,7 @@ import com.example.ecommerceservidorjava.model.Despesa;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -120,7 +121,7 @@ public class ListaDespesaActivity extends AppCompatActivity implements ListaDesp
 
 
         for (Despesa despesa : despesaList) {
-            if (despesa.getDescricao().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+            if (Util.removerAcentos(despesa.getDescricao()).contains(Util.removerAcentos(pesquisa))) {
                 filtroList.add(despesa);
             }
         }

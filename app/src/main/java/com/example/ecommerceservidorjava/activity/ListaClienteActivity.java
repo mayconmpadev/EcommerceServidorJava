@@ -27,6 +27,7 @@ import com.example.ecommerceservidorjava.model.Cliente;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -114,7 +115,7 @@ public class ListaClienteActivity extends AppCompatActivity implements ListaClie
 
 
         for (Cliente cliente : clienteList) {
-            if (cliente.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+            if (Util.removerAcentos(cliente.getNome()).contains(Util.removerAcentos(pesquisa))) {
                 filtroList.add(cliente);
             }
         }

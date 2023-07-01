@@ -35,6 +35,7 @@ import com.example.ecommerceservidorjava.model.Categoria;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -139,7 +140,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
 
 
         for (Categoria categoria : categoriaList) {
-            if (categoria.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+            if (Util.removerAcentos(categoria.getNome()).contains(Util.removerAcentos(pesquisa))) {
                 filtroList.add(categoria);
             }
         }

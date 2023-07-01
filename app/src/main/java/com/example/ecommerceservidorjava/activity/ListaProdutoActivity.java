@@ -127,7 +127,7 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
         filtroProdutoNomeList.clear();
         for (Produto produto : filtroProdutoCategoriaList) {
-            if (Util.removerAcentos(produto.getNome().toUpperCase(Locale.ROOT)).contains(Util.removerAcentos(pesquisa.toUpperCase(Locale.ROOT)))) {
+            if (Util.removerAcentos(produto.getNome()).contains(Util.removerAcentos(pesquisa))) {
                 filtroProdutoNomeList.add(produto);
             }
         }

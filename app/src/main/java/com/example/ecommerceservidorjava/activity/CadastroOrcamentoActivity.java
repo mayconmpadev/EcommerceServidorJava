@@ -104,7 +104,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
 
         filtroList.clear();
         for (Produto produto : filtroProdutoCategoriaList) {
-            if (produto.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+            if (Util.removerAcentos(produto.getNome()).contains(Util.removerAcentos(pesquisa))) {
                 filtroList.add(produto);
 
             }
