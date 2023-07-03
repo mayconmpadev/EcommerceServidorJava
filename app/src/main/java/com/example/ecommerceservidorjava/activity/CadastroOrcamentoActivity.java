@@ -111,7 +111,7 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
         }
 
         for (ItemVenda itemVenda : filtroItemVendaCategotia) {
-            if (itemVenda.getNome().toUpperCase(Locale.ROOT).contains(pesquisa.toUpperCase(Locale.ROOT))) {
+            if (Util.removerAcentos(itemVenda.getNome()).contains(Util.removerAcentos(pesquisa))) {
                 filtroItemVendaList.add(itemVenda);
 
             }
