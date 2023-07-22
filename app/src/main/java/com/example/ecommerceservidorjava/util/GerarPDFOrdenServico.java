@@ -433,7 +433,7 @@ public class GerarPDFOrdenServico extends AppCompatActivity {
 
         Paragraph pp = new Paragraph("Problema informado:", paragraphFont4);
         Paragraph problema = new Paragraph(ordemServico.getDefeitoRelatado() + "\n", paragraphFont);
-        Paragraph ppp = new Paragraph("Condições de cerviço:", paragraphFont4);
+        Paragraph ppp = new Paragraph("Condições de serviço:", paragraphFont4);
         Paragraph condicao = new Paragraph("1 - A Empresa da garantia de 90 dias para mão de obra e peças usadas no conserto, contados a partir da entrega\n" +
                 "2 – Os Aparelhos não retirados no prazo máximo de 30 dias contados a partir da comunicação de sua retirada sofrerão acréscimo das despesas de armazenamento e seguro.\n" +
                 "3 – O Aparelho só será entregue mediante a apresentação deste comprovante.\n", paragraphFont);

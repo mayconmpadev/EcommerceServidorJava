@@ -62,135 +62,147 @@
 
 
 
-            <HorizontalScrollView
-                android:id="@+id/horizontalScrollView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/texthoje"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="hoje"></TextView>
+    <TextView
+        android:id="@+id/texthoje"
+        style="@style/TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:padding="8dp"
+        android:text="hoje"></TextView>
 
-                    <TextView
-                        android:id="@+id/textJaneiro"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="Janeiro"></TextView>
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/textFevereiro"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="Fevereiro"></TextView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/textMarco"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="Março"></TextView>
 
-                    <TextView
-                        android:id="@+id/textAbril"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="Abril"></TextView>
 
-                    <TextView
-                        android:id="@+id/textMaio"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="Maio"></TextView>
+        <TextView
+            android:id="@+id/textJaneiro"
+            style="@style/TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="Janeiro"></TextView>
 
-                    <TextView
-                        android:id="@+id/textJunho"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="Junho"></TextView>
+        <TextView
+            android:id="@+id/textFevereiro"
+            style="@style/TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="Fevereiro"></TextView>
 
-                    <TextView
-                        android:id="@+id/textJulho"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="Julho"></TextView>
+        <TextView
+            android:id="@+id/textMarco"
+            style="@style/TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="Março"></TextView>
 
-                    <TextView
-                        android:id="@+id/textAgosto"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="Agosto"></TextView>
+        <TextView
+            android:id="@+id/textAbril"
+            style="@style/TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="Abril"></TextView>
 
-                    <TextView
-                        android:id="@+id/textSetembro"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="Setembro"></TextView>
+        <TextView
+            android:id="@+id/textMaio"
+            style="@style/TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="Maio"></TextView>
 
-                    <TextView
-                        android:id="@+id/textOutubro"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="Outubro"></TextView>
+        <TextView
+            android:id="@+id/textJunho"
+            style="@style/TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="Junho"></TextView>
 
-                    <TextView
-                        android:id="@+id/textNovembro"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="Novembro"></TextView>
+        <TextView
+            android:id="@+id/textJulho"
+            style="@style/TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="Julho"></TextView>
 
-                    <TextView
-                        android:id="@+id/textDezembro"
-                        style="@style/TextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:padding="8dp"
-                        android:text="Dezembro"></TextView>
-                </LinearLayout>
+        <TextView
+            android:id="@+id/textAgosto"
+            style="@style/TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="Agosto"></TextView>
 
-            </HorizontalScrollView>
+        <TextView
+            android:id="@+id/textSetembro"
+            style="@style/TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="Setembro"></TextView>
+
+        <TextView
+            android:id="@+id/textOutubro"
+            style="@style/TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="Outubro"></TextView>
+
+        <TextView
+            android:id="@+id/textNovembro"
+            style="@style/TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="Novembro"></TextView>
+
+        <TextView
+            android:id="@+id/textDezembro"
+            style="@style/TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="Dezembro"></TextView>
+    </LinearLayout>
+
+    </HorizontalScrollView>
+
+</LinearLayout>
+
+
 
 
         </androidx.cardview.widget.CardView>

@@ -29,6 +29,11 @@ public class OrdemServico implements Serializable {
     private String total;
     private String subTotal;
     private String tipoPagamento;
+    private String dataBoleto;
+    private boolean boletoPago;
+    private String parcela1;
+    private String parcela2;
+    private String parcela3;
     private String acrescimo;
     private List<ItemVenda> itens;
     private String urlImagem0;
@@ -221,6 +226,46 @@ public class OrdemServico implements Serializable {
 
     public void setTipoPagamento(String tipoPagamento) {
         this.tipoPagamento = tipoPagamento;
+    }
+
+    public String getDataBoleto() {
+        return dataBoleto;
+    }
+
+    public void setDataBoleto(String dataBoleto) {
+        this.dataBoleto = dataBoleto;
+    }
+
+    public boolean isBoletoPago() {
+        return boletoPago;
+    }
+
+    public void setBoletoPago(boolean boletoPago) {
+        this.boletoPago = boletoPago;
+    }
+
+    public String getParcela1() {
+        return parcela1;
+    }
+
+    public void setParcela1(String parcela1) {
+        this.parcela1 = parcela1;
+    }
+
+    public String getParcela2() {
+        return parcela2;
+    }
+
+    public void setParcela2(String parcela2) {
+        this.parcela2 = parcela2;
+    }
+
+    public String getParcela3() {
+        return parcela3;
+    }
+
+    public void setParcela3(String parcela3) {
+        this.parcela3 = parcela3;
     }
 
     public String getAcrescimo() {

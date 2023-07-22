@@ -126,6 +126,9 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
 
 
     private void filtraProdutoNome(String pesquisa) {
+        if (filtroProdutoCategoriaList.isEmpty()){
+            filtraProdutoCategoria();
+        }
 
         filtroList.clear();
         for (Produto produto : filtroProdutoCategoriaList) {

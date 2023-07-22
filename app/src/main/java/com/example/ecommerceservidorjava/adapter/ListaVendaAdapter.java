@@ -85,7 +85,7 @@ public class ListaVendaAdapter extends RecyclerView.Adapter<ListaVendaAdapter.My
         }
 
         if (!venda.isBoletoPago()){
-            holder.binding.root.setBackgroundResource(R.color.color_cinza_claro);
+            holder.binding.root.setBackgroundResource(R.color.color_boleto);
         }else {
             holder.binding.root.setBackgroundResource(R.color.branco);
         }
