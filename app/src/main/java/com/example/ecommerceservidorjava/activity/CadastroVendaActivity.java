@@ -58,16 +58,12 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
         super.onCreate(savedInstanceState);
         binding = ActivityCadastroVendaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         configSearchView();
         recuperaProdutos();
         recuperaCategotia();
-
         binding.includeSheet.btnContinue.setOnClickListener(view -> {
             selecionarItems();
-
         });
-
     }
 
     private void recuperarIntent() {
@@ -94,14 +90,15 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
     }
 
     private void configSearchView() {
+        EditText edtSerachView = binding.searchView.findViewById(R.id.search_src_text);
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String texto) {
                 pesquisa = texto;
-                ocultaTeclado();
                 filtroList.clear();
                 filtroItemVendaList.clear();
                 filtraProdutoNome(texto);
+                edtSerachView.selectAll();
                 return true;
             }
 
@@ -112,13 +109,11 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
         });
 
         binding.searchView.findViewById(R.id.search_close_btn).setOnClickListener(v -> {
-            EditText edtSerachView = binding.searchView.findViewById(R.id.search_src_text);
+
             binding.textVazio.setVisibility(View.GONE);
             edtSerachView.setText("");
             pesquisa = "";
             edtSerachView.clearFocus();
-            ocultaTeclado();
-
             configRvProdutos(filtroProdutoCategoriaList, filtroItemVendaCategotia);
         });
 
@@ -126,7 +121,7 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
 
 
     private void filtraProdutoNome(String pesquisa) {
-        if (filtroProdutoCategoriaList.isEmpty()){
+        if (filtroProdutoCategoriaList.isEmpty()) {
             filtraProdutoCategoria();
         }
 
@@ -145,9 +140,7 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
             }
         }
 
-
         configRvProdutos(filtroList, filtroItemVendaList);
-
 
         if (filtroList.isEmpty()) {
             binding.textVazio.setVisibility(View.VISIBLE);
@@ -231,9 +224,6 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
                         itemVenda.setDescricao(produto.getDescricao());
                         itemVenda.setFoto(produto.getUrlImagem0());
                         itemVendaList.add(itemVenda);
-                        filtroItemVendaCategotia.add(itemVenda);
-
-
                         binding.progressBar2.setVisibility(View.GONE);
                         binding.textVazio.setVisibility(View.GONE);
                     }
@@ -358,6 +348,12 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
                 InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
+    private void mostrarTeclado() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(binding.searchView.getApplicationWindowToken(),
+                InputMethodManager.SHOW_IMPLICIT);
+    }
+
 
     @Override
     public void onClick(Categoria categoria) {
@@ -385,7 +381,7 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
     @Override
     protected void onRestart() {
         super.onRestart();
-        Toast.makeText(this, "onRestart()", Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(this, "onRestart()", Toast.LENGTH_SHORT).show();
         //recuperarIntent();
     }
 }

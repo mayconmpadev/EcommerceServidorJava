@@ -60,23 +60,43 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
         configSearchView();
         recuperaProdutos();
         recuperaCategotia();
-
         binding.includeSheet.btnContinue.setOnClickListener(view -> {
             selecionarItems();
-
         });
+    }
+    private void recuperarIntent() {
+
+        List<ItemVenda> itemVendaList2;
+        itemVendaList2 = (ArrayList<ItemVenda>) getIntent().getSerializableExtra("itemVenda2");
+
+        if (itemVendaList2 != null) {
+            for (int i = 0; i < itemVendaList2.size(); i++) {
+                for (int j = 0; j < itemVendaList.size(); j++) {
+                    if (itemVendaList.get(j).getIdProduto().equals(itemVendaList2.get(i).getIdProduto())) {
+                        itemVendaList.get(j).setQtd(itemVendaList2.get(i).getQtd());
+                    }
+                }
+
+            }
+            binding.lytCartSheet.setVisibility(View.VISIBLE);
+            binding.includeSheet.tvTotalCart.setText(total());
+
+            binding.includeSheet.counterBadge.setText(String.valueOf(quantidade));
+        }
+
 
     }
 
     private void configSearchView() {
+        EditText edtSerachView = binding.searchView.findViewById(R.id.search_src_text);
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String texto) {
                 pesquisa = texto;
-                ocultaTeclado();
                 filtroList.clear();
                 filtroItemVendaList.clear();
                 filtraProdutoNome(texto);
+                edtSerachView.selectAll();
                 return true;
             }
 
@@ -87,13 +107,11 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
         });
 
         binding.searchView.findViewById(R.id.search_close_btn).setOnClickListener(v -> {
-            EditText edtSerachView = binding.searchView.findViewById(R.id.search_src_text);
+
             binding.textVazio.setVisibility(View.GONE);
             edtSerachView.setText("");
             pesquisa = "";
             edtSerachView.clearFocus();
-            ocultaTeclado();
-
             configRvProdutos(filtroProdutoCategoriaList, filtroItemVendaCategotia);
         });
 
@@ -101,25 +119,23 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
 
 
     private void filtraProdutoNome(String pesquisa) {
-
+        if (filtroProdutoCategoriaList.isEmpty()) {
+            filtraProdutoCategoria();
+        }
         filtroList.clear();
         for (Produto produto : filtroProdutoCategoriaList) {
             if (Util.removerAcentos(produto.getNome()).contains(Util.removerAcentos(pesquisa))) {
                 filtroList.add(produto);
-
             }
         }
 
         for (ItemVenda itemVenda : filtroItemVendaCategotia) {
             if (Util.removerAcentos(itemVenda.getNome()).contains(Util.removerAcentos(pesquisa))) {
                 filtroItemVendaList.add(itemVenda);
-
             }
         }
 
-
         configRvProdutos(filtroList, filtroItemVendaList);
-
 
         if (filtroList.isEmpty()) {
             binding.textVazio.setVisibility(View.VISIBLE);
@@ -203,12 +219,11 @@ public class CadastroOrcamentoActivity extends AppCompatActivity implements Cada
                         itemVenda.setFoto(produto.getUrlImagem0());
                         itemVendaList.add(itemVenda);
                         filtroItemVendaCategotia.add(itemVenda);
-
-
                         binding.progressBar2.setVisibility(View.GONE);
                         binding.textVazio.setVisibility(View.GONE);
                     }
                     configRvProdutos(produtoList, itemVendaList);
+                    recuperarIntent();
                 } else {
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);

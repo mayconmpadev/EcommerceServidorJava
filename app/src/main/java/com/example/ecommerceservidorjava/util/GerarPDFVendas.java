@@ -450,7 +450,7 @@ public class GerarPDFVendas extends AppCompatActivity {
         p1.add(venda.getSubTotal());
         document.add(p1);
 
-        if (Integer.parseInt(venda.getDesconto()) > 0) {
+     /*   if (Integer.parseInt(venda.getDesconto()) > 0) {
 
             Chunk glue2 = new Chunk(new VerticalPositionMark());
             Paragraph p2 = new Paragraph("Desconto aplicado nos produtos", paragraphFont3);
@@ -463,7 +463,7 @@ public class GerarPDFVendas extends AppCompatActivity {
             p2.add(new Chunk(glue2));
             p2.add(Integer.parseInt(venda.getDesconto()) * -1 + "%");
             document.add(p2);
-        }
+        }*/
 
 
         Chunk glue = new Chunk(new VerticalPositionMark());

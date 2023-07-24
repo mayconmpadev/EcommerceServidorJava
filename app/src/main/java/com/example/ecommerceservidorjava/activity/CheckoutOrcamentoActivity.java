@@ -96,10 +96,8 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == 2) {
                     clienteSelecionado = (Cliente) result.getData().getSerializableExtra("cliente");
-
                     binding.edtNome.setText(clienteSelecionado.getNome());
                     binding.edtTelefone.setText(clienteSelecionado.getTelefone1());
-
                     recuperaEndereco(0);
                 }
             }
@@ -218,10 +216,7 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
                 }else {
                     Toast.makeText(getApplicationContext(), "usuario não exixte", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -233,8 +228,6 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
     private void recuperarConfiguracao() {
         binding.progressBar.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
-
-
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
                 .child("configuracao");
@@ -245,14 +238,10 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
                     binding.progressBar.setVisibility(View.GONE);
                     configuracao = snapshot.getValue(Configuracao.class);
 
-
-
                 } else {
-
                     binding.progressBar.setVisibility(View.GONE);
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -269,6 +258,7 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
     }
 
     private void formaDePagamento(View view) {
+
         Util.vibrar(this, 25);
         switch (view.getId()) {
             case R.id.ib_dinheiro: {
@@ -283,6 +273,11 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
                 credito();
                 break;
             }
+
+            case R.id.ib_boleto: {
+                boleto();
+                break;
+            }
         }
     }
 
@@ -290,38 +285,60 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
         binding.ibDinheiro.setBackgroundResource(R.drawable.borda_2);
         binding.ibDebito.setBackgroundResource(R.drawable.borda);
         binding.ibCredito.setBackgroundResource(R.drawable.borda);
+        binding.ibBoleto.setBackgroundResource(R.drawable.borda);
         binding.textDinheiro.setTextColor(getResources().getColor(R.color.preto));
-        //binding.textDinheiro.setTypeface(Typeface.DEFAULT_BOLD);
         binding.textDebito.setTextColor(getResources().getColor(R.color.grey_40));
         binding.textCredito.setTextColor(getResources().getColor(R.color.grey_40));
+        binding.textBoleto.setTextColor(getResources().getColor(R.color.grey_40));
         pagamento = "dinheiro";
-        binding.includeSheet.tvTotalCart.setText(total(pagamento, configuracao.getDesconto_dinheiro()));
         desconto = configuracao.getDesconto_dinheiro();
+        binding.includeSheet.tvTotalCart.setText(total(pagamento, binding.swDesconto.isChecked() ? desconto : 0));
+
     }
 
     private void debito() {
         binding.ibDinheiro.setBackgroundResource(R.drawable.borda);
         binding.ibDebito.setBackgroundResource(R.drawable.borda_2);
         binding.ibCredito.setBackgroundResource(R.drawable.borda);
+        binding.ibBoleto.setBackgroundResource(R.drawable.borda);
         binding.textDinheiro.setTextColor(getResources().getColor(R.color.grey_40));
         binding.textDebito.setTextColor(getResources().getColor(R.color.preto));
+        binding.textBoleto.setTextColor(getResources().getColor(R.color.grey_40));
         binding.textCredito.setTextColor(getResources().getColor(R.color.grey_40));
         pagamento = "debito";
-        binding.includeSheet.tvTotalCart.setText(total(pagamento, configuracao.getDesconto_debito()));
         desconto = configuracao.getDesconto_debito();
+        binding.includeSheet.tvTotalCart.setText(total(pagamento, binding.swDesconto.isChecked() ? desconto : 0));
+
     }
 
     private void credito() {
         binding.ibDinheiro.setBackgroundResource(R.drawable.borda);
         binding.ibDebito.setBackgroundResource(R.drawable.borda);
+        binding.ibBoleto.setBackgroundResource(R.drawable.borda);
         binding.ibCredito.setBackgroundResource(R.drawable.borda_2);
         binding.textDinheiro.setTextColor(getResources().getColor(R.color.grey_40));
         binding.textDebito.setTextColor(getResources().getColor(R.color.grey_40));
+        binding.textBoleto.setTextColor(getResources().getColor(R.color.grey_40));
         binding.textCredito.setTextColor(getResources().getColor(R.color.preto));
         pagamento = "credito";
         binding.includeSheet.tvTotalCart.setText(total(pagamento, 0));
         desconto = 0;
     }
+
+    private void boleto() {
+        binding.ibDinheiro.setBackgroundResource(R.drawable.borda);
+        binding.ibDebito.setBackgroundResource(R.drawable.borda);
+        binding.ibCredito.setBackgroundResource(R.drawable.borda);
+        binding.ibBoleto.setBackgroundResource(R.drawable.borda_2);
+        binding.textDinheiro.setTextColor(getResources().getColor(R.color.grey_40));
+        binding.textDebito.setTextColor(getResources().getColor(R.color.grey_40));
+        binding.textCredito.setTextColor(getResources().getColor(R.color.grey_40));
+        binding.textBoleto.setTextColor(getResources().getColor(R.color.preto));
+        pagamento = "boleto";
+        desconto = configuracao.getAcrecimo_boleto();
+        binding.includeSheet.tvTotalCart.setText(total(pagamento, binding.swDesconto.isChecked() ? desconto : 0));
+    }
+
 
     private void recuperarIntent() {
 
@@ -337,7 +354,6 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
     }
 
     private String total(String tipo, int valor) {
-        Toast.makeText(getApplicationContext(), String.valueOf(valor), Toast.LENGTH_SHORT).show();
         BigDecimal total = new BigDecimal("0");
         BigDecimal desconto = new BigDecimal("0");
 
@@ -345,15 +361,11 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
             if (itemVendaList.get(i).getQtd() != 0) {
                 BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco_venda());
                 preco = preco.divide(new BigDecimal("100"));
-
                 total = total.add(new BigDecimal(itemVendaList.get(i).getQtd()).multiply(preco));
-
             }
-
         }
         if (!tipo.equals("credito")) {
             desconto = total.multiply(new BigDecimal(valor).divide(new BigDecimal(100)));
-
         }
         total = total.subtract(desconto);
         return NumberFormat.getCurrencyInstance().format(total);
@@ -370,11 +382,30 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
         binding.ibDinheiro.setOnClickListener(view -> formaDePagamento(view));
         binding.ibDebito.setOnClickListener(view -> formaDePagamento(view));
         binding.ibCredito.setOnClickListener(view -> formaDePagamento(view));
+        binding.ibBoleto.setOnClickListener(view -> formaDePagamento(view));
         binding.includeSheet.btnContinue.setOnClickListener(view -> finalizar());
         binding.include.include.ibVoltar.setOnClickListener(view -> finish());
+
+
+        binding.swDesconto.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                binding.includeSheet.tvTotalCart.setText(total(pagamento, desconto));
+            } else {
+                binding.includeSheet.tvTotalCart.setText(total(pagamento, 0));
+            }
+
+        });
     }
 
     private void finalizar() {
+        BigDecimal bDesconto = new BigDecimal("0");
+        for (int i = 0; i < itemVendaList.size(); i++) {
+            BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco_venda());
+            preco = preco.divide(new BigDecimal("100"));
+            bDesconto = preco.multiply(new BigDecimal(String.valueOf(desconto)).divide(new BigDecimal(100)));
+            preco = preco.subtract(bDesconto);
+            itemVendaList.get(i).setPreco_venda(NumberFormat.getCurrencyInstance().format(preco));
+        }
         if (clienteSelecionado != null){
             clienteSelecionado.setNome(binding.edtNome.getText().toString());
             clienteSelecionado.setTelefone1(binding.edtTelefone.getText().toString());
@@ -392,7 +423,7 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
             orcamento.setDesconto(String.valueOf(desconto));
             orcamento.setTipoPagamento(pagamento);
             orcamento.setTotal(binding.includeSheet.tvTotalCart.getText().toString());
-            orcamento.setSubTotal(subTotal);
+            orcamento.setSubTotal(binding.includeSheet.tvTotalCart.getText().toString());
 
             SPM spm = new SPM(getApplicationContext());
             DatabaseReference produtoRef = FirebaseHelper.getDatabaseReference()
@@ -492,24 +523,20 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
         table.setWidthPercentage(100);
         table.setWidths(headerwidths);
         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
-        //String url;
-        // String url = "/data/data/" + this.getPackageName() + "/mpasistema/foto perfil/" + "perfil" + ".png";
         File baseDir = this.getExternalFilesDir(null);
         String url = baseDir.getAbsolutePath() + File.separator + "ecommercempa/foto perfil/" + "perfil" + ".png";
         Image img = Image.getInstance(url);
-        img.scaleAbsoluteWidth(90);
-        img.scaleAbsoluteHeight(90f);
+        img.scaleAbsoluteWidth(80);
+        img.scaleAbsoluteHeight(80f);
         img.setAlignment(Element.ALIGN_CENTER);
         PdfPCell c1 = new PdfPCell();
         c1.addElement(img);
         PdfPCell c2 = new PdfPCell();
         PdfPCell c3 = new PdfPCell();
 
-
         c1.setBorder(NO_BORDER);
         c2.setBorder(NO_BORDER);
         c3.setBorder(NO_BORDER);
-
 
         Paragraph p5 = new Paragraph("Tel.: " + perfilEmpresa.getTelefone1(), paragraphFont2);
         Paragraph p6 = new Paragraph("WhatsApp.: " + perfilEmpresa.getTelefone2(), paragraphFont2);
@@ -618,20 +645,6 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
         document.add(table3);
         document.add(new Paragraph("\n", paragraphRodaPe2));
 
-
-        // document.add(new Paragraph("Para:  " + venda.nomeCliente + "\n" + "Tel:  " + venda.telefone1Cliente, paragraphFont));
-
-        // document.add(new Paragraph("Tel:  " + venda.telefone2Cliente, paragraphFont));
-        // Chunk glue2 = new Chunk(new VerticalPositionMark());
-        // Chunk glue2 = new Chunk(data());
-        // glue2.setFont(paragraphFont);
-
-        // Paragraph p2 = new Paragraph("vendedor(a): " + venda.nomeVendedor + "\n", paragraphFont2);
-        // p2.add(new Chunk(glue2));
-        //border.setActive(true);
-        // document.add(p2);
-        // document.add(new Chunk(lineSeparator));
-
         PdfContentByte canvas = pdfWriter.getDirectContent();
         Rectangle rect = new Rectangle(36, 710, 445, 805);
         rect.setBorder(Rectangle.BOX);
@@ -675,15 +688,11 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
             document.add(p2);
         }
 
-
-
-
         Chunk glue = new Chunk(new VerticalPositionMark());
         Paragraph p = new Paragraph("Total", paragraphFont);
         p.add(new Chunk(glue));
         p.add(orcamento.getTotal());
         document.add(p);
-
 
         document.add(new Chunk(lineSeparator));
 
@@ -696,8 +705,6 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
 
         document.add(new Paragraph("\n", paragraphRodaPe));
 
-
-
         Paragraph rodape2 = new Paragraph(perfilEmpresa.getNome(), paragraphRodaPe);
         rodape2.setAlignment(Element.ALIGN_CENTER);
         document.add(rodape2);
@@ -707,8 +714,6 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
         document.add(rodape3);
 
         document.close();
-
-
 
     }
 
@@ -771,13 +776,10 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
     }
     private BigDecimal somatoriaDosProdutosIguais(String sPreco, String sQtd) {
         BigDecimal total = new BigDecimal("0");
-
         BigDecimal preco = Util.convertMoneEmBigDecimal(sPreco);
         preco = preco.divide(new BigDecimal("100"));
         BigDecimal qtd = Util.convertMoneEmBigDecimal(sQtd);
-
         total = total.add(preco.multiply(qtd));
-
         return total;
     }
 }

@@ -92,10 +92,8 @@ public class CheckoutVendaActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == 2) {
                     clienteSelecionado = (Cliente) result.getData().getSerializableExtra("cliente");
-
                     binding.edtNome.setText(clienteSelecionado.getNome());
                     binding.edtTelefone.setText(clienteSelecionado.getTelefone1());
-
                     recuperaEndereco(0);
                 }
             }
@@ -214,8 +212,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(getApplicationContext(), "usuario não exixte", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
 
             @Override
@@ -229,8 +225,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
     private void recuperarConfiguracao() {
         binding.progressBar.setVisibility(View.VISIBLE);
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
-
-
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
                 .child("configuracao");
@@ -241,9 +235,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
                     binding.progressBar.setVisibility(View.GONE);
                     configuracao = snapshot.getValue(Configuracao.class);
 
-
                 } else {
-
                     binding.progressBar.setVisibility(View.GONE);
                 }
             }
@@ -366,15 +358,11 @@ public class CheckoutVendaActivity extends AppCompatActivity {
             if (itemVendaList.get(i).getQtd() != 0) {
                 BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco_venda());
                 preco = preco.divide(new BigDecimal("100"));
-
                 total = total.add(new BigDecimal(itemVendaList.get(i).getQtd()).multiply(preco));
-
             }
-
         }
         if (!tipo.equals("credito")) {
             desconto = total.multiply(new BigDecimal(valor).divide(new BigDecimal(100)));
-
         }
         total = total.subtract(desconto);
         return NumberFormat.getCurrencyInstance().format(total);
@@ -406,14 +394,14 @@ public class CheckoutVendaActivity extends AppCompatActivity {
     }
 
     private void finalizar() {
-       /* BigDecimal bDesconto = new BigDecimal("0");
+        BigDecimal bDesconto = new BigDecimal("0");
         for (int i = 0; i < itemVendaList.size(); i++) {
             BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco_venda());
             preco = preco.divide(new BigDecimal("100"));
             bDesconto = preco.multiply(new BigDecimal(String.valueOf(desconto)).divide(new BigDecimal(100)));
             preco = preco.subtract(bDesconto);
             itemVendaList.get(i).setPreco_venda(NumberFormat.getCurrencyInstance().format(preco));
-        } */
+        }
         if (clienteSelecionado != null) {
             clienteSelecionado.setNome(binding.edtNome.getText().toString());
             clienteSelecionado.setTelefone1(binding.edtTelefone.getText().toString());
@@ -432,7 +420,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
             venda.setStatus("Finalizada");
             venda.setDesconto(String.valueOf(desconto));
             venda.setTotal(binding.includeSheet.tvTotalCart.getText().toString());
-            venda.setSubTotal(subTotal);
+            venda.setSubTotal(binding.includeSheet.tvTotalCart.getText().toString());
             if (pagamento.equals("boleto")) {
                 venda.setBoletoPago(false);
             } else {
@@ -597,11 +585,9 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         PdfPCell c2 = new PdfPCell();
         PdfPCell c3 = new PdfPCell();
 
-
         c1.setBorder(NO_BORDER);
         c2.setBorder(NO_BORDER);
         c3.setBorder(NO_BORDER);
-
 
         Paragraph p5 = new Paragraph("Tel.: " + perfilEmpresa.getTelefone1(), paragraphFont2);
         Paragraph p6 = new Paragraph("WhatsApp.: " + perfilEmpresa.getTelefone2(), paragraphFont2);
@@ -741,7 +727,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         Chunk glue1 = new Chunk(new VerticalPositionMark());
         Paragraph p1 = new Paragraph("Subtotal", paragraphFont3);
         p1.add(new Chunk(glue1));
-        p1.add(subTotal);
+        p1.add(venda.getTotal());
         document.add(p1);
 
         if (Integer.parseInt(venda.getDesconto()) > 0) {
@@ -753,13 +739,11 @@ public class CheckoutVendaActivity extends AppCompatActivity {
             document.add(p2);
         }
 
-
         Chunk glue = new Chunk(new VerticalPositionMark());
         Paragraph p = new Paragraph("Total", paragraphFont);
         p.add(new Chunk(glue));
         p.add(venda.getTotal());
         document.add(p);
-
 
         document.add(new Chunk(lineSeparator));
 
@@ -782,8 +766,6 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         document.add(rodape3);
 
         document.close();
-
-
     }
 
     private void createTable(Venda venda)
@@ -846,13 +828,10 @@ public class CheckoutVendaActivity extends AppCompatActivity {
 
     private BigDecimal somatoriaDosProdutosIguais(String sPreco, String sQtd) {
         BigDecimal total = new BigDecimal("0");
-
         BigDecimal preco = Util.convertMoneEmBigDecimal(sPreco);
         preco = preco.divide(new BigDecimal("100"));
         BigDecimal qtd = Util.convertMoneEmBigDecimal(sQtd);
-
         total = total.add(preco.multiply(qtd));
-
         return total;
     }
 }

@@ -461,7 +461,7 @@
                                 android:orientation="vertical">
 
                                 <ImageButton
-                                    android:id="@+id/ib_"
+                                    android:id="@+id/ib_boleto"
                                     android:layout_width="65dp"
                                     android:layout_height="65dp"
                                     android:background="@drawable/borda"
@@ -471,17 +471,26 @@
                                 </ImageButton>
 
                                 <TextView
-                                    android:id="@+id/text_crediario"
+                                    android:id="@+id/text_boleto"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
-                                    android:text="Crediario">
+                                    android:text="Boleto">
 
                                 </TextView>
 
                             </LinearLayout>
 
                         </LinearLayout>
+
+                        <Switch
+                            android:id="@+id/sw_desconto"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="aplicar desconto"
+                            android:layout_marginTop="8dp">
+
+                        </Switch>
 
                     </LinearLayout>
                 </LinearLayout>
