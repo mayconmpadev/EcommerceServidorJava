@@ -10,10 +10,15 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintJob;
+import android.print.PrintManager;
 import android.telephony.PhoneNumberUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -36,11 +41,15 @@ import com.example.ecommerceservidorjava.databinding.DialogOpcaoEnviarBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrcamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
 import com.example.ecommerceservidorjava.model.Orcamento;
+import com.example.ecommerceservidorjava.model.PerfilEmpresa;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.GerarPDFOrcamento;
+import com.example.ecommerceservidorjava.util.PdfDocumentAdapter;
+import com.example.ecommerceservidorjava.util.PrintJobMonitorService;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.example.ecommerceservidorjava.util.Timestamp;
 import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -57,11 +66,14 @@ import java.util.Locale;
 public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOrcamentoAdapter.OnClickLister, ListaOrcamentoAdapter.OnLongClickLister {
     ActivityListaOrcamentoBinding binding;
     ListaOrcamentoAdapter orcamentoAdapter;
+    PerfilEmpresa perfilEmpresa;
     private final List<Orcamento> orcamentoList = new ArrayList<>();
     List<Orcamento> filtroList = new ArrayList<>();
     SPM spm = new SPM(this);
     private AlertDialog dialog;
     private Orcamento orcamento;
+    String recibo;
+    private PrintManager mgr = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +82,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         binding = ActivityListaOrcamentoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         recuperarIntent();
+        recuperarPerfil();
         configSearchView();
         recuperaOrcamento();
         binding.floatingActionButton.setOnClickListener(view -> {
@@ -127,27 +140,40 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     private void recuperarIntent() {
         orcamento = (Orcamento) getIntent().getSerializableExtra("orcamento");
         if (orcamento != null) {
-            if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")) {
-                enviarPDFWhatsapp();
-            } else {
-                Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();
-            }
+            showDialogEnviar();
 
         }
     }
 
+    private void recuperarPerfil() {
+        String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
+        DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
+                .child(caminho)
+                .child("perfil_empresa");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    perfilEmpresa = snapshot.getValue(PerfilEmpresa.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
     private void filtraProdutoNome(String pesquisa) {
-
-
+        pesquisa = Util.removerAcentos(pesquisa);
         for (Orcamento orcamento : orcamentoList) {
-            if (Util.removerAcentos(orcamento.getIdCliente().getNome()).contains(Util.removerAcentos(pesquisa))) {                filtroList.add(orcamento);
+            if (Util.removerAcentos(orcamento.getIdCliente().getNome()).contains(pesquisa)) {
+                filtroList.add(orcamento);
             }
         }
 
-
         configRvProdutos(filtroList);
-
 
         if (filtroList.isEmpty()) {
             binding.textVazio.setVisibility(View.VISIBLE);
@@ -172,7 +198,6 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // orcamentoList.clear();
                 if (snapshot.exists()) {
 
                     binding.progressBar2.setVisibility(View.GONE);
@@ -234,7 +259,6 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
                     orcamentoAdapter.notifyDataSetChanged();
                 }
-
             }
 
             @Override
@@ -246,7 +270,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
                         orcamentoList.remove(i);
                     }
                 }
-               listVazia();
+                listVazia();
                 orcamentoAdapter.notifyDataSetChanged();
                 if (!filtroList.isEmpty()) {
                     for (int i = 0; i < filtroList.size(); i++) {
@@ -254,7 +278,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
                             filtroList.remove(i);
                         }
                     }
-                  listVazia();
+                    listVazia();
                     orcamentoAdapter.notifyDataSetChanged();
                 }
 
@@ -268,8 +292,6 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-
-
     }
 
     private void showDialog(Orcamento cliente) {
@@ -329,11 +351,8 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         });
 
         deleteBinding.btnSim.setOnClickListener(v -> {
-
-
             dialog.dismiss();
             excluir(orcamento);
-
         });
 
         builder.setView(deleteBinding.getRoot());
@@ -350,13 +369,8 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho).child("orcamentos").child(orcamento.getId());
         databaseReference.removeValue();
-
-
         binding.progressBar2.setVisibility(View.GONE);
-
-
     }
-
     private void alterarStatus(Orcamento orcamento, int position, String status) {
         SPM spm = new SPM(getApplicationContext());
         String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
@@ -371,11 +385,8 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
             } else {
                 orcamentoList.get(position).setStatus(status);
             }
-
-
             orcamentoAdapter.notifyItemChanged(position);
         });
-
     }
 
     //---------------------------------------------------- ENVIAR PDF WHATSAPP-----------------------------------------------------------------
@@ -393,9 +404,9 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         String telefone = "55" + orcamento.getIdCliente().getTelefone1().replaceAll("\\D", "");
         Intent sendIntent = new Intent("android.intent.action.SEND");
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
-        if(isAppInstalled("com.whatsapp")) {
+        if (isAppInstalled("com.whatsapp")) {
             sendIntent.setPackage("com.whatsapp");
-        }else {
+        } else {
             sendIntent.setPackage("com.whatsapp.w4b");
         }
         sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -404,23 +415,17 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
         sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         sendIntent.putExtra("jid", PhoneNumberUtils.stripSeparators(telefone) + "@s.whatsapp.net");
-
         startActivity(sendIntent);
         binding.progressBar2.setVisibility(View.GONE);
-
-
     }
-
     private boolean isAppInstalled(String packageName) {
         try {
             getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
             return true;
-        }
-        catch (PackageManager.NameNotFoundException ignored) {
+        } catch (PackageManager.NameNotFoundException ignored) {
             return false;
         }
     }
-
     private void enviarPDFEmeail() {
         try {
             File pdfFolder = new File(getExternalFilesDir(null)
@@ -440,7 +445,6 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
             Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
             email.putExtra(Intent.EXTRA_STREAM, uri);
             email.setData(Uri.parse("mailto:")); // only email apps should handle this
-
 
             List<ResolveInfo> resInfoList = getApplication().getPackageManager().queryIntentActivities(email, PackageManager.MATCH_DEFAULT_ONLY);
             for (ResolveInfo resolveInfo : resInfoList) {
@@ -644,14 +648,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
 
 
         dialogBinding.llWhatsapp.setOnClickListener(view -> {
-            if (orcamento != null) {
-                if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")) {
-                    enviarPDFWhatsapp();
-                } else {
-                    Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();
-                }
-
-            }
+            enviarPDFWhatsapp();
             dialog.dismiss();
         });
 
@@ -661,6 +658,10 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         });
 
         dialogBinding.llImprimir.setOnClickListener(view -> {
+            //imprimir();
+            print("Test PDF",
+                    new PdfDocumentAdapter(getApplicationContext()),
+                    new PrintAttributes.Builder().build());
             dialog.dismiss();
 
 
@@ -672,13 +673,69 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         dialog.show();
     }
 
+    private PrintJob print(String name, PrintDocumentAdapter adapter, PrintAttributes attrs) {
+        startService(new Intent(this, PrintJobMonitorService.class));
 
+        return (mgr.print(name, adapter, attrs));
+    }
+
+    private String criarReciboVendas() {
+
+        String produtos = "";
+        for (int i = 0; i < orcamento.getItens().size(); i++) {
+            produtos = produtos + "<p>" + orcamento.getItens().get(i).getQtd() + " x " +
+                    orcamento.getItens().get(i).getNome() + "    " +
+                    orcamento.getItens().get(i).getPreco_venda() + "<p>";
+
+        }
+        String divisao = "--------------------------------------------------------------------";
+
+        recibo = "<html><body>" +
+                "<h2>VENDA</h2>" +
+                "<p>" + perfilEmpresa.getNome() + "<p>" +
+                "<p>CNPJ: " + perfilEmpresa.getDocumento() + "<p>" +
+                "<p>" + perfilEmpresa.getEndereco().getLogradouro() + "<p>" +
+                "<p>" + perfilEmpresa.getEndereco().getBairro() + "<p>" +
+                "<p>" + perfilEmpresa.getEndereco().getLocalidade() + "<p>" +
+                "<p>" + divisao + "<p>" +
+                "<p>" + "Cliente: " + orcamento.getIdCliente().getNome() + "<p>" +
+                "<p>" + "Telefone: " + orcamento.getIdCliente().getTelefone1() + "<p>" +
+                "<p>" + "Data: " + Timestamp.getFormatedDateTime(Long.parseLong(orcamento.getData()), "dd/MM/yy") + "   "
+                + Timestamp.getFormatedDateTime(Long.parseLong(orcamento.getData()), "HH:mm") + "<p>" +
+
+                "<p>" + divisao + "<p>" +
+                "<p>" + produtos + "<p>" +
+                "<p>" + divisao + "<p>" +
+                "<p>" + "Subtotal:   " + orcamento.getSubTotal() + "<p>" +
+                "<p>" + "Desconto:   " + orcamento.getDesconto() + "%" + "<p>" +
+                "<p>" + "Total:   " + orcamento.getTotal() + "<p>"
+                + "</body></html>";
+
+        return recibo;
+
+    }
+
+    private void createWebPrintJob(WebView webView) {
+
+        //create object of print manager in your device
+        PrintManager printManager = (PrintManager) this.getSystemService(Context.PRINT_SERVICE);
+
+        //create object of print adapter
+        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter();
+
+        //provide name to your newly generated pdf file
+        String jobName = getString(R.string.app_name) + " Print Test";
+
+        //open print dialog
+        printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
+    }
     // Oculta o teclado do dispotivo
     private void ocultaTeclado() {
         InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(binding.searchView.getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
     }
+
     private void listVazia() {
         if (orcamentoList.size() == 0) {
             binding.textVazio.setVisibility(View.VISIBLE);

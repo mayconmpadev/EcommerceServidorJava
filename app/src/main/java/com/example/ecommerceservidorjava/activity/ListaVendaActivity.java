@@ -78,14 +78,15 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
     private AlertDialog dialog;
     private Venda venda;
     String recibo;
-    private PrintManager mgr=null;
+    private PrintManager mgr = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         binding = ActivityListaVendaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        mgr=(PrintManager)getSystemService(PRINT_SERVICE);
+        mgr = (PrintManager) getSystemService(PRINT_SERVICE);
         recuperarIntent();
         recuperarPerfil();
         configSearchView();
@@ -153,16 +154,12 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
                 enviarPDFWhatsapp();
             } else {
                 Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();
-            } */
-
+           } */
         }
     }
 
     private void recuperarPerfil() {
-
         String caminho = Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", ""));
-
-
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho)
                 .child("perfil_empresa");
@@ -185,16 +182,14 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
     private void filtraProdutoNome(String pesquisa) {
 
-pesquisa = Util.removerAcentos(pesquisa);
+        pesquisa = Util.removerAcentos(pesquisa);
         for (Venda venda : vendaList) {
             if (Util.removerAcentos(venda.getIdCliente().getNome()).contains(pesquisa)) {
                 filtroList.add(venda);
             }
         }
 
-
         configRvProdutos(filtroList);
-
 
         if (filtroList.isEmpty()) {
             binding.textVazio.setVisibility(View.VISIBLE);
@@ -240,7 +235,6 @@ pesquisa = Util.removerAcentos(pesquisa);
         produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // orcamentoList.clear();
                 if (snapshot.exists()) {
 
                     binding.progressBar2.setVisibility(View.GONE);
@@ -302,7 +296,6 @@ pesquisa = Util.removerAcentos(pesquisa);
 
                     vendaAdapter.notifyDataSetChanged();
                 }
-
             }
 
             @Override
@@ -325,7 +318,6 @@ pesquisa = Util.removerAcentos(pesquisa);
 
                     vendaAdapter.notifyDataSetChanged();
                 }
-
             }
 
             @Override
@@ -425,13 +417,8 @@ pesquisa = Util.removerAcentos(pesquisa);
         DatabaseReference databaseReference = FirebaseHelper.getDatabaseReference().child("empresas")
                 .child(caminho).child("vendas").child(venda.getId());
         databaseReference.removeValue();
-
-
         binding.progressBar2.setVisibility(View.GONE);
-
-
     }
-
     private void alterarStatus(Venda venda, int position, String status) {
         SPM spm = new SPM(getApplicationContext());
         String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
@@ -446,11 +433,8 @@ pesquisa = Util.removerAcentos(pesquisa);
             } else {
                 vendaList.get(position).setStatus(status);
             }
-
-
             vendaAdapter.notifyItemChanged(position);
         });
-
     }
 
     //---------------------------------------------------- ENVIAR PDF WHATSAPP-----------------------------------------------------------------
@@ -474,20 +458,15 @@ pesquisa = Util.removerAcentos(pesquisa);
         } else {
             sendIntent.setPackage("com.whatsapp.w4b");
         }
-
         sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sendIntent.setType("application/pdf");
         sendIntent.putExtra(Intent.EXTRA_TEXT, "sample text you want to send along with the image");
         sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
         sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         sendIntent.putExtra("jid", PhoneNumberUtils.stripSeparators(telefone) + "@s.whatsapp.net");
-
         startActivity(sendIntent);
         binding.progressBar2.setVisibility(View.GONE);
-
-
     }
-
     private boolean isAppInstalled(String packageName) {
         try {
             getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
@@ -496,7 +475,6 @@ pesquisa = Util.removerAcentos(pesquisa);
             return false;
         }
     }
-
     private void enviarPDFEmeail() {
         try {
             File pdfFolder = new File(getExternalFilesDir(null)
@@ -517,7 +495,6 @@ pesquisa = Util.removerAcentos(pesquisa);
             email.putExtra(Intent.EXTRA_STREAM, uri);
             email.setData(Uri.parse("mailto:")); // only email apps should handle this
 
-
             List<ResolveInfo> resInfoList = getApplication().getPackageManager().queryIntentActivities(email, PackageManager.MATCH_DEFAULT_ONLY);
             for (ResolveInfo resolveInfo : resInfoList) {
                 String packageName = resolveInfo.activityInfo.packageName;
@@ -536,7 +513,6 @@ pesquisa = Util.removerAcentos(pesquisa);
         }
         binding.progressBar2.setVisibility(View.GONE);
     }
-
     private void exibirPDF() {
 
         File pdfFolder = new File(getExternalFilesDir(null)
@@ -670,7 +646,7 @@ pesquisa = Util.removerAcentos(pesquisa);
         });
 
         dialogBinding.llPdf.setOnClickListener(view -> {
-           // exibirPDF();
+            // exibirPDF();
             Intent intent = new Intent(getApplicationContext(), AndroidPDFViewer.class);
             startActivity(intent);
             dialog.dismiss();
@@ -832,11 +808,13 @@ pesquisa = Util.removerAcentos(pesquisa);
             }
         });
     }
+
     private PrintJob print(String name, PrintDocumentAdapter adapter, PrintAttributes attrs) {
         startService(new Intent(this, PrintJobMonitorService.class));
 
-        return(mgr.print(name, adapter, attrs));
+        return (mgr.print(name, adapter, attrs));
     }
+
     private void imprimir() {
 
         binding.webview.setWebViewClient(new WebViewClient() {
@@ -878,9 +856,9 @@ pesquisa = Util.removerAcentos(pesquisa);
 
         String produtos = "";
         for (int i = 0; i < venda.getItens().size(); i++) {
-            produtos = produtos +  "<p>" + venda.getItens().get(i).getQtd() + " x " +
+            produtos = produtos + "<p>" + venda.getItens().get(i).getQtd() + " x " +
                     venda.getItens().get(i).getNome() + "    " +
-                    venda.getItens().get(i).getPreco_venda() +  "<p>";
+                    venda.getItens().get(i).getPreco_venda() + "<p>";
 
         }
         String divisao = "--------------------------------------------------------------------";
@@ -906,7 +884,7 @@ pesquisa = Util.removerAcentos(pesquisa);
                 "<p>" + "Total:   " + venda.getTotal() + "<p>"
                 + "</body></html>";
 
-       return recibo;
+        return recibo;
 
     }
 

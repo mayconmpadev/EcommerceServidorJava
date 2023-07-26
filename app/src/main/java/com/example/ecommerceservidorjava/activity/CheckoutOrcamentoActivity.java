@@ -676,7 +676,7 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
         Chunk glue1 = new Chunk(new VerticalPositionMark());
         Paragraph p1 = new Paragraph("Subtotal", paragraphFont3);
         p1.add(new Chunk(glue1));
-        p1.add(subTotal);
+        p1.add(orcamento.getTotal());
         document.add(p1);
 
         if (Integer.parseInt(orcamento.getDesconto()) > 0) {
