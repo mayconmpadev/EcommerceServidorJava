@@ -81,6 +81,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         super.onCreate(savedInstanceState);
         binding = ActivityListaOrcamentoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        mgr = (PrintManager) getSystemService(PRINT_SERVICE);
         recuperarIntent();
         recuperarPerfil();
         configSearchView();
@@ -660,7 +661,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         dialogBinding.llImprimir.setOnClickListener(view -> {
             //imprimir();
             print("Test PDF",
-                    new PdfDocumentAdapter(getApplicationContext()),
+                    new PdfDocumentAdapter(getApplicationContext(), "orcamentos", "orcamento"),
                     new PrintAttributes.Builder().build());
             dialog.dismiss();
 

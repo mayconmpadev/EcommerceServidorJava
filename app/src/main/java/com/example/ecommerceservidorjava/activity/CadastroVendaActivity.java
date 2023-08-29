@@ -224,6 +224,7 @@ public class CadastroVendaActivity extends AppCompatActivity implements Cadastro
                         itemVenda.setDescricao(produto.getDescricao());
                         itemVenda.setFoto(produto.getUrlImagem0());
                         itemVendaList.add(itemVenda);
+                        filtroItemVendaCategotia.add(itemVenda);
                         binding.progressBar2.setVisibility(View.GONE);
                         binding.textVazio.setVisibility(View.GONE);
                     }

@@ -1,8 +1,16 @@
 package com.example.ecommerceservidorjava.activity;
 
+import static com.gun0912.tedpermission.provider.TedPermissionProvider.context;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -19,6 +27,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.adapter.ListaCategoriaHorizontalAdapter;
 import com.example.ecommerceservidorjava.adapter.ListaProdutoAdapter;
@@ -39,10 +49,10 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class ListaProdutoActivity extends AppCompatActivity implements ListaProdutoAdapter.OnClickLister, ListaProdutoAdapter.OnLongClickLister, ListaCategoriaHorizontalAdapter.OnClickLister {
     ActivityListaProdutoBinding binding;
@@ -144,7 +154,13 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     }
 
     private void configRvProdutos(List<Produto> usuarioList) {
-        binding.recycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            binding.recycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 4));
+        } else {
+            binding.recycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+        }
+
         binding.recycler.setHasFixedSize(true);
         produtoAdapter = new ListaProdutoAdapter(R.layout.item_produto_adapter, usuarioList, getApplicationContext(), true, this, this);
         binding.recycler.setAdapter(produtoAdapter);
@@ -515,7 +531,19 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
 
     @Override
     public void onLongClick(Produto produto) {
+        Glide.with(getApplicationContext())
+                .asBitmap()
+                .load(produto.getUrlImagem0())
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        enviarPDFWhatsapp(resource, produto);
+                    }
 
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                    }
+                });
     }
 
     @Override
@@ -527,6 +555,41 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     @Override
     public void onLongClick(Categoria categoria) {
 
+    }
+    //---------------------------------------------------- ENVIAR PDF WHATSAPP-----------------------------------------------------------------
+    private void enviarPDFWhatsapp(Bitmap bitmap ,Produto produto) {
+        binding.progressBar2.setVisibility(View.VISIBLE);
+
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
+        Uri imagem = Uri.parse(path);
+
+        Intent sendIntent = new Intent("android.intent.action.SEND");
+
+
+        boolean tipowhts = isAppInstalled("com.whatsapp");
+        if (tipowhts) {
+            sendIntent.setPackage("com.whatsapp");
+        } else {
+            sendIntent.setPackage("com.whatsapp.w4b");
+        }
+        sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        sendIntent.setType("image/*");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "*" + produto.getNome() +"*" + "\n" +produto.getPrecoVenda());
+        sendIntent.putExtra(Intent.EXTRA_STREAM, imagem);
+        sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(sendIntent);
+        binding.progressBar2.setVisibility(View.GONE);
+    }
+
+    private boolean isAppInstalled(String packageName) {
+        try {
+            getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException ignored) {
+            return false;
+        }
     }
 }
 //TODO: atualizar lista com estoque baixo.

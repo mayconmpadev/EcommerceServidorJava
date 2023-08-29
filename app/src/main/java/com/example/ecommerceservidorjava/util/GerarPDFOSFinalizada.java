@@ -314,7 +314,7 @@ public class GerarPDFOSFinalizada extends AppCompatActivity {
         tabela1_c1.setUseAscender(true);
 //_________________________________________________________________________TABELA 2_________________________________________________________________________________
 
-        Paragraph p1_tabela2 = new Paragraph("COMPROVANTE DE ENTRADA - OS Nº " + ordemServico.getNumeroOs(), paragraphFont4);
+        Paragraph p1_tabela2 = new Paragraph("COMPROVANTE DE RETIRADA - OS Nº " + ordemServico.getNumeroOs(), paragraphFont4);
         Paragraph p2_tabela2 = new Paragraph("Hora: " + Timestamp.getFormatedDateTime(Long.parseLong(ordemServico.getDataEntrada()), "HH:mm"), paragraphFont3);
         Paragraph p3_tabela2 = new Paragraph("Data: " + Timestamp.getFormatedDateTime(Long.parseLong(ordemServico.getDataEntrada()), "dd/MM/yy"), paragraphFont3);
 
@@ -387,7 +387,7 @@ public class GerarPDFOSFinalizada extends AppCompatActivity {
         p3_tabela3.setAlignment(Element.ALIGN_RIGHT);
 
         PdfPTable table3 = new PdfPTable(3);
-        int headerwidths3[] = {50, 30, 20};
+        int headerwidths3[] = {35, 30, 45};
         table3.setWidthPercentage(100);
         table3.setWidths(headerwidths3);
 
@@ -411,6 +411,48 @@ public class GerarPDFOSFinalizada extends AppCompatActivity {
         table3.addCell(table3_c2);
         table3.addCell(table3_c3);
 
+        //_________________________________________________________________________TABELA 4__________________________________________________________________________________
+
+        Paragraph p1_tabela4 = new Paragraph(new Chunk(lineSeparator));
+        Paragraph p2_tabela4 = new Paragraph("", paragraphFont);
+        Paragraph p3_tabela4 = new Paragraph(new Chunk(lineSeparator));
+        Paragraph p4_tabela4 = new Paragraph("Assi. Cliente", paragraphFont);
+        Paragraph p5_tabela4 = new Paragraph("Assi. Técnico", paragraphFont);
+
+
+        p1_tabela4.setAlignment(Element.ALIGN_CENTER);
+        p2_tabela4.setAlignment(Element.ALIGN_CENTER);
+        p3_tabela4.setAlignment(Element.ALIGN_RIGHT);
+        p4_tabela4.setAlignment(Element.ALIGN_CENTER);
+        p5_tabela4.setAlignment(Element.ALIGN_CENTER);
+
+        PdfPTable table4 = new PdfPTable(3);
+        int headerwidths4[] = {30, 30, 30};
+        table4.setWidthPercentage(100);
+        table4.setWidths(headerwidths4);
+
+        // table2.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+        // String url = "/data/data/" + this.getPackageName() + "/mpasistema/foto perfil/" + "perfil" + ".png";
+        PdfPCell table4_c1 = new PdfPCell();
+        PdfPCell table4_c2 = new PdfPCell();
+        PdfPCell table4_c3 = new PdfPCell();
+        table4_c1.setBorder(NO_BORDER);
+        table4_c2.setBorder(NO_BORDER);
+        table4_c3.setBorder(NO_BORDER);
+
+        table4_c1.addElement(p1_tabela4);
+        table4_c1.addElement(p4_tabela4);
+        //table3_c1.setUseAscender(true);
+        table4_c2.addElement(p2_tabela4);
+        //table3_c2.setUseAscender(true);
+        table4_c3.addElement(p3_tabela4);
+        table4_c3.addElement(p5_tabela4);
+        // table3_c3.setUseAscender(true);
+
+        table4.addCell(table4_c1);
+        table4.addCell(table4_c2);
+        table4.addCell(table4_c3);
+
 
         document.add(table1);
         document.add(lineSeparator);
@@ -431,13 +473,15 @@ public class GerarPDFOSFinalizada extends AppCompatActivity {
 
 
 
-        Paragraph pp = new Paragraph("Problema informado:", paragraphFont4);
-        Paragraph problema = new Paragraph(ordemServico.getDefeitoRelatado() + "\n", paragraphFont);
-        Paragraph ppp = new Paragraph("Condições de cerviço:", paragraphFont4);
-        Paragraph condicao = new Paragraph("1 - A Empresa da garantia de 90 dias para mão de obra e peças usadas no conserto, contados a partir da entrega\n" +
-                "2 – Os Aparelhos não retirados no prazo máximo de 30 dias contados a partir da comunicação de sua retirada sofrerão acréscimo das despesas de armazenamento e seguro.\n" +
-                "3 – O Aparelho só será entregue mediante a apresentação deste comprovante.\n", paragraphFont);
+        Paragraph pp = new Paragraph("Problema encontrado:", paragraphFont4);
+        Paragraph problema = new Paragraph(ordemServico.getDefeitoEncontrado() + "\n", paragraphFont);
+        Paragraph ppp = new Paragraph("Condições de Garantia:", paragraphFont4);
+        Paragraph condicao = new Paragraph("1 - A Empresa da garantia de 90 dias para mão de obra e peças usadas no conserto, contados a partir da entrega" + "\n", paragraphFont);
 
+        Chunk glue3 = new Chunk(new VerticalPositionMark());
+        Paragraph p3 = new Paragraph("Assi. Cliente " , paragraphFont);
+        p3.add(new Chunk(glue3));
+        p3.add("Assi. Técnico ");
         document.add(pp);
         document.add(problema);
         document.add(new Paragraph("\n", paragraphRodaPe2));
@@ -458,6 +502,10 @@ public class GerarPDFOSFinalizada extends AppCompatActivity {
 
         document.add(ppp);
         document.add(condicao);
+        document.add(new Paragraph("\n", paragraphRodaPe2));
+        document.add(new Paragraph("\n", paragraphRodaPe2));
+
+        document.add(table4);
 
 
 

@@ -34,8 +34,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class PdfDocumentAdapter extends ThreadedPrintDocumentAdapter {
-  public PdfDocumentAdapter(Context ctxt) {
+  static String pasta;
+  static String arquivo;
+  public PdfDocumentAdapter(Context ctxt,  String p, String a) {
     super(ctxt);
+    pasta = p;
+    arquivo = a;
   }
 
   @Override
@@ -99,12 +103,12 @@ public class PdfDocumentAdapter extends ThreadedPrintDocumentAdapter {
       try {
         File pdfFolder = new File(context.getExternalFilesDir(null)
                 + File.separator
-                + "ecommercempa/vendas"
+                + "ecommercempa/" + pasta
                 + File.separator);
         if (!pdfFolder.exists()) {
           pdfFolder.mkdirs();
         }
-        File myFile = new File(pdfFolder + File.separator + "venda" + ".pdf");
+        File myFile = new File(pdfFolder + File.separator + arquivo + ".pdf");
         InputStream targetStream = new FileInputStream(myFile);
         in=targetStream;
         out=new FileOutputStream(destination.getFileDescriptor());

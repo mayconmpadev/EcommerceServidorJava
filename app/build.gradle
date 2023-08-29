@@ -77,6 +77,8 @@ dependencies {
 
     implementation 'com.edmodo:cropper:1.0.1'
 
+    implementation 'io.github.itsxtt:pattern-lock:0.2.0' // senha de desenho
+
 
     implementation 'com.github.MikeOrtiz:TouchImageView:1.4.1' // last SupportLib version
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.6.0'

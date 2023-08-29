@@ -10,6 +10,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintJob;
+import android.print.PrintManager;
 import android.telephony.PhoneNumberUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +44,8 @@ import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.GerarPDFOSFinalizada;
 import com.example.ecommerceservidorjava.util.GerarPDFOrdenServico;
+import com.example.ecommerceservidorjava.util.PdfDocumentAdapter;
+import com.example.ecommerceservidorjava.util.PrintJobMonitorService;
 import com.example.ecommerceservidorjava.util.SPM;
 import com.example.ecommerceservidorjava.util.Util;
 import com.google.firebase.database.ChildEventListener;
@@ -62,6 +68,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
     SPM spm = new SPM(this);
     private AlertDialog dialog;
     private OrdemServico ordemServico;
+    private PrintManager mgr = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +76,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
         super.onCreate(savedInstanceState);
         binding = ActivityListaOrdemServicoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        mgr = (PrintManager) getSystemService(PRINT_SERVICE);
         recuperarIntent();
         configSearchView();
         recuperaOrcamento();
@@ -125,9 +133,11 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
     }
 
     private void recuperarIntent() {
-        ordemServico = (OrdemServico) getIntent().getSerializableExtra("venda");
+
+        ordemServico = (OrdemServico) getIntent().getSerializableExtra("ordens_servico");
         if (ordemServico != null) {
-            enviarPDFWhatsapp();
+            GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(ordemServico, this);
+            showDialogEnviar();
         }
     }
 
@@ -242,7 +252,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
                         ordemServicoList.remove(i);
                     }
                 }
-
+                listVazia();
                 ordemServicoAdapter.notifyDataSetChanged();
                 if (!filtroList.isEmpty()) {
                     for (int i = 0; i < filtroList.size(); i++) {
@@ -250,7 +260,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
                             filtroList.remove(i);
                         }
                     }
-
+                    listVazia();
                     ordemServicoAdapter.notifyDataSetChanged();
                 }
 
@@ -417,9 +427,9 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
         String telefone = "55" + ordemServico.getIdCliente().getTelefone1().replaceAll("\\D", "");
         Intent sendIntent = new Intent("android.intent.action.SEND");
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
-        if(isAppInstalled("com.whatsapp")) {
+        if (isAppInstalled("com.whatsapp")) {
             sendIntent.setPackage("com.whatsapp");
-        }else {
+        } else {
             sendIntent.setPackage("com.whatsapp.w4b");
         }
         sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -599,9 +609,9 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
         });
 
         dialogBinding.llEntregue.setOnClickListener(view -> {
-            if (ordemServico.isEntregue()){
+            if (ordemServico.isEntregue()) {
                 entregue(ordemServico, position, false);
-            }else {
+            } else {
                 entregue(ordemServico, position, true);
             }
 
@@ -627,10 +637,10 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
         dialogBinding.llPdf.setOnClickListener(view -> {
             dialog.dismiss();
-            if (ordemServico.getStatus().equals("Em analise")){
+            if (ordemServico.getStatus().equals("Em analise")) {
                 GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(ordemServico, this);
                 exibirPDF();
-            }else {
+            } else {
                 GerarPDFOSFinalizada gerarPDFOSFinalizada = new GerarPDFOSFinalizada(ordemServico, this);
                 exibirPDF();
             }
@@ -680,6 +690,11 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
             alterarStatus(ordemServico, position, "Aprovado");
         });
 
+        dialogBinding.llReparado.setOnClickListener(view -> {
+            dialog.dismiss();
+            alterarStatus(ordemServico, position, "Reparado");
+        });
+
         dialogBinding.llRecusado.setOnClickListener(view -> {
             dialog.dismiss();
             alterarStatus(ordemServico, position, "Recusado");
@@ -692,49 +707,12 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
         dialog.show();
     }
 
-    private void showDialogEnviar() {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
-
-        DialogOpcaoEnviarBinding dialogBinding = DialogOpcaoEnviarBinding
-                .inflate(LayoutInflater.from(this));
-
-
-        dialogBinding.llWhatsapp.setOnClickListener(view -> {
-            if (ordemServico != null) {
-                if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")) {
-                    enviarPDFWhatsapp();
-                } else {
-                    Toast.makeText(this, "Instale o whatsapp!!", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-            dialog.dismiss();
-        });
-
-        dialogBinding.llEmail.setOnClickListener(view -> {
-            enviarPDFEmeail();
-            dialog.dismiss();
-        });
-
-        dialogBinding.llImprimir.setOnClickListener(view -> {
-            dialog.dismiss();
-
-
-        });
-
-
-        builder.setView(dialogBinding.getRoot());
-        dialog = builder.create();
-        dialog.show();
-    }
 
     private boolean isAppInstalled(String packageName) {
         try {
             getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
             return true;
-        }
-        catch (PackageManager.NameNotFoundException ignored) {
+        } catch (PackageManager.NameNotFoundException ignored) {
             return false;
         }
     }
@@ -784,6 +762,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
         });
     }
 
+
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -811,5 +790,52 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
     public void onLongClick(OrdemServico ordemServico) {
         // showDialogDelete(ordemServico);
 
+    }
+
+    private void showDialogEnviar() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
+
+        DialogOpcaoEnviarBinding dialogBinding = DialogOpcaoEnviarBinding
+                .inflate(LayoutInflater.from(this));
+
+
+        dialogBinding.llWhatsapp.setOnClickListener(view -> {
+            enviarPDFWhatsapp();
+            dialog.dismiss();
+        });
+
+        dialogBinding.llEmail.setOnClickListener(view -> {
+            enviarPDFEmeail();
+            dialog.dismiss();
+        });
+
+        dialogBinding.llImprimir.setOnClickListener(view -> {
+            //imprimir();
+            print("Test PDF",
+                    new PdfDocumentAdapter(getApplicationContext(), "ordemServico", "ordemServico"),
+                    new PrintAttributes.Builder().build());
+            dialog.dismiss();
+
+
+        });
+
+
+        builder.setView(dialogBinding.getRoot());
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    private PrintJob print(String name, PrintDocumentAdapter adapter, PrintAttributes attrs) {
+        startService(new Intent(this, PrintJobMonitorService.class));
+
+        return (mgr.print(name, adapter, attrs));
+    }
+
+    private void listVazia() {
+        if (ordemServicoList.size() == 0) {
+            binding.textVazio.setVisibility(View.VISIBLE);
+        } else {
+            binding.textVazio.setVisibility(View.GONE);
+        }
     }
 }

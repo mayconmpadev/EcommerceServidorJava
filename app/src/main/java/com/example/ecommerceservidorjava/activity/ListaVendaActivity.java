@@ -419,6 +419,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         databaseReference.removeValue();
         binding.progressBar2.setVisibility(View.GONE);
     }
+
     private void alterarStatus(Venda venda, int position, String status) {
         SPM spm = new SPM(getApplicationContext());
         String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
@@ -467,6 +468,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         startActivity(sendIntent);
         binding.progressBar2.setVisibility(View.GONE);
     }
+
     private boolean isAppInstalled(String packageName) {
         try {
             getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
@@ -475,6 +477,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
             return false;
         }
     }
+
     private void enviarPDFEmeail() {
         try {
             File pdfFolder = new File(getExternalFilesDir(null)
@@ -513,6 +516,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         }
         binding.progressBar2.setVisibility(View.GONE);
     }
+
     private void exibirPDF() {
 
         File pdfFolder = new File(getExternalFilesDir(null)
@@ -732,6 +736,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
     }
 
     private void showDialogEnviar() {
+        GerarPDFVendas gerarPDFOrcamento = new GerarPDFVendas(venda, this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogOpcaoEnviarBinding dialogBinding = DialogOpcaoEnviarBinding
@@ -751,7 +756,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         dialogBinding.llImprimir.setOnClickListener(view -> {
             //imprimir();
             print("Test PDF",
-                    new PdfDocumentAdapter(getApplicationContext()),
+                    new PdfDocumentAdapter(getApplicationContext(), "vendas", "venda"),
                     new PrintAttributes.Builder().build());
             dialog.dismiss();
 

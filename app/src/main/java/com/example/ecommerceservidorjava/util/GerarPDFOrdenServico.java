@@ -387,7 +387,7 @@ public class GerarPDFOrdenServico extends AppCompatActivity {
         p3_tabela3.setAlignment(Element.ALIGN_RIGHT);
 
         PdfPTable table3 = new PdfPTable(3);
-        int headerwidths3[] = {50, 30, 20};
+        int headerwidths3[] = {35, 30, 45};
         table3.setWidthPercentage(100);
         table3.setWidths(headerwidths3);
 

@@ -1,9 +1,15 @@
 package com.example.ecommerceservidorjava.activity;
 
+import static com.gun0912.tedpermission.provider.TedPermissionProvider.context;
+
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -11,7 +17,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -19,9 +27,17 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.example.ecommerceservidorjava.R;
 import com.example.ecommerceservidorjava.databinding.ActivityCadastroOrdemServicoBinding;
+import com.example.ecommerceservidorjava.databinding.DialogLojaProdutoBinding;
+import com.example.ecommerceservidorjava.databinding.DialogPadraoOkCancelarValorBinding;
+import com.example.ecommerceservidorjava.databinding.DialogSenhaAlfanumericaBinding;
+import com.example.ecommerceservidorjava.databinding.DialogSenhaDesenhoBinding;
+import com.example.ecommerceservidorjava.databinding.DialogTipoSenhaBinding;
 import com.example.ecommerceservidorjava.model.Cliente;
+import com.example.ecommerceservidorjava.model.ItemVenda;
 import com.example.ecommerceservidorjava.model.OrdemServico;
+import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
@@ -33,6 +49,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.itsxtt.patternlock.PatternLockView;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -51,6 +68,8 @@ public class CadastroOrdemServicoActivity extends AppCompatActivity {
     private final List<String> codigoList = new ArrayList<>();
     private final List<OrdemServico> ordemServicoList = new ArrayList<>();
     private int imagemSelecionada;
+    private String senha = "";
+    private AlertDialog dialog;
     private Uri imagemUri_0, imagemUri_1, imagemUri_2;
     private OrdemServico ordemServico = new OrdemServico();
     private OrdemServico ordemServicoSelecionado;
@@ -102,6 +121,8 @@ public class CadastroOrdemServicoActivity extends AppCompatActivity {
             binding.editObservacao.setText(ordemServicoSelecionado.getObservacao());
             binding.checkGarantia.setChecked(ordemServicoSelecionado.isGarantia());
             binding.editNumeroOs.setEnabled(false);
+            binding.textSenha.setText(ordemServico.getSenha());
+            binding.btnSenha.setBackgroundResource(R.drawable.borda_2);
             clienteSelecionado = ordemServicoSelecionado.getIdCliente();
 
             if (ordemServicoSelecionado.getUrlImagem0() != null) {
@@ -143,7 +164,8 @@ public class CadastroOrdemServicoActivity extends AppCompatActivity {
         String observação = binding.editObservacao.getText().toString();
 
 
-     if (cliente.isEmpty()) {
+
+        if (cliente.isEmpty()) {
             binding.edtCliente.setError("preencha o campo");
             binding.edtCliente.requestFocus();
         } else if (equipamento.isEmpty()) {
@@ -176,6 +198,8 @@ public class CadastroOrdemServicoActivity extends AppCompatActivity {
             ordemServico.setEntregue(false);
             ordemServico.setStatus(ordemServico.getStatus());
             ordemServico.setDataEntrada(String.valueOf(Timestamp.getUnixTimestamp()));
+            ordemServico.setSenha(senha);
+
             if (imagemUri_0 != null) {
                 caminhoImagens.set(0, "");
                 salvarDadosImagem(ordemServico, imagemUri_0, 0);
@@ -250,9 +274,9 @@ public class CadastroOrdemServicoActivity extends AppCompatActivity {
     }
 
     public void salvarDados() {
-if (caminhoImagens.size() > 0){
-    ordemServico.setUrlImagem0(caminhoImagens.get(0));
-}
+        if (caminhoImagens.size() > 0) {
+            ordemServico.setUrlImagem0(caminhoImagens.get(0));
+        }
 
         if (caminhoImagens.size() > 1) {
             ordemServico.setUrlImagem1(caminhoImagens.get(1));
@@ -270,7 +294,10 @@ if (caminhoImagens.size() > 0){
         databaseReference.setValue(ordemServico).addOnCompleteListener(task1 -> {
 
             if (task1.isSuccessful()) {
-                finish();
+                finishAffinity();
+                Intent intent = new Intent(getApplicationContext(), ListaOrdemServicoActivity.class);
+                intent.putExtra("ordens_servico", ordemServico);
+                startActivity(intent);
             } else {
                 Toast.makeText(getApplicationContext(), "erro de foto", Toast.LENGTH_SHORT).show();
             }
@@ -340,7 +367,116 @@ if (caminhoImagens.size() > 0){
             chamarImagens();
         });
 
-        binding.btnSalvar.setOnClickListener(view -> validaDados());
+        binding.btnSenha.setOnClickListener(view -> showDialogSenha());
+        binding.btnSalvar.setOnClickListener(view -> {if (!senha.equals("")){validaDados();}
+        else {showDialogSenha();}
+        });
+    }
+
+    private void showDialogSenha() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
+
+        DialogTipoSenhaBinding dialogBinding = DialogTipoSenhaBinding
+                .inflate(LayoutInflater.from(this));
+
+        dialogBinding.txtNomeProduto.setVisibility(View.VISIBLE);
+        dialogBinding.semSenha.setOnClickListener(v -> {
+            senha = "sem senha";
+            binding.btnSenha.setBackgroundResource(R.drawable.borda_2);
+            binding.textSenha.setText(senha);
+            dialog.dismiss();
+        });
+
+        dialogBinding.senhaDesenho.setOnClickListener(v -> {
+            dialog.dismiss();
+            showDialogSenhaDesenho();
+
+        });
+
+        dialogBinding.senhaAN.setOnClickListener(v -> {
+            dialog.dismiss();
+            showDialogSenhaAN();
+
+
+        });
+
+
+        dialogBinding.btnFechar.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        builder.setView(dialogBinding.getRoot());
+
+        dialog = builder.create();
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
+    }
+
+    private void showDialogSenhaDesenho() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
+
+        DialogSenhaDesenhoBinding dialogBinding = DialogSenhaDesenhoBinding
+                .inflate(LayoutInflater.from(this));
+
+        dialogBinding.patternLockView.setOnPatternListener(new PatternLockView.OnPatternListener() {
+            @Override
+            public void onStarted() {
+
+            }
+
+            @Override
+            public void onProgress(ArrayList<Integer> ids) {
+
+            }
+
+            @Override
+            public boolean onComplete(ArrayList<Integer> ids) {
+                //  Toast.makeText(MainActivity.this, String.valueOf(ids.get(0)), Toast.LENGTH_SHORT).show();
+                String senhaDesenho = "";
+                for (int i = 0; i < ids.size(); i++) {
+                    senhaDesenho = senhaDesenho + "[" + ids.get(i) + "]";
+
+                }
+                senha = senhaDesenho;
+                binding.btnSenha.setBackgroundResource(R.drawable.borda_2);
+                binding.textSenha.setText(senha);
+                dialog.dismiss();
+                return false;
+            }
+        });
+
+
+        builder.setView(dialogBinding.getRoot());
+
+        dialog = builder.create();
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
+    }
+
+    private void showDialogSenhaAN() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                CadastroOrdemServicoActivity.this, R.style.CustomAlertDialog2);
+
+        DialogSenhaAlfanumericaBinding dialogBinding = DialogSenhaAlfanumericaBinding
+                .inflate(LayoutInflater.from(CadastroOrdemServicoActivity.this));
+
+        dialogBinding.dialogPadraoBtnDireita.setOnClickListener(v -> {
+            senha = dialogBinding.editPreco.getText().toString();
+            binding.btnSenha.setBackgroundResource(R.drawable.borda_2);
+            binding.textSenha.setText(senha);
+            dialog.dismiss();
+        });
+
+        dialogBinding.dialogPadraoBtnEsquerda.setOnClickListener(v -> {
+            dialog.dismiss();
+
+        });
+
+        builder.setView(dialogBinding.getRoot());
+
+        dialog = builder.create();
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);// impede fechamento com clique externo.
     }
 
 

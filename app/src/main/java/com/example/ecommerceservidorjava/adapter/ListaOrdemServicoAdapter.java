@@ -67,11 +67,14 @@ public class ListaOrdemServicoAdapter extends RecyclerView.Adapter<ListaOrdemSer
             holder.binding.viewStatus.setBackgroundResource(R.color.ouro);
         }else if(ordemServico.getStatus().equals("Aprovado")){
             holder.binding.viewStatus.setBackgroundResource(R.color.color_verde);
+        }else if(ordemServico.getStatus().equals("Reparado")){
+            holder.binding.viewStatus.setBackgroundResource(R.color.blue);
         }else if(ordemServico.getStatus().equals("Orçada, esperando aprovação")) {
             holder.binding.viewStatus.setBackgroundResource(R.color.color_laranja);
         }else {
             holder.binding.viewStatus.setBackgroundResource(R.color.red);
         }
+
 
         holder.binding.textData.setText(Timestamp.getFormatedDateTime(Long.parseLong(ordemServico.getDataEntrada()),"dd/MM/yyyy - HH:mm"));
 

@@ -18,6 +18,7 @@ public class OrdemServico implements Serializable {
     private String tecnico;
 
     private String observacao;
+    private String senha;
     private boolean garantia;
     private boolean entregue;
 
@@ -146,6 +147,14 @@ public class OrdemServico implements Serializable {
 
     public void setObservacao(String observacao) {
         this.observacao = observacao;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
     public boolean isGarantia() {
