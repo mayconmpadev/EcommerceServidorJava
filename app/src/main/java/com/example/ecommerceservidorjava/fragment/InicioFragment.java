@@ -2,10 +2,13 @@ package com.example.ecommerceservidorjava.fragment;
 
 import static android.widget.Toast.makeText;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,15 +49,18 @@ public class InicioFragment extends Fragment {
     private final List<OrdemServico> ordemServicoList = new ArrayList<>();
     BigDecimal receita = new BigDecimal("0");
     BigDecimal despesa = new BigDecimal("0");
-    List<TextView> mes = new ArrayList<>();
+    ArrayList<TextView> mes = new ArrayList<>();
     FragmentInicioBinding binding;
     String data;
     int produtosEstoqueBaixo = 0;
     int mesAtual = 0;
+    Handler mHandler = new Handler();
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Toast.makeText(getContext(), "onCreate() ", Toast.LENGTH_SHORT).show();
+        mes.clear();
         mes.add(binding.texthoje);
         mes.add(binding.textJaneiro);
         mes.add(binding.textFevereiro);
@@ -71,11 +77,23 @@ public class InicioFragment extends Fragment {
         data = String.valueOf(Timestamp.getUnixTimestamp());
         data = Timestamp.getFormatedDateTime(Long.parseLong(data), "dd/MM/yyyy");
         binding.textAno.setText(Timestamp.getFormatedDateTime(Timestamp.getUnixTimestamp(), "yyyy"));
+       mesAtual =Integer.parseInt (Timestamp.getFormatedDateTime(Timestamp.getUnixTimestamp(), "MM"));
+
         configClicks();
         produtosEmFalta();
-        recuperarVendasDia(data);
-        recuperarOrcamentoDia(data);
-        recuperarDespesaDia(data);
+       // recuperarVendasDia(data);
+        //recuperarOrcamentoDia(data);
+       // recuperarDespesaDia(data);
+        recuperarDespesaMes(mesAtual,Integer.parseInt(binding.textAno.getText().toString()));
+        recuperarOrcamentoMes(mesAtual,Integer.parseInt(binding.textAno.getText().toString()));
+        recuperarVendasMes(mesAtual,Integer.parseInt(binding.textAno.getText().toString()));
+        Toast.makeText(getContext(), String.valueOf(mes.size()), Toast.LENGTH_SHORT).show();
+        mes.get(mesAtual).setBackgroundResource(R.color.color_laranja);
+        mes.get(mesAtual).setTextColor(ContextCompat.getColor(getContext(), R.color.branco));
+
+
+
+
 
     }
 
@@ -85,10 +103,32 @@ public class InicioFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         binding = FragmentInicioBinding.inflate(inflater, container, false);
+        Toast.makeText(getContext(), "onCreateView", Toast.LENGTH_SHORT).show();
+
         return binding.getRoot();
+
+    }
+
+
+
+    public void focusOnView(final HorizontalScrollView scroll, final View view) {
+
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                int vLeft = view.getLeft();
+                int vRight = view.getRight();
+                int sWidth = scroll.getWidth();
+
+              //  scroll.smoothScrollTo(((vLeft + vRight - sWidth) / 2), 0); para centralizar
+                scroll.smoothScrollTo(vLeft , 0);
+            }
+        });
     }
 
     private void configClicks() {
+
+        Toast.makeText(getContext(), "clickmes", Toast.LENGTH_SHORT).show();
         for (int i = 0; i < mes.size(); i++) {
             clickMes(mes.get(i));
         }
@@ -113,6 +153,7 @@ public class InicioFragment extends Fragment {
     }
 
     private void clickMes(TextView textView) {
+
         textView.setOnClickListener(view -> {
             for (int i = 0; i < mes.size(); i++) {
                 if (mes.get(i).getText().toString().equals(textView.getText().toString())) {
@@ -713,6 +754,7 @@ public class InicioFragment extends Fragment {
 
     private void totalVendas() {
 
+
         BigDecimal total = new BigDecimal("0");
         for (int i = 0; i < vendaList.size(); i++) {
             BigDecimal preco = Util.convertMoneEmBigDecimal(vendaList.get(i).getTotal());
@@ -793,7 +835,7 @@ public class InicioFragment extends Fragment {
                 if (Integer.parseInt(produto.getQuantidadeMinima()) > Integer.parseInt(produto.getQuantidadeEtoque())){
                     produtos.add(produto);
                 }
-
+                focusOnView(binding.horizontalScrollView, mes.get(mesAtual));
                 binding.textProdutosBaixo.setText(String.valueOf(produtos.size()));
 
             }
@@ -837,6 +879,5 @@ public class InicioFragment extends Fragment {
         });
 
     }
-
 
 }
