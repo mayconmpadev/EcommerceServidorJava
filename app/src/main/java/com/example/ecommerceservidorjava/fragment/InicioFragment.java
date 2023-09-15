@@ -2,7 +2,6 @@ package com.example.ecommerceservidorjava.fragment;
 
 import static android.widget.Toast.makeText;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -59,7 +58,6 @@ public class InicioFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Toast.makeText(getContext(), "onCreate() ", Toast.LENGTH_SHORT).show();
         mes.clear();
         mes.add(binding.texthoje);
         mes.add(binding.textJaneiro);
@@ -81,13 +79,10 @@ public class InicioFragment extends Fragment {
 
         configClicks();
         produtosEmFalta();
-       // recuperarVendasDia(data);
-        //recuperarOrcamentoDia(data);
-       // recuperarDespesaDia(data);
         recuperarDespesaMes(mesAtual,Integer.parseInt(binding.textAno.getText().toString()));
         recuperarOrcamentoMes(mesAtual,Integer.parseInt(binding.textAno.getText().toString()));
         recuperarVendasMes(mesAtual,Integer.parseInt(binding.textAno.getText().toString()));
-        Toast.makeText(getContext(), String.valueOf(mes.size()), Toast.LENGTH_SHORT).show();
+        recuperarOrdemMes(mesAtual,Integer.parseInt(binding.textAno.getText().toString()));
         mes.get(mesAtual).setBackgroundResource(R.color.color_laranja);
         mes.get(mesAtual).setTextColor(ContextCompat.getColor(getContext(), R.color.branco));
 
@@ -103,7 +98,6 @@ public class InicioFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         binding = FragmentInicioBinding.inflate(inflater, container, false);
-        Toast.makeText(getContext(), "onCreateView", Toast.LENGTH_SHORT).show();
 
         return binding.getRoot();
 
@@ -128,7 +122,7 @@ public class InicioFragment extends Fragment {
 
     private void configClicks() {
 
-        Toast.makeText(getContext(), "clickmes", Toast.LENGTH_SHORT).show();
+
         for (int i = 0; i < mes.size(); i++) {
             clickMes(mes.get(i));
         }
@@ -140,6 +134,7 @@ public class InicioFragment extends Fragment {
             recuperarOrcamentoMes(mesAtual, Integer.parseInt(binding.textAno.getText().toString()));
             recuperarDespesaMes(mesAtual, Integer.parseInt(binding.textAno.getText().toString()));
             recuperarOrdemMes(mesAtual, Integer.parseInt(binding.textAno.getText().toString()));
+            recuperarQtdOrdemMes(mesAtual, Integer.parseInt(binding.textAno.getText().toString()));
         });
 
         binding.ibAnoAnterior.setOnClickListener(v -> {
@@ -149,6 +144,7 @@ public class InicioFragment extends Fragment {
             recuperarOrcamentoMes(mesAtual, Integer.parseInt(binding.textAno.getText().toString()));
             recuperarDespesaMes(mesAtual, Integer.parseInt(binding.textAno.getText().toString()));
             recuperarOrdemMes(mesAtual, Integer.parseInt(binding.textAno.getText().toString()));
+            recuperarQtdOrdemMes(mesAtual, Integer.parseInt(binding.textAno.getText().toString()));
         });
     }
 
@@ -165,12 +161,14 @@ public class InicioFragment extends Fragment {
                         recuperarOrcamentoMes(i, Integer.parseInt(binding.textAno.getText().toString()));
                         recuperarDespesaMes(i, Integer.parseInt(binding.textAno.getText().toString()));
                         recuperarOrdemMes(i, Integer.parseInt(binding.textAno.getText().toString()));
+                        recuperarQtdOrdemMes(i, Integer.parseInt(binding.textAno.getText().toString()));
 
                     } else {
                         recuperarVendasDia(data);
                         recuperarOrcamentoDia(data);
                         recuperarDespesaDia(data);
                         recuperarOrdemDia(data);
+                        recuperarQtdOrdemDia(data);
                     }
 
 
@@ -465,6 +463,147 @@ public class InicioFragment extends Fragment {
 
     }
 
+    private void recuperarOrdemMes(int mes, int ano) {
+        vendaList.clear();
+        SPM spm = new SPM(getContext());
+        Query produtoRef = FirebaseHelper.getDatabaseReference()
+                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                .child("ordens_servicos").orderByChild("dataEntrada").startAt(Timestamp.convertMesInicio(mes, ano)).endAt(Timestamp.convertMesFim(mes, ano));
+        produtoRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    binding.progressBar.setVisibility(View.GONE);
+                    totalVendas();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        produtoRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                OrdemServico ordemServico = snapshot.getValue(OrdemServico.class);
+                ordemServicoList.add(ordemServico);
+                totalVendas();
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                OrdemServico ordemServico = snapshot.getValue(OrdemServico.class);
+
+                for (int i = 0; i < ordemServicoList.size(); i++) {
+                    if (ordemServicoList.get(i).getId().equals(ordemServico.getId())) {
+                        ordemServicoList.set(i, ordemServico);
+                    }
+                }
+                totalVendas();
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                OrdemServico ordemServico = snapshot.getValue(OrdemServico.class);
+
+                for (int i = 0; i < ordemServicoList.size(); i++) {
+                    if (ordemServicoList.get(i).getId().equals(ordemServico.getId())) {
+                        ordemServicoList.remove(i);
+
+                    }
+                }
+                totalVendas();
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                makeText(getContext(), "onChildMoved", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                makeText(getContext(), "onCancelled", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void recuperarOrdemDia(String data) {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        vendaList.clear();
+        SPM spm = new SPM(getContext());
+        Query produtoRef = FirebaseHelper.getDatabaseReference()
+                .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
+                .child("ordens_servicos").orderByChild("dataEntrada").startAt(Timestamp.convertInicio(data)).endAt(Timestamp.convertFim(data));
+        produtoRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.textReceita.setText("R$ 0,00");
+                    totalVendas();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        produtoRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                OrdemServico ordemServico = snapshot.getValue(OrdemServico.class);
+                ordemServicoList.add(ordemServico);
+
+                totalVendas();
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                OrdemServico ordemServico = snapshot.getValue(OrdemServico.class);
+
+                for (int i = 0; i < ordemServicoList.size(); i++) {
+                    if (ordemServicoList.get(i).getId().equals(ordemServico.getId())) {
+                        ordemServicoList.set(i, ordemServico);
+                    }
+                }
+                totalVendas();
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                OrdemServico ordemServico = snapshot.getValue(OrdemServico.class);
+
+                for (int i = 0; i < ordemServicoList.size(); i++) {
+                    if (ordemServicoList.get(i).getId().equals(ordemServico.getId())) {
+                        ordemServicoList.remove(i);
+
+                    }
+                }
+                totalVendas();
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                makeText(getContext(), "onChildMoved", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                makeText(getContext(), "onCancelled", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+
     private void recuperarDespesaDia(String data) {
         binding.texthoje.setBackgroundResource(R.color.color_laranja);
         binding.texthoje.setTextColor(ContextCompat.getColor(getContext(), R.color.branco));
@@ -610,7 +749,7 @@ public class InicioFragment extends Fragment {
         });
     }
 
-    private void recuperarOrdemDia(String data) {
+    private void recuperarQtdOrdemDia(String data) {
         binding.texthoje.setBackgroundResource(R.color.color_laranja);
         binding.texthoje.setTextColor(ContextCompat.getColor(getContext(), R.color.branco));
         ordemServicoList.clear();
@@ -681,7 +820,7 @@ public class InicioFragment extends Fragment {
         });
     }
 
-    private void recuperarOrdemMes(int mes, int ano) {
+    private void recuperarQtdOrdemMes(int mes, int ano) {
         ordemServicoList.clear();
         SPM spm = new SPM(getContext());
         Query produtoRef = FirebaseHelper.getDatabaseReference()
@@ -755,17 +894,25 @@ public class InicioFragment extends Fragment {
     private void totalVendas() {
 
 
-        BigDecimal total = new BigDecimal("0");
+        BigDecimal totalVendas = new BigDecimal("0");
         for (int i = 0; i < vendaList.size(); i++) {
             BigDecimal preco = Util.convertMoneEmBigDecimal(vendaList.get(i).getTotal());
             preco = preco.divide(new BigDecimal("100"));
-            total = total.add(preco);
+            totalVendas = totalVendas.add(preco);
         }
-        receita = total;
+        BigDecimal totalOdens = new BigDecimal("0");
+        for (int i = 0; i < ordemServicoList.size(); i++) {
+            BigDecimal preco = Util.convertMoneEmBigDecimal(ordemServicoList.get(i).getTotal());
+            preco = preco.divide(new BigDecimal("100"));
+            totalOdens = totalOdens.add(preco);
+        }
+        receita = totalVendas.add(totalOdens);
         binding.textQtdVendas.setText(String.valueOf(vendaList.size()));
-        binding.textReceita.setText(NumberFormat.getCurrencyInstance().format(total));
+        binding.textReceita.setText(NumberFormat.getCurrencyInstance().format(receita));
         lucro();
     }
+
+
 
     private void totalOrcamentos() {
         int emAnalise = 0, aprovado = 0, recusado = 0;

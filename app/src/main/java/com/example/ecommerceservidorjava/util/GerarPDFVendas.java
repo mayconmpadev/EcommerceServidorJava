@@ -216,7 +216,7 @@ public class GerarPDFVendas extends AppCompatActivity {
 
         storageReference.getFile(myFile2).addOnSuccessListener(taskSnapshot -> {
 
-            Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile2);
+           // Uri uri = FileProvider.getUriForFile(GerarPDFVendas.this, getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile2);
             try {
                 createPdf(venda, perfilEmpresa);
             } catch (IOException e) {
