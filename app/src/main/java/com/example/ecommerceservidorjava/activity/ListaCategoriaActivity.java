@@ -159,7 +159,7 @@ public class ListaCategoriaActivity extends AppCompatActivity implements ListaCa
     private void configRvProdutos(List<Categoria> categoriaList) {
         binding.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         binding.recycler.setHasFixedSize(true);
-        listaCategoriaAdapter = new ListaCategoriaAdapter(R.layout.item_lista_usuario, categoriaList, getApplicationContext(), true, this, this);
+        listaCategoriaAdapter = new ListaCategoriaAdapter( categoriaList, getApplicationContext(), true, this, this);
         binding.recycler.setAdapter(listaCategoriaAdapter);
         binding.recycler.setListener(new SwipeLeftRightCallback.Listener() {
             @Override

@@ -37,17 +37,21 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
     ListaPecasAdapter produtoAdapter;
     private ArrayList<ItemVenda> itemVendaList;
     private SPM spm = new SPM(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityOrcarBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         recuperarIntent();
+        binding.include.include.ibVoltar.setOnClickListener(v -> {
+            finish();
+        });
         binding.floatingActionButton.setOnClickListener(v -> {
-            if (!binding.editDefeito.getText().toString().isEmpty()){
+            if (!binding.editDefeito.getText().toString().isEmpty()) {
                 ordemServico.setDefeitoEncontrado(binding.editDefeito.getText().toString());
             }
-            if (!binding.editValorServico.getText().toString().isEmpty()){
+            if (!binding.editValorServico.getText().toString().isEmpty()) {
                 ordemServico.setValorMaoDeObra(binding.editValorServico.getText().toString());
             }
             Intent intent = new Intent(getApplicationContext(), OrcarPecasActivity.class);
@@ -56,7 +60,7 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
         });
 
         binding.btnSalvar.setOnClickListener(v -> {
-           salvar();
+            salvar();
         });
 
         binding.editValorServico.addTextChangedListener(new TextWatcher() {
@@ -68,10 +72,10 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 BigDecimal total;
-                if (itemVendaList != null){
-                   total = Util.convertMoneEmBigDecimal(total());
-                }else{
-                   total = Util.convertMoneEmBigDecimal("R$0,00");
+                if (itemVendaList != null) {
+                    total = Util.convertMoneEmBigDecimal(total());
+                } else {
+                    total = Util.convertMoneEmBigDecimal("R$0,00");
                 }
 
                 total = total.divide(new BigDecimal("100"));
@@ -125,26 +129,30 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
         ordemServico = (OrdemServico) getIntent().getSerializableExtra("ordemServiçoSelecionada");
 
 
-        if (ordemServico != null){
+        if (ordemServico != null) {
+            binding.textNome.setText("");
+            binding.textEquipamento.setText("");
+            binding.textDefeito.setText("");
+            binding.textGarantia.setText("");
 
-            Util.textoNegrito(binding.textNome.getText() + "  *" + ordemServico.getIdCliente().getNome()+ "*",binding.textNome , null );
-            Util.textoNegrito(binding.textEquipamento.getText() + "  *" + ordemServico.getEquipamento()+ "*",binding.textEquipamento, null);
-            Util.textoNegrito(binding.textDefeito.getText() + "  *" + ordemServico.getDefeitoRelatado()+ "*",binding.textDefeito, null);
-            binding.editDefeito.setText( ordemServico.getDefeitoEncontrado());
-
-
-                binding.editValorServico.setText( ordemServico.getValorMaoDeObra());
-                if (binding.editValorServico.getText().toString().isEmpty()){
-                    binding.editValorServico.setText("0,00");
-                }
+            Util.textoNegrito(binding.textNome.getText() + "  *" + ordemServico.getIdCliente().getNome() + "*", binding.textNome, null);
+            Util.textoNegrito(binding.textEquipamento.getText() + "  *" + ordemServico.getEquipamento() + "*", binding.textEquipamento, null);
+            Util.textoNegrito(binding.textDefeito.getText() + "  *" + ordemServico.getDefeitoRelatado() + "*", binding.textDefeito, null);
+            binding.editDefeito.setText(ordemServico.getDefeitoEncontrado());
 
 
-            if (ordemServico.isGarantia()){
+            binding.editValorServico.setText(ordemServico.getValorMaoDeObra());
+            if (binding.editValorServico.getText().toString().isEmpty()) {
+                binding.editValorServico.setText("0,00");
+            }
 
-                Util.textoNegrito(binding.textGarantia.getText() + "  " + "*sim*",binding.textGarantia, null);
 
-            }else {
-                Util.textoNegrito(binding.textGarantia.getText() + "  " + "*não*",binding.textGarantia, null);
+            if (ordemServico.isGarantia()) {
+
+                Util.textoNegrito(binding.textGarantia.getText() + "  " + "*sim*", binding.textGarantia, null);
+
+            } else {
+                Util.textoNegrito(binding.textGarantia.getText() + "  " + "*não*", binding.textGarantia, null);
             }
 
             String sUnidade = ordemServico.getMaoDeObra();
@@ -168,7 +176,7 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
             total = total.add(preco);
             binding.textValorTotal.setText(NumberFormat.getCurrencyInstance().format(total));
 
-        }else if(ordemServico.getItens() != null){
+        } else if (ordemServico.getItens() != null) {
             itemVendaList = new ArrayList<>(ordemServico.getItens());
             configRvProdutos(itemVendaList);
             binding.textValorPecas.setText(total());
@@ -178,7 +186,9 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
             BigDecimal preco = Util.convertMoneEmBigDecimal(binding.editValorServico.getText().toString());
             preco = preco.divide(new BigDecimal("100"));
             total = total.add(preco);
-            binding.textValorTotal.setText(NumberFormat.getCurrencyInstance().format(total));
+
+        } else {
+            binding.textValorTotal.setText(ordemServico.getTotal());
         }
 
 
@@ -206,12 +216,14 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
     }
 
     @Override
-    public void onClick(ItemVenda usuario) {
-        Toast.makeText(this, usuario.getNome(), Toast.LENGTH_SHORT).show();
+    public void onClick(ItemVenda itemVenda) {
+        Toast.makeText(this, itemVenda.getNome(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onLongClick(ItemVenda usuario) {
+    public void onLongClick(ItemVenda itemVenda) {
         Toast.makeText(this, "onlongclick", Toast.LENGTH_SHORT).show();
+        itemVendaList.remove(itemVenda);
+        recuperarIntent();
     }
 }

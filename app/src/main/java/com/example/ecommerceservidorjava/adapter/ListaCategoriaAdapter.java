@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ListaCategoriaAdapter extends RecyclerView.Adapter<ListaCategoriaAdapter.MyViewHolder> {
 
-    private final int layout;
+
     private final List<Categoria> categoriaList;
     private final Context context;
     private final boolean favorito;
@@ -25,8 +25,8 @@ public class ListaCategoriaAdapter extends RecyclerView.Adapter<ListaCategoriaAd
     private final OnClickLister onClickLister;
     private final OnLongClickLister onLongClickLister;
 
-    public ListaCategoriaAdapter(int layout, List<Categoria> categoriaList, Context context, boolean favorito, OnClickLister onClickLister, OnLongClickLister onLongClickLister) {
-        this.layout = layout;
+    public ListaCategoriaAdapter(List<Categoria> categoriaList, Context context, boolean favorito, OnClickLister onClickLister, OnLongClickLister onLongClickLister) {
+
         this.categoriaList = categoriaList;
         this.context = context;
         this.favorito = favorito;
