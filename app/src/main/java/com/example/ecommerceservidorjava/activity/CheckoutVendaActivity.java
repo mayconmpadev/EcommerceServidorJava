@@ -358,7 +358,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
         for (int i = 0; i < itemVendaList.size(); i++) {
             BigDecimal preco = Util.convertMoneEmBigDecimal(itemVendaList.get(i).getPreco_venda());
             preco = preco.divide(new BigDecimal("100"));
-            bDesconto = preco.multiply(new BigDecimal(String.valueOf(desconto)).divide(new BigDecimal(100)));
+            bDesconto = preco.multiply(new BigDecimal(String.valueOf(binding.swDesconto.isChecked() ? desconto : 0)).divide(new BigDecimal(100)));
             preco = preco.subtract(bDesconto);
             itemVendaList.get(i).setPreco_venda(NumberFormat.getCurrencyInstance().format(preco));
         }
@@ -378,7 +378,7 @@ public class CheckoutVendaActivity extends AppCompatActivity {
             venda.setItens(itemVendaList);
             venda.setTipoPagamento(pagamento);
             venda.setStatus("Finalizada");
-            venda.setDesconto(String.valueOf(desconto));
+            venda.setDesconto(String.valueOf(binding.swDesconto.isChecked() ? desconto : 0));
             venda.setTotal(binding.includeSheet.tvTotalCart.getText().toString());
             venda.setSubTotal(binding.includeSheet.tvTotalCart.getText().toString());
             if (pagamento.equals("boleto")) {
