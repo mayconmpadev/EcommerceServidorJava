@@ -242,7 +242,7 @@ public class GerarPDFOrdenServico extends AppCompatActivity {
 
         File pdfFolder = new File(context.getExternalFilesDir(null)
                 + File.separator
-                + "ecommercempa/ordemServico"
+                + "ecommercempa/ordemServicos"
                 + File.separator);
         if (!pdfFolder.exists()) {
             pdfFolder.mkdirs();
@@ -424,10 +424,10 @@ public class GerarPDFOrdenServico extends AppCompatActivity {
         document.add(new Paragraph("\n", paragraphRodaPe2));
         document.add(lineSeparator);
 
-        PdfContentByte canvas = pdfWriter.getDirectContent();
-        canvas.moveTo(36, 36);
-        canvas.lineTo(559, 36);
-        canvas.stroke();
+      //  PdfContentByte canvas = pdfWriter.getDirectContent();
+      //  canvas.moveTo(36, 36);
+      //  canvas.lineTo(559, 36);
+      //  canvas.stroke();
 
 
 
@@ -436,7 +436,7 @@ public class GerarPDFOrdenServico extends AppCompatActivity {
         Paragraph ppp = new Paragraph("Condições de serviço:", paragraphFont4);
         Paragraph condicao = new Paragraph("1 - A Empresa da garantia de 90 dias para mão de obra e peças usadas no conserto, contados a partir da entrega\n" +
                 "2 – Os Aparelhos não retirados no prazo máximo de 30 dias contados a partir da comunicação de sua retirada sofrerão acréscimo das despesas de armazenamento e seguro.\n" +
-                "3 – O Aparelho só será entregue mediante a apresentação deste comprovante.\n", paragraphFont);
+                "3 – O Aparelho só será entregue mediante a apresentação deste comprovante.", paragraphFont);
 
         document.add(pp);
         document.add(problema);
@@ -458,7 +458,15 @@ public class GerarPDFOrdenServico extends AppCompatActivity {
        // rect3.setBorder(Rectangle.BOX);
        // rect3.setBorderWidth(1);
         //canvas3.rectangle(rect3);
+        document.add(new Paragraph("\n", paragraphRodaPe));
 
+        Paragraph rodape2 = new Paragraph(perfilEmpresa.getNome(), paragraphRodaPe);
+        rodape2.setAlignment(Element.ALIGN_CENTER);
+        document.add(rodape2);
+
+        Paragraph rodape3 = new Paragraph(configuracao.getRodape(), paragraphRodaPe);
+        rodape3.setAlignment(Element.ALIGN_CENTER);
+        document.add(rodape3);
 
         document.close();
         Parametro.bPdf = true;

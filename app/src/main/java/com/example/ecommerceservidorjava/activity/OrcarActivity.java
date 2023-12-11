@@ -135,9 +135,9 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
             binding.textDefeito.setText("");
             binding.textGarantia.setText("");
 
-            Util.textoNegrito(binding.textNome.getText() + "  *" + ordemServico.getIdCliente().getNome() + "*", binding.textNome, null);
-            Util.textoNegrito(binding.textEquipamento.getText() + "  *" + ordemServico.getEquipamento() + "*", binding.textEquipamento, null);
-            Util.textoNegrito(binding.textDefeito.getText() + "  *" + ordemServico.getDefeitoRelatado() + "*", binding.textDefeito, null);
+            Util.textoNegrito(binding.textNome.getText() + "nome:  *" + ordemServico.getIdCliente().getNome() + "*", binding.textNome, null);
+            Util.textoNegrito(binding.textEquipamento.getText() + "equipamento:  *" + ordemServico.getEquipamento() + "*", binding.textEquipamento, null);
+            Util.textoNegrito(binding.textDefeito.getText() + "defeito:  *" + ordemServico.getDefeitoRelatado() + "*", binding.textDefeito, null);
             binding.editDefeito.setText(ordemServico.getDefeitoEncontrado());
 
 
@@ -149,10 +149,10 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
 
             if (ordemServico.isGarantia()) {
 
-                Util.textoNegrito(binding.textGarantia.getText() + "  " + "*sim*", binding.textGarantia, null);
+                Util.textoNegrito(binding.textGarantia.getText() + "garantia:  " + "*sim*", binding.textGarantia, null);
 
             } else {
-                Util.textoNegrito(binding.textGarantia.getText() + "  " + "*não*", binding.textGarantia, null);
+                Util.textoNegrito(binding.textGarantia.getText() + "garantia:  " + "*não*", binding.textGarantia, null);
             }
 
             String sUnidade = ordemServico.getMaoDeObra();
@@ -166,6 +166,7 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
         }
 
         if (itemVendaList != null) {
+            Toast.makeText(this, "1", Toast.LENGTH_SHORT).show();
             configRvProdutos(itemVendaList);
             binding.textValorPecas.setText(total());
 
@@ -177,6 +178,7 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
             binding.textValorTotal.setText(NumberFormat.getCurrencyInstance().format(total));
 
         } else if (ordemServico.getItens() != null) {
+            Toast.makeText(this, "2", Toast.LENGTH_SHORT).show();
             itemVendaList = new ArrayList<>(ordemServico.getItens());
             configRvProdutos(itemVendaList);
             binding.textValorPecas.setText(total());
@@ -186,8 +188,10 @@ public class OrcarActivity extends AppCompatActivity implements ListaPecasAdapte
             BigDecimal preco = Util.convertMoneEmBigDecimal(binding.editValorServico.getText().toString());
             preco = preco.divide(new BigDecimal("100"));
             total = total.add(preco);
+            binding.textValorTotal.setText(NumberFormat.getCurrencyInstance().format(total));
 
         } else {
+            Toast.makeText(this, "3", Toast.LENGTH_SHORT).show();
             binding.textValorTotal.setText(ordemServico.getTotal());
         }
 

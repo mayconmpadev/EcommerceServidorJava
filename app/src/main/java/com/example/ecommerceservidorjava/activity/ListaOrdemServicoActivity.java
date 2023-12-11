@@ -42,7 +42,6 @@ import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusOrdemServi
 import com.example.ecommerceservidorjava.model.OrdemServico;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
-import com.example.ecommerceservidorjava.util.GerarPDFOSFinalizada;
 import com.example.ecommerceservidorjava.util.GerarPDFOrdenServico;
 import com.example.ecommerceservidorjava.util.PdfDocumentAdapter;
 import com.example.ecommerceservidorjava.util.PrintJobMonitorService;
@@ -58,7 +57,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class ListaOrdemServicoActivity extends AppCompatActivity implements ListaOrdemServicoAdapter.OnClickLister, ListaOrdemServicoAdapter.OnLongClickLister {
     ActivityListaOrdemServicoBinding binding;
@@ -69,6 +67,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
     private AlertDialog dialog;
     private OrdemServico ordemServico;
     private PrintManager mgr = null;
+    String a = "teste";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -418,7 +417,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
         File pdfFolder = new File(getExternalFilesDir(null)
                 + File.separator
-                + "ecommercempa/ordemServico"
+                + "ecommercempa/ordemServicos"
                 + File.separator);
         if (!pdfFolder.exists()) {
             pdfFolder.mkdirs();
@@ -434,7 +433,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
         }
         sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sendIntent.setType("application/pdf");
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "sample text you want to send along with the image");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, a);
         sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
         sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         sendIntent.putExtra("jid", PhoneNumberUtils.stripSeparators(telefone) + "@s.whatsapp.net");
@@ -449,7 +448,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
         try {
             File pdfFolder = new File(getExternalFilesDir(null)
                     + File.separator
-                    + "ecommercempa/ordemServico"
+                    + "ecommercempa/ordemServicos"
                     + File.separator);
             if (!pdfFolder.exists()) {
                 pdfFolder.mkdirs();
@@ -489,7 +488,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
         File pdfFolder = new File(getExternalFilesDir(null)
                 + File.separator
-                + "ecommercempa/ordemServico"
+                + "ecommercempa/ordemServicos"
                 + File.separator);
         if (!pdfFolder.exists()) {
             pdfFolder.mkdirs();
@@ -586,12 +585,14 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
         DialogOpcaoOrdemServicoBinding dialogBinding = DialogOpcaoOrdemServicoBinding
                 .inflate(LayoutInflater.from(this));
-
+        dialogBinding.llStatus.setVisibility(View.VISIBLE);
 
         if (ordemServico.getStatus().equals("Em analise")) {
-            dialogBinding.llStatus.setVisibility(View.GONE);
+        //    dialogBinding.llEntregue.setVisibility(View.GONE);
+           // dialogBinding.llEntregue.setVisibility(View.GONE);
+          //  dialogBinding.llStatus.setVisibility(View.VISIBLE);
         } else {
-            dialogBinding.llStatus.setVisibility(View.VISIBLE);
+           // dialogBinding.llEntregue.setVisibility(View.VISIBLE);
         }
 
         dialogBinding.llEnviar.setOnClickListener(view -> {
@@ -637,13 +638,11 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
 
         dialogBinding.llPdf.setOnClickListener(view -> {
             dialog.dismiss();
-            if (ordemServico.getStatus().equals("Em analise")) {
-                GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(ordemServico, this);
-                exibirPDF();
-            } else {
-                GerarPDFOSFinalizada gerarPDFOSFinalizada = new GerarPDFOSFinalizada(ordemServico, this);
-                exibirPDF();
-            }
+            Intent intent = new Intent(getApplicationContext(), AndroidPDFViewerVendas.class);
+            intent.putExtra("caminho", "ordemServicos");
+            intent.putExtra("arquivo", "ordemServico");
+            startActivity(intent);
+            dialog.dismiss();
 
 
         });
@@ -674,7 +673,17 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
         DialogOpcaoStatusOrdemServicoBinding dialogBinding = DialogOpcaoStatusOrdemServicoBinding
                 .inflate(LayoutInflater.from(this));
 
-
+if (ordemServico.getStatus().equals("Em analise")){
+    dialogBinding.llAnalise.setVisibility(View.GONE);
+    dialogBinding.llAprovado.setVisibility(View.GONE);
+    dialogBinding.llRecusado.setVisibility(View.GONE);
+    dialogBinding.llReparado.setVisibility(View.GONE);
+}else if (ordemServico.getStatus().equals("Orçada, esperando aprovação")){
+    dialogBinding.llOrcada.setVisibility(View.GONE);
+    dialogBinding.llReparado.setVisibility(View.GONE);
+    dialogBinding.llAnalise.setVisibility(View.GONE);
+    dialogBinding.llSemReparo.setVisibility(View.GONE);
+}
         dialogBinding.llAnalise.setOnClickListener(view -> {
             dialog.dismiss();
             alterarStatus(ordemServico, position, "Em analise");

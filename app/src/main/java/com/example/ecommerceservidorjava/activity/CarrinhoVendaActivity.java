@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -138,8 +139,14 @@ binding.include.include.ibVoltar.setOnClickListener(v -> {
                 .inflate(LayoutInflater.from(CarrinhoVendaActivity.this));
         precoBinding.editPreco.setText(itemVenda.getPreco_venda());
         precoBinding.dialogPadraoBtnDireita.setOnClickListener(v -> {
-            preco(position, itemVenda, precoBinding.editPreco.getText().toString());
-            dialog.dismiss();
+            if (Util.convertMoneEmBigDecimal(precoBinding.editPreco.getText().toString())
+                    .compareTo(Util.convertMoneEmBigDecimal(itemVenda.getPreco_venda()) ) > 0){
+                preco(position, itemVenda, precoBinding.editPreco.getText().toString());
+                dialog.dismiss();
+            }else {
+                Toast.makeText(this, "O valor não pode ser menor que o de origem", Toast.LENGTH_SHORT).show();
+            }
+
         });
 
         precoBinding.dialogPadraoBtnEsquerda.setOnClickListener(v -> {

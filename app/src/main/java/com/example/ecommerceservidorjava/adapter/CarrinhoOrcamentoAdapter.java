@@ -66,6 +66,7 @@ public class CarrinhoOrcamentoAdapter extends RecyclerView.Adapter<CarrinhoOrcam
         holder.binding.imageExcluir.setOnClickListener(v -> onClickLister.onClick(position, itemVenda, "excluir"));
         holder.binding.btnMais.setOnClickListener(v -> onClickLister.onClick(position, itemVenda, "mais"));
         holder.binding.btnMenos.setOnClickListener(v -> onClickLister.onClick(position, itemVenda, "menos"));
+        holder.binding.textPreco.setOnClickListener(v -> onClickLister.onClick(position, itemVenda, "preco"));
 
     }
 

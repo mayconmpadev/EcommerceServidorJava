@@ -87,9 +87,6 @@ public class InicioFragment extends Fragment {
         mes.get(mesAtual).setTextColor(ContextCompat.getColor(getContext(), R.color.branco));
 
 
-
-
-
     }
 
 
@@ -464,7 +461,7 @@ public class InicioFragment extends Fragment {
     }
 
     private void recuperarOrdemMes(int mes, int ano) {
-        vendaList.clear();
+        ordemServicoList.clear();
         SPM spm = new SPM(getContext());
         Query produtoRef = FirebaseHelper.getDatabaseReference()
                 .child("empresas").child(Base64Custom.codificarBase64(spm.getPreferencia("PREFERENCIAS", "CAMINHO", "")))
@@ -902,9 +899,12 @@ public class InicioFragment extends Fragment {
         }
         BigDecimal totalOdens = new BigDecimal("0");
         for (int i = 0; i < ordemServicoList.size(); i++) {
-            BigDecimal preco = Util.convertMoneEmBigDecimal(ordemServicoList.get(i).getTotal());
-            preco = preco.divide(new BigDecimal("100"));
-            totalOdens = totalOdens.add(preco);
+            if (ordemServicoList.get(i).isEntregue()){
+                BigDecimal preco = Util.convertMoneEmBigDecimal(ordemServicoList.get(i).getTotal());
+                preco = preco.divide(new BigDecimal("100"));
+                totalOdens = totalOdens.add(preco);
+            }
+
         }
         receita = totalVendas.add(totalOdens);
         binding.textQtdVendas.setText(String.valueOf(vendaList.size()));

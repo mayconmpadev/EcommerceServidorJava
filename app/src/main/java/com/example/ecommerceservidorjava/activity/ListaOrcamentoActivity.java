@@ -593,7 +593,11 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         });
 
         dialogBinding.llPdf.setOnClickListener(view -> {
-            exibirPDF();
+           // exibirPDF();
+            Intent intent = new Intent(getApplicationContext(), AndroidPDFViewerVendas.class);
+            intent.putExtra("caminho", "orcamentos");
+            intent.putExtra("arquivo", "orcamento");
+            startActivity(intent);
             dialog.dismiss();
 
         });

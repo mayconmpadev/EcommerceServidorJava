@@ -437,7 +437,7 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
                 startActivity(intent);
 
             });
-            try {
+          /* try {
 
 
                 createPdf(orcamento, perfilEmpresa);
@@ -448,7 +448,7 @@ public class CheckoutOrcamentoActivity extends AppCompatActivity {
             } catch (DocumentException e) {
                 Toast.makeText(this, " erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
-            }
+            }*/
         }else {
             Toast.makeText(getApplicationContext(), "Selecione um Cliente", Toast.LENGTH_SHORT).show();
         }

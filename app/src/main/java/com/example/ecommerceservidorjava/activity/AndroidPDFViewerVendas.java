@@ -11,11 +11,14 @@ import android.graphics.pdf.PdfRenderer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.example.ecommerceservidorjava.R;
+import com.example.ecommerceservidorjava.databinding.ActivityAndroidPdfviewerBinding;
+import com.example.ecommerceservidorjava.databinding.ActivityBoletoBinding;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,24 +30,36 @@ import java.io.InputStream;
  * and displays it in an {@link ImageView}.
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class AndroidPDFViewer extends AppCompatActivity {
-
+public class AndroidPDFViewerVendas extends AppCompatActivity {
+    ActivityAndroidPdfviewerBinding binding;
+    String caminho ;
+    String arquivo;
     private static final String FILE_NAME = "sample_cache.pdf";
     private PdfRenderer mPdfRenderer;
     private PdfRenderer.Page mPdfPage;
-    private SubsamplingScaleImageView mImageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_android_pdfviewer);
+        binding = ActivityAndroidPdfviewerBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        mImageView = findViewById(R.id.pdf_view_android);
+        recuperaraIntent();
         try {
-            openPdfWithAndroidSDK(mImageView, 0);
+            openPdfWithAndroidSDK(binding.pdfViewAndroid, 0);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        binding.fb.setOnClickListener(v -> {
+
+        });
+    }
+
+    public void recuperaraIntent() {
+        caminho = getIntent().getStringExtra("caminho");
+        arquivo = getIntent().getStringExtra("arquivo");
     }
 
     @Override
@@ -69,15 +84,15 @@ public class AndroidPDFViewer extends AppCompatActivity {
 
         File pdfFolder = new File(context.getExternalFilesDir(null)
                 + File.separator
-                + "ecommercempa/vendas"
+                + "ecommercempa/" + caminho
                 + File.separator);
         if (!pdfFolder.exists()) {
             pdfFolder.mkdirs();
         }
 
 
-        File myFile = new File(pdfFolder + File.separator + "venda" + ".pdf");
-       // File fileCopy = new File(getCacheDir(), FILE_NAME);
+        File myFile = new File(pdfFolder + File.separator + arquivo + ".pdf");
+        // File fileCopy = new File(getCacheDir(), FILE_NAME);
         //copyToLocalCache(fileCopy, R.raw.sample);
 
 
@@ -89,8 +104,8 @@ public class AndroidPDFViewer extends AppCompatActivity {
         mPdfPage = mPdfRenderer.openPage(pageNumber);
 
         // Create a new bitmap and render the page contents on to it
-        int height=2000;
-        int width=height * mPdfPage.getWidth() / mPdfPage.getHeight();
+        int height = 2000;
+        int width = height * mPdfPage.getWidth() / mPdfPage.getHeight();
         Bitmap bitmap = Bitmap.createBitmap(width, height,
 
                 Bitmap.Config.ARGB_8888);
@@ -100,7 +115,6 @@ public class AndroidPDFViewer extends AppCompatActivity {
         // Set the bitmap in the ImageView so we can view it
         imageView.setImage(ImageSource.cachedBitmap(bitmap));
     }
-
 
 
     /**

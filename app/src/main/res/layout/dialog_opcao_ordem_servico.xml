@@ -244,6 +244,7 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/img_entregue"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:scaleType="center"

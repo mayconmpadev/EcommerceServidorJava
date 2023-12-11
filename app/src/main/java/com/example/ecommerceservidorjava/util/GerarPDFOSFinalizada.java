@@ -242,7 +242,7 @@ public class GerarPDFOSFinalizada extends AppCompatActivity {
 
         File pdfFolder = new File(context.getExternalFilesDir(null)
                 + File.separator
-                + "ecommercempa/ordemServico"
+                + "ecommercempa/ordemServicos"
                 + File.separator);
         if (!pdfFolder.exists()) {
             pdfFolder.mkdirs();

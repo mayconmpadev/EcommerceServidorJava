@@ -44,7 +44,6 @@ import com.example.ecommerceservidorjava.databinding.DialogOpcaoOrcamentoBinding
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoPagamentoBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusBinding;
 import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusVendasBinding;
-import com.example.ecommerceservidorjava.model.Orcamento;
 import com.example.ecommerceservidorjava.model.PerfilEmpresa;
 import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.model.Venda;
@@ -66,7 +65,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class ListaVendaActivity extends AppCompatActivity implements ListaVendaAdapter.OnClickLister, ListaVendaAdapter.OnLongClickLister {
     ActivityListaVendaBinding binding;
@@ -651,7 +649,9 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
         dialogBinding.llPdf.setOnClickListener(view -> {
             // exibirPDF();
-            Intent intent = new Intent(getApplicationContext(), AndroidPDFViewer.class);
+            Intent intent = new Intent(getApplicationContext(), AndroidPDFViewerVendas.class);
+            intent.putExtra("caminho", "vendas");
+            intent.putExtra("arquivo", "venda");
             startActivity(intent);
             dialog.dismiss();
 

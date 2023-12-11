@@ -27,7 +27,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchView"
 
-        tools:listitem="@layout/item_lista_usuario">
+        tools:listitem="@layout/item_lista_ordem_servico">
 
     </androidx.recyclerview.widget.RecyclerView>
 
