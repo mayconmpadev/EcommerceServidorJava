@@ -637,7 +637,7 @@ public class ListaOrdemServicoActivity extends AppCompatActivity implements List
         });
 
         dialogBinding.llPdf.setOnClickListener(view -> {
-            dialog.dismiss();
+
             Intent intent = new Intent(getApplicationContext(), AndroidPDFViewerVendas.class);
             intent.putExtra("caminho", "ordemServicos");
             intent.putExtra("arquivo", "ordemServico");
@@ -783,9 +783,9 @@ if (ordemServico.getStatus().equals("Em analise")){
     @Override
     public void onClick(OrdemServico ordemServico, int position) {
         this.ordemServico = ordemServico;
-
+        Toast.makeText(this, ordemServico.getIdCliente().getNome(), Toast.LENGTH_SHORT).show();
         showDialog(ordemServico, position);
-        //GerarPDFVendas gerarPDFOrcamento = new GerarPDFVendas(this.ordemServico, this);
+        GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(this.ordemServico, this);
         // while (Parametro.bPdf){
         // Toast.makeText(getApplicationContext(), "teste", Toast.LENGTH_SHORT).show();
         // break;
@@ -802,6 +802,7 @@ if (ordemServico.getStatus().equals("Em analise")){
     }
 
     private void showDialogEnviar() {
+        GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(ordemServico, this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogOpcaoEnviarBinding dialogBinding = DialogOpcaoEnviarBinding
@@ -821,7 +822,7 @@ if (ordemServico.getStatus().equals("Em analise")){
         dialogBinding.llImprimir.setOnClickListener(view -> {
             //imprimir();
             print("Test PDF",
-                    new PdfDocumentAdapter(getApplicationContext(), "ordemServico", "ordemServico"),
+                    new PdfDocumentAdapter(getApplicationContext(), "ordemServicos", "ordemServico"),
                     new PrintAttributes.Builder().build());
             dialog.dismiss();
 
