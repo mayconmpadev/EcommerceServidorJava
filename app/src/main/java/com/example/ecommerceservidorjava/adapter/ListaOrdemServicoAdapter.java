@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -58,6 +59,7 @@ public class ListaOrdemServicoAdapter extends RecyclerView.Adapter<ListaOrdemSer
         holder.binding.textNome.setText(ordemServico.getEquipamento());
         holder.binding.textNumeroOs.setText(ordemServico.getNumeroOs());
         holder.binding.textTotal.setText(ordemServico.getTotal());
+        holder.binding.textStatus.setText(ordemServico.getStatus());
         if (ordemServico.isEntregue()){
             holder.binding.textEntregue.setVisibility(View.VISIBLE);
         }else {
@@ -65,14 +67,19 @@ public class ListaOrdemServicoAdapter extends RecyclerView.Adapter<ListaOrdemSer
         }
         if (ordemServico.getStatus().equals("Em analise")){
             holder.binding.viewStatus.setBackgroundResource(R.color.ouro);
+            holder.binding.textStatus.setTextColor(ContextCompat.getColor(context, R.color.ouro));
         }else if(ordemServico.getStatus().equals("Aprovado")){
             holder.binding.viewStatus.setBackgroundResource(R.color.color_verde);
+            holder.binding.textStatus.setTextColor(ContextCompat.getColor(context, R.color.color_verde));
         }else if(ordemServico.getStatus().equals("Reparado")){
             holder.binding.viewStatus.setBackgroundResource(R.color.blue);
+            holder.binding.textStatus.setTextColor(ContextCompat.getColor(context, R.color.blue));
         }else if(ordemServico.getStatus().equals("Orçada, esperando aprovação")) {
             holder.binding.viewStatus.setBackgroundResource(R.color.color_laranja);
+            holder.binding.textStatus.setTextColor(ContextCompat.getColor(context, R.color.color_laranja));
         }else {
             holder.binding.viewStatus.setBackgroundResource(R.color.red);
+            holder.binding.textStatus.setTextColor(ContextCompat.getColor(context, R.color.red));
         }
 
 

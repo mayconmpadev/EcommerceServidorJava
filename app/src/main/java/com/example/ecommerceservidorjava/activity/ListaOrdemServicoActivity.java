@@ -42,6 +42,7 @@ import com.example.ecommerceservidorjava.databinding.DialogOpcaoStatusOrdemServi
 import com.example.ecommerceservidorjava.model.OrdemServico;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
+import com.example.ecommerceservidorjava.util.GerarPDFOSFinalizada;
 import com.example.ecommerceservidorjava.util.GerarPDFOrdenServico;
 import com.example.ecommerceservidorjava.util.PdfDocumentAdapter;
 import com.example.ecommerceservidorjava.util.PrintJobMonitorService;
@@ -785,7 +786,12 @@ if (ordemServico.getStatus().equals("Em analise")){
         this.ordemServico = ordemServico;
         Toast.makeText(this, ordemServico.getIdCliente().getNome(), Toast.LENGTH_SHORT).show();
         showDialog(ordemServico, position);
-        GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(this.ordemServico, this);
+        if (ordemServico.getStatus().equals("Em analise")){
+            GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(this.ordemServico, this);
+        }else {
+            GerarPDFOSFinalizada gerarPDFOrcamento = new GerarPDFOSFinalizada(this.ordemServico, this);
+        }
+
         // while (Parametro.bPdf){
         // Toast.makeText(getApplicationContext(), "teste", Toast.LENGTH_SHORT).show();
         // break;
