@@ -8,6 +8,7 @@ import android.print.PrintManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -127,30 +128,31 @@ public class GeralFragment extends Fragment {
 
         binding.boletos.setOnClickListener(view -> {
 
-                // Get a PrintManager instance
-                PrintManager printManager = (PrintManager) getActivity()
-                        .getSystemService(Context.PRINT_SERVICE);
+            // Get a PrintManager instance
+            PrintManager printManager = (PrintManager) getActivity()
+                    .getSystemService(Context.PRINT_SERVICE);
 
-                // Set job name, which will be displayed in the print queue
-                String jobName = getActivity().getString(R.string.app_name) + " Document";
+            // Set job name, which will be displayed in the print queue
+            String jobName = getActivity().getString(R.string.app_name) + " Document";
 
-                // Start a print job, passing in a PrintDocumentAdapter implementation
-                // to handle the generation of a print document
-
-
+            // Start a print job, passing in a PrintDocumentAdapter implementation
+            // to handle the generation of a print document
 
 
         });
     }
 
     private void verificacaoCadastro() {
-
+        //a = false;
+        binding.cardOrcamento.setBackgroundTintList(getContext().getResources().getColorStateList(R.color.branco));
+        binding.cardPedidos.setBackgroundTintList(getContext().getResources().getColorStateList(R.color.branco));
+        binding.cardOrcamento.setEnabled(true);
+        binding.cardPedidos.setEnabled(true);
         List<String> caminhos = new ArrayList<>();
-        caminhos.add("" +
-                "");
+        caminhos.add("perfil_empresa");
         caminhos.add("produtos");
         caminhos.add("categorias");
-        caminhos.add("perfil_empresa");
+
 
         for (int i = 0; i < caminhos.size(); i++) {
 
@@ -162,12 +164,12 @@ public class GeralFragment extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (!snapshot.exists()) {
+
+                        a = true;
                         binding.cardOrcamento.setBackgroundTintList(getContext().getResources().getColorStateList(R.color.color_cinza));
                         binding.cardPedidos.setBackgroundTintList(getContext().getResources().getColorStateList(R.color.color_cinza));
                         binding.cardOrcamento.setEnabled(false);
                         binding.cardPedidos.setEnabled(false);
-                        a = true;
-
                     }
                 }
 
@@ -176,10 +178,18 @@ public class GeralFragment extends Fragment {
 
                 }
             });
-            if (a){
+            if (a) {
                 break;
             }
         }
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+
+        verificacaoCadastro();
     }
 }

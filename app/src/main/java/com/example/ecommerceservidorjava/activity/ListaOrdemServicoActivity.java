@@ -808,7 +808,7 @@ if (ordemServico.getStatus().equals("Em analise")){
     }
 
     private void showDialogEnviar() {
-        GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(ordemServico, this);
+       //01242 GerarPDFOrdenServico gerarPDFOrcamento = new GerarPDFOrdenServico(ordemServico, this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogOpcaoEnviarBinding dialogBinding = DialogOpcaoEnviarBinding

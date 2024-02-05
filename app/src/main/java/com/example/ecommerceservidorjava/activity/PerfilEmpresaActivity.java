@@ -119,7 +119,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                                 public void onLoadCleared(@Nullable Drawable placeholder) {
                                 }
                             });
-                   // Glide.with(getApplicationContext()).load(perfilEmpresa.getUrlImagem()).into(binding.imagemFoto);
+                    // Glide.with(getApplicationContext()).load(perfilEmpresa.getUrlImagem()).into(binding.imagemFoto);
                     binding.edtNome.setText(perfilEmpresa.getNome());
                     binding.edtEmail.setText(perfilEmpresa.getEmail());
                     binding.edtTelefone1.setText(perfilEmpresa.getTelefone1());
@@ -276,7 +276,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                         resource.compress(Bitmap.CompressFormat.JPEG, 70, bytes);
                         ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes.toByteArray());
-                         setLocalBitmapUri(resource);
+                        setLocalBitmapUri(resource);
 
                         try {
                             bytes.close();
@@ -295,7 +295,7 @@ public class PerfilEmpresaActivity extends AppCompatActivity {
                                     if (task1.isSuccessful()) {
                                         binding.imageFake.setVisibility(View.GONE);
                                         binding.imagemFoto.setImageURI(resultUri);
-
+                                        finish();
                                         Toast.makeText(getApplicationContext(), "Salvo com sucesso", Toast.LENGTH_SHORT).show();
                                     } else {
                                         storageReferencere.delete(); //apaga a imagem previamente salva no banco

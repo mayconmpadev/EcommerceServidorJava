@@ -74,9 +74,9 @@
                 android:inputType="textCapWords" />
 
             <LinearLayout
+                android:id="@+id/linearCamposNaoEditados"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/linearCamposNaoEditados"
                 android:orientation="vertical">
 
                 <TextView
@@ -95,9 +95,6 @@
                     android:inputType="textEmailAddress" />
 
 
-
-
-
             </LinearLayout>
 
             <TextView
@@ -113,6 +110,7 @@
                 android:layout_height="wrap_content"
                 android:hint="CPF/CNPJ"
                 android:inputType="numberDecimal"
+                android:nextFocusDown="@+id/edtTelefone1"
                 app:mask="___.___.___-__"
                 app:maskCharacter="_"
                 app:maskStyle="completable" />
@@ -142,6 +140,7 @@
                         android:layout_height="wrap_content"
                         android:hint="(21) 98888-7777"
                         android:inputType="numberDecimal"
+                        android:nextFocusDown="@id/edtTelefone2"
                         app:mask="(__) _____-____"
                         app:maskCharacter="_"
                         app:maskStyle="completable" />
@@ -175,7 +174,6 @@
             </LinearLayout>
 
 
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -196,6 +194,7 @@
                     android:layout_marginRight="16dp"
                     android:hint="00000-000"
                     android:inputType="numberDecimal"
+                    android:nextFocusDown="@id/edtNumero"
                     app:mask="_____-___"
                     app:maskCharacter="_"
                     app:maskStyle="completable" />
@@ -249,6 +248,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -260,9 +260,9 @@
                         style="@style/EditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="311"
 
-                        android:inputType="numberDecimal" />
+                        android:inputType="numberDecimal"
+                        android:nextFocusDown="@id/edtObservacao" />
                 </LinearLayout>
             </LinearLayout>
 
