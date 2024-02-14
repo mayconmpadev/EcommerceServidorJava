@@ -223,6 +223,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         binding.recycler.setHasFixedSize(true);
         vendaAdapter = new ListaVendaAdapter(R.layout.item_lista_usuario, vendaList, getApplicationContext(), true, this, this);
         binding.recycler.setAdapter(vendaAdapter);
+
     }
 
     private void recuperaVendas() {
@@ -239,8 +240,10 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
                     monitorarLista();
 
                 } else {
+                    monitorarLista();
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
+
                 }
             }
 
@@ -252,6 +255,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
     }
 
     private void monitorarLista() {
+
         vendaList.clear();
         SPM spm = new SPM(getApplicationContext());
         //String user = FirebaseHelper.getAuth().getCurrentUser().getUid();
@@ -264,11 +268,16 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
                 if (snapshot.exists()) {
                     Venda venda = snapshot.getValue(Venda.class);
+
                     vendaList.add(venda);
                     binding.progressBar2.setVisibility(View.GONE);
+                    binding.textVazio.setVisibility(View.GONE);
 
                     configRvProdutos(vendaList);
+
+
                 } else {
+                    Toast.makeText(getApplicationContext(), "else", Toast.LENGTH_SHORT).show();
                     binding.progressBar2.setVisibility(View.GONE);
                     binding.textVazio.setVisibility(View.VISIBLE);
                 }
@@ -276,6 +285,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Toast.makeText(getApplicationContext(), "onChildChanged", Toast.LENGTH_SHORT).show();
                 Venda venda = snapshot.getValue(Venda.class);
 
                 for (int i = 0; i < vendaList.size(); i++) {
@@ -305,7 +315,9 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
                         vendaList.remove(i);
                     }
                 }
-
+                if (vendaList.size() == 0) {
+                    binding.textVazio.setVisibility(View.VISIBLE);
+                }
                 vendaAdapter.notifyDataSetChanged();
                 if (!filtroList.isEmpty()) {
                     for (int i = 0; i < filtroList.size(); i++) {
@@ -316,6 +328,8 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
 
                     vendaAdapter.notifyDataSetChanged();
                 }
+
+
             }
 
             @Override
