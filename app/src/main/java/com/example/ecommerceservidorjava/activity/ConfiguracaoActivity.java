@@ -54,7 +54,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
                     configuracao = snapshot.getValue(Configuracao.class);
                     binding.edtDescontoDinheiro.setText(String.valueOf(configuracao.getDesconto_dinheiro()));
                     binding.edtDescontoDebito.setText(String.valueOf(configuracao.getDesconto_debito()));
-                    binding.edtAcrecimoBoleto.setText(String.valueOf(configuracao.getAcrecimo_boleto()));
+                    binding.edtAcrecimoBoleto.setText(String.valueOf(configuracao.getAcrecimo_boleto() * (-1)));
                     binding.edtParcelas.setText(String.valueOf(configuracao.getQtd_parcelas()));
                     binding.edtRodape.setText(configuracao.getRodape());
                     binding.edtLucro.setText(String.valueOf(configuracao.getLucro()));

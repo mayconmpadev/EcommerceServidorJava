@@ -111,6 +111,7 @@
                  <EditText
                      android:id="@+id/edtSenha"
                      android:layout_width="match_parent"
+                     android:editable="false"
                      android:layout_height="wrap_content"
                      android:layout_weight="1"
                      android:background="@drawable/bg_edit_off"
@@ -149,8 +150,9 @@
                      android:layout_height="wrap_content"
                      android:layout_weight="1"
                      android:background="@drawable/bg_edit_off"
-                     android:text="123456"
+                     android:enabled="false"
                      android:inputType="textPassword"
+                     android:text="123456"
                      android:textColor="@color/preto"
                      android:textColorHint="@color/color_cinza_escuro" />
 

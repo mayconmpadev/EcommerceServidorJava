@@ -15,6 +15,7 @@ import com.example.ecommerceservidorjava.model.Venda;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.SPM;
+import com.example.ecommerceservidorjava.util.Timestamp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -96,14 +97,18 @@ public class ReciboVendaActivity extends AppCompatActivity {
                     vendaSelecionada.getItens().get(i).getPreco_venda() + "\n";
 
         }
-        String divisao = "--------------------------------------------------------------------";
+        String divisao = "-----------------------------------------------------";
 
-        recibo = "*VENDA*" + "\n" +
-                "*" + perfilEmpresa.getNome() + "*" + "\n" +
-                "CNPJ: " + perfilEmpresa.getDocumento() + "\n" +
-                perfilEmpresa.getEndereco().getLogradouro() + "\n" +
-                perfilEmpresa.getEndereco().getBairro() + "\n" +
+        recibo = "*" + perfilEmpresa.getNome() + "*" + "\n" +
+                perfilEmpresa.getEndereco().getLogradouro() + ", " +
+                perfilEmpresa.getEndereco().getNumero() + ", " +
+                perfilEmpresa.getEndereco().getBairro() + ", " +
                 perfilEmpresa.getEndereco().getLocalidade() + "\n" +
+                "TELEFONE: " + perfilEmpresa.getTelefone1() + "\n" +
+                "CNPJ: " + perfilEmpresa.getDocumento() + "\n" +
+                "DATA: " + Timestamp.getFormatedDateTime(Long.parseLong(vendaSelecionada.getData()), "dd/MM/yy HH:mm") + "\n" + "\n" +
+                "             *CUPOM NÃO FISCAL* " + "\n" +
+
                 divisao + "\n" +
                 "Cliente: " + vendaSelecionada.getIdCliente().getNome() + "\n" +
                 "Telefone: " + vendaSelecionada.getIdCliente().getTelefone1() + "\n" +
@@ -111,7 +116,7 @@ public class ReciboVendaActivity extends AppCompatActivity {
                 produtos +
                 divisao + "\n" +
                 "Subtotal:   " + vendaSelecionada.getSubTotal() + "\n" +
-                "Desconto:   " + vendaSelecionada.getDesconto() + "%" + "\n" +
+              //  "Desconto:   " + vendaSelecionada.getDesconto() + "%" + "\n" +
                 "Total:   " + vendaSelecionada.getTotal() + "\n"
         ;
         binding.editRecibo.setText(recibo);

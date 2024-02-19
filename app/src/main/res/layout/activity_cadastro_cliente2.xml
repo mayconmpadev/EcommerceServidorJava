@@ -30,7 +30,6 @@
             android:paddingHorizontal="16dp">
 
 
-
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardFoto"
                 android:layout_width="180dp"
@@ -76,9 +75,9 @@
                 android:inputType="textCapWords" />
 
             <LinearLayout
+                android:id="@+id/linearCamposNaoEditados"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/linearCamposNaoEditados"
                 android:orientation="vertical">
 
                 <TextView
@@ -116,9 +115,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@drawable/bg_edit_off"
-
-                        android:text="123456"
+                        android:enabled="false"
                         android:inputType="textPassword"
+                        android:text="123456"
                         android:textColor="@color/preto"
                         android:textColorHint="@color/color_cinza_escuro" />
 
@@ -151,8 +150,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@drawable/bg_edit_off"
-                        android:text="123456"
+                        android:enabled="false"
                         android:inputType="textPassword"
+                        android:text="123456"
                         android:textColor="@color/preto"
                         android:textColorHint="@color/color_cinza_escuro" />
 
@@ -240,7 +240,6 @@
                         app:maskStyle="completable" />
                 </LinearLayout>
             </LinearLayout>
-
 
 
             <TextView

@@ -672,7 +672,7 @@ public class ListaVendaActivity extends AppCompatActivity implements ListaVendaA
         });
 
         dialogBinding.llRecibo.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), ReciboOrcamentoActivity.class);
+            Intent intent = new Intent(getApplicationContext(), ReciboVendaActivity.class);
             intent.putExtra("vendaSelecionado", venda);
             startActivity(intent);
             dialog.dismiss();

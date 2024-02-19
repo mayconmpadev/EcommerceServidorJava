@@ -78,13 +78,15 @@ public class CadastroCliente2Activity extends AppCompatActivity {
             binding.btnCriarConta.setText("Editar conta");
             editar = true;
             binding.linearCamposNaoEditados.setVisibility(View.GONE);
-            binding.edtSenha.setText("123456");
-            binding.edtConfirmaSenha.setText("123456");
+            binding.edtSenha.setText(clienteSelecionado.getSenha());
+            binding.edtConfirmaSenha.setText(clienteSelecionado.getSenha());
             binding.edtNome.setText(clienteSelecionado.getNome());
             binding.edtEmail.setText(clienteSelecionado.getEmail());
             binding.edtTelefone1.setText(clienteSelecionado.getTelefone1());
             binding.edtTelefone2.setText(clienteSelecionado.getTelefone2());
             binding.edtDocumento.setText(clienteSelecionado.getDocumento());
+            binding.edtSenha.setEnabled(true);
+            binding.edtConfirmaSenha.setEnabled(true);
             tipodocumento();
             binding.edtDocumento.setText(clienteSelecionado.getDocumento());
             binding.edtObservacao.setText(clienteSelecionado.getObservacao());
@@ -189,14 +191,13 @@ public class CadastroCliente2Activity extends AppCompatActivity {
                 .child(caminho)
                 .child("clientes").child(Base64Custom.codificarBase64(cliente.getTelefone1()));
 
-        produtoRef.addValueEventListener(new ValueEventListener() {
+        produtoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     Toast.makeText(CadastroCliente2Activity.this, "Esse telefone ja esta no cadastro de " + snapshot.getValue(Cliente.class).getNome(), Toast.LENGTH_SHORT).show();
                     binding.progressBar.setVisibility(View.GONE);
                 } else {
-                    Toast.makeText(CadastroCliente2Activity.this, "nao existe", Toast.LENGTH_SHORT).show();
                     salvarDadosImagem(cliente);
                 }
             }
@@ -253,6 +254,8 @@ public class CadastroCliente2Activity extends AppCompatActivity {
                                     if (task1.isSuccessful()) {
                                         binding.imageFake.setVisibility(View.GONE);
                                         binding.imagemFoto.setImageURI(resultUri);
+                                        Toast.makeText(CadastroCliente2Activity.this, "Salvo com sucesso! " , Toast.LENGTH_SHORT).show();
+
                                         finish();
                                     } else {
                                         storageReferencere.delete(); //apaga a imagem previamente salva no banco
