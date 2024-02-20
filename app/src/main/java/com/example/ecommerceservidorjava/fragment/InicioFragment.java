@@ -898,7 +898,7 @@ public class InicioFragment extends Fragment {
 
     private void totalVendas() {
 
-
+//teste
         BigDecimal totalVendas = new BigDecimal("0");
         for (int i = 0; i < vendaList.size(); i++) {
             BigDecimal preco = Util.convertMoneEmBigDecimal(vendaList.get(i).getTotal());
