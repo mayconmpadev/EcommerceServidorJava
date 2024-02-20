@@ -193,6 +193,7 @@ public class InicioFragment extends Fragment {
                     binding.progressBar.setVisibility(View.GONE);
                     binding.textReceita.setText("R$ 0,00");
                     totalVendas();
+                    totalProdutos();
                 }
             }
 
@@ -210,6 +211,7 @@ public class InicioFragment extends Fragment {
                 vendaList.add(venda);
 
                 totalVendas();
+                totalProdutos();
             }
 
             @Override
@@ -222,6 +224,7 @@ public class InicioFragment extends Fragment {
                     }
                 }
                 totalVendas();
+                totalProdutos();
             }
 
             @Override
@@ -235,6 +238,7 @@ public class InicioFragment extends Fragment {
                     }
                 }
                 totalVendas();
+                totalProdutos();
             }
 
             @Override
@@ -262,6 +266,7 @@ public class InicioFragment extends Fragment {
                 if (!snapshot.exists()) {
                     binding.progressBar.setVisibility(View.GONE);
                   totalVendas();
+                    totalProdutos();
                 }
             }
 
@@ -277,6 +282,7 @@ public class InicioFragment extends Fragment {
                 Venda venda = snapshot.getValue(Venda.class);
                 vendaList.add(venda);
                 totalVendas();
+                totalProdutos();
             }
 
             @Override
@@ -289,6 +295,7 @@ public class InicioFragment extends Fragment {
                     }
                 }
                 totalVendas();
+                totalProdutos();
 
             }
 
@@ -303,6 +310,7 @@ public class InicioFragment extends Fragment {
                     }
                 }
                 totalVendas();
+                totalProdutos();
 
             }
 
@@ -910,6 +918,30 @@ public class InicioFragment extends Fragment {
         binding.textQtdVendas.setText(String.valueOf(vendaList.size()));
         binding.textReceita.setText(NumberFormat.getCurrencyInstance().format(receita));
         lucro();
+    }
+
+    private void totalProdutos() {
+
+
+        BigDecimal totalLucro = new BigDecimal("0");
+        for (int i = 0; i < vendaList.size(); i++) {
+            for (int j = 0; j < vendaList.get(i).getItens().size(); j++) {
+                BigDecimal lucro = new BigDecimal("0");
+                BigDecimal precoVenda = Util.convertMoneEmBigDecimal(vendaList.get(i).getItens().get(j).getPreco_venda());
+                BigDecimal precoCusto = Util.convertMoneEmBigDecimal(vendaList.get(i).getItens().get(j).getPreco_custo());
+                lucro = precoVenda.subtract(precoCusto);
+               lucro = lucro.multiply(new BigDecimal(vendaList.get(i).getItens().get(j).getQtd()));
+                lucro = lucro.divide(new BigDecimal("100"));
+                totalLucro = totalLucro.add(lucro);
+
+            }
+
+        }
+
+        Toast.makeText(getContext(), String.valueOf(totalLucro), Toast.LENGTH_SHORT).show();
+
+
+
     }
 
 
