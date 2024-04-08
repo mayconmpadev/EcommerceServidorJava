@@ -75,14 +75,14 @@ public class InicioFragment extends Fragment {
         data = String.valueOf(Timestamp.getUnixTimestamp());
         data = Timestamp.getFormatedDateTime(Long.parseLong(data), "dd/MM/yyyy");
         binding.textAno.setText(Timestamp.getFormatedDateTime(Timestamp.getUnixTimestamp(), "yyyy"));
-       mesAtual =Integer.parseInt (Timestamp.getFormatedDateTime(Timestamp.getUnixTimestamp(), "MM"));
+        mesAtual = Integer.parseInt(Timestamp.getFormatedDateTime(Timestamp.getUnixTimestamp(), "MM"));
 
         configClicks();
         produtosEmFalta();
-        recuperarDespesaMes(mesAtual,Integer.parseInt(binding.textAno.getText().toString()));
-        recuperarOrcamentoMes(mesAtual,Integer.parseInt(binding.textAno.getText().toString()));
-        recuperarVendasMes(mesAtual,Integer.parseInt(binding.textAno.getText().toString()));
-        recuperarOrdemMes(mesAtual,Integer.parseInt(binding.textAno.getText().toString()));
+        recuperarDespesaMes(mesAtual, Integer.parseInt(binding.textAno.getText().toString()));
+        recuperarOrcamentoMes(mesAtual, Integer.parseInt(binding.textAno.getText().toString()));
+        recuperarVendasMes(mesAtual, Integer.parseInt(binding.textAno.getText().toString()));
+        recuperarOrdemMes(mesAtual, Integer.parseInt(binding.textAno.getText().toString()));
         mes.get(mesAtual).setBackgroundResource(R.color.color_laranja);
         mes.get(mesAtual).setTextColor(ContextCompat.getColor(getContext(), R.color.branco));
 
@@ -101,7 +101,6 @@ public class InicioFragment extends Fragment {
     }
 
 
-
     public void focusOnView(final HorizontalScrollView scroll, final View view) {
 
         mHandler.post(new Runnable() {
@@ -111,8 +110,8 @@ public class InicioFragment extends Fragment {
                 int vRight = view.getRight();
                 int sWidth = scroll.getWidth();
 
-              //  scroll.smoothScrollTo(((vLeft + vRight - sWidth) / 2), 0); para centralizar
-                scroll.smoothScrollTo(vLeft , 0);
+                //  scroll.smoothScrollTo(((vLeft + vRight - sWidth) / 2), 0); para centralizar
+                scroll.smoothScrollTo(vLeft, 0);
             }
         });
     }
@@ -265,7 +264,7 @@ public class InicioFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
                     binding.progressBar.setVisibility(View.GONE);
-                  totalVendas();
+                    totalVendas();
                     totalProdutos();
                 }
             }
@@ -707,7 +706,7 @@ public class InicioFragment extends Fragment {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
                 Despesa despesa = snapshot.getValue(Despesa.class);
-                if (snapshot.exists()){
+                if (snapshot.exists()) {
                     for (int i = 0; i < despesa.getParcelas().size(); i++) {
                         if (Timestamp.getFormatedDateTime(Long.parseLong(despesa.getParcelas().get(i).getData()), "MMyyyy").equals(String.format("%02d", mes) + ano)) {
                             despesaList.add(despesa);
@@ -907,7 +906,7 @@ public class InicioFragment extends Fragment {
         }
         BigDecimal totalOdens = new BigDecimal("0");
         for (int i = 0; i < ordemServicoList.size(); i++) {
-            if (ordemServicoList.get(i).isEntregue()){
+            if (ordemServicoList.get(i).isEntregue()) {
                 BigDecimal preco = Util.convertMoneEmBigDecimal(ordemServicoList.get(i).getTotal());
                 preco = preco.divide(new BigDecimal("100"));
                 totalOdens = totalOdens.add(preco);
@@ -930,7 +929,7 @@ public class InicioFragment extends Fragment {
                 BigDecimal precoVenda = Util.convertMoneEmBigDecimal(vendaList.get(i).getItens().get(j).getPreco_venda());
                 BigDecimal precoCusto = Util.convertMoneEmBigDecimal(vendaList.get(i).getItens().get(j).getPreco_custo());
                 lucro = precoVenda.subtract(precoCusto);
-               lucro = lucro.multiply(new BigDecimal(vendaList.get(i).getItens().get(j).getQtd()));
+                lucro = lucro.multiply(new BigDecimal(vendaList.get(i).getItens().get(j).getQtd()));
                 lucro = lucro.divide(new BigDecimal("100"));
                 totalLucro = totalLucro.add(lucro);
 
@@ -939,11 +938,10 @@ public class InicioFragment extends Fragment {
         }
 
         Toast.makeText(getContext(), String.valueOf(totalLucro), Toast.LENGTH_SHORT).show();
-
+        binding.textLucro.setText(String.valueOf(totalLucro));
 
 
     }
-
 
 
     private void totalOrcamentos() {
@@ -981,7 +979,7 @@ public class InicioFragment extends Fragment {
     private void lucro() {
         BigDecimal lucro;
         lucro = receita.subtract(despesa);
-        binding.textLucro.setText(NumberFormat.getCurrencyInstance().format(lucro));
+        binding.textBalanco.setText(NumberFormat.getCurrencyInstance().format(lucro));
     }
 
     private void produtosEmFalta() {
@@ -997,7 +995,7 @@ public class InicioFragment extends Fragment {
                 if (!snapshot.exists()) {
                     binding.progressBar.setVisibility(View.GONE);
                     binding.textReceita.setText("R$ 0,00");
-                    
+
                 }
             }
 
@@ -1011,7 +1009,7 @@ public class InicioFragment extends Fragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Produto produto = snapshot.getValue(Produto.class);
-                if (Integer.parseInt(produto.getQuantidadeMinima()) > Integer.parseInt(produto.getQuantidadeEtoque())){
+                if (Integer.parseInt(produto.getQuantidadeMinima()) > Integer.parseInt(produto.getQuantidadeEtoque())) {
                     produtos.add(produto);
                 }
                 focusOnView(binding.horizontalScrollView, mes.get(mesAtual));
@@ -1023,12 +1021,10 @@ public class InicioFragment extends Fragment {
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Produto produto = snapshot.getValue(Produto.class);
                 for (int i = 0; i < produtos.size(); i++) {
-                    if (Integer.parseInt(produtos.get(i).getQuantidadeMinima()) >= Integer.parseInt(produtos.get(i).getQuantidadeEtoque())){
+                    if (Integer.parseInt(produtos.get(i).getQuantidadeMinima()) >= Integer.parseInt(produtos.get(i).getQuantidadeEtoque())) {
                         produtosEstoqueBaixo++;
                     }
                 }
-
-
 
 
             }

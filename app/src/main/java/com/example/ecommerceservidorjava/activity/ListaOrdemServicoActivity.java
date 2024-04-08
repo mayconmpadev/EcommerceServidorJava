@@ -690,10 +690,14 @@ if (ordemServico.getStatus().equals("Em analise")){
             alterarStatus(ordemServico, position, "Em analise");
         });
 
-        dialogBinding.llAnalise.setOnClickListener(view -> {
+
+
+        dialogBinding.llEntregueSemAnalise.setOnClickListener(view -> {
             dialog.dismiss();
-            alterarStatus(ordemServico, position, "Em analise");
+            alterarStatus(ordemServico, position, "Entregue sem analise");
+            entregue(ordemServico,position, true);
         });
+
 
         dialogBinding.llAprovado.setOnClickListener(view -> {
             dialog.dismiss();

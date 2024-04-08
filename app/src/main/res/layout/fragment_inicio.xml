@@ -233,6 +233,57 @@
                 </TextView>
 
                 <TextView
+                    android:id="@+id/textBalanco"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="R$ 0,00"
+                    android:textColor="@color/grey_80"
+                    android:textSize="24sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="no mês de abril"
+                    android:textColor="@color/grey_80"
+                    android:textSize="14sp">
+
+                </TextView>
+            </LinearLayout>
+
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+
+            app:cardCornerRadius="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/borda"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="$ LUCRO"
+                    android:textColor="@color/grey_80"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <TextView
                     android:id="@+id/textLucro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
