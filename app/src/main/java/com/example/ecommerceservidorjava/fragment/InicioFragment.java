@@ -479,6 +479,8 @@ public class InicioFragment extends Fragment {
                 if (!snapshot.exists()) {
                     binding.progressBar.setVisibility(View.GONE);
                     totalVendas();
+                }else {
+                    binding.progressBar.setVisibility(View.GONE);
                 }
             }
 
@@ -937,8 +939,8 @@ public class InicioFragment extends Fragment {
 
         }
 
-        Toast.makeText(getContext(), String.valueOf(totalLucro), Toast.LENGTH_SHORT).show();
-        binding.textLucro.setText(String.valueOf(totalLucro));
+        //Toast.makeText(getContext(), String.valueOf(totalLucro), Toast.LENGTH_SHORT).show();
+        binding.textLucro.setText(NumberFormat.getCurrencyInstance().format(totalLucro));
 
 
     }
