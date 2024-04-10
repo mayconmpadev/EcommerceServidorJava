@@ -479,6 +479,7 @@ public class InicioFragment extends Fragment {
                 if (!snapshot.exists()) {
                     binding.progressBar.setVisibility(View.GONE);
                     totalVendas();
+                    totalProdutos();
                 }else {
                     binding.progressBar.setVisibility(View.GONE);
                 }
@@ -496,6 +497,7 @@ public class InicioFragment extends Fragment {
                 OrdemServico ordemServico = snapshot.getValue(OrdemServico.class);
                 ordemServicoList.add(ordemServico);
                 totalVendas();
+                totalProdutos();
             }
 
             @Override
@@ -508,6 +510,7 @@ public class InicioFragment extends Fragment {
                     }
                 }
                 totalVendas();
+                totalProdutos();
 
             }
 
@@ -522,6 +525,7 @@ public class InicioFragment extends Fragment {
                     }
                 }
                 totalVendas();
+                totalProdutos();
 
             }
 
@@ -924,7 +928,7 @@ public class InicioFragment extends Fragment {
     private void totalProdutos() {
 
 
-        BigDecimal totalLucro = new BigDecimal("0");
+        BigDecimal totalLucroVendas = new BigDecimal("0");
         for (int i = 0; i < vendaList.size(); i++) {
             for (int j = 0; j < vendaList.get(i).getItens().size(); j++) {
                 BigDecimal lucro = new BigDecimal("0");
@@ -933,14 +937,33 @@ public class InicioFragment extends Fragment {
                 lucro = precoVenda.subtract(precoCusto);
                 lucro = lucro.multiply(new BigDecimal(vendaList.get(i).getItens().get(j).getQtd()));
                 lucro = lucro.divide(new BigDecimal("100"));
-                totalLucro = totalLucro.add(lucro);
+                totalLucroVendas = totalLucroVendas.add(lucro);
 
             }
 
         }
 
-        //Toast.makeText(getContext(), String.valueOf(totalLucro), Toast.LENGTH_SHORT).show();
-        binding.textLucro.setText(NumberFormat.getCurrencyInstance().format(totalLucro));
+        BigDecimal totalLucroOs = new BigDecimal("0");
+        for (int i = 0; i < ordemServicoList.size(); i++) {
+            BigDecimal maoDeObra = Util.convertMoneEmBigDecimal(ordemServicoList.get(i).getValorMaoDeObra());
+            for (int j = 0; j < ordemServicoList.get(i).getItens().size(); j++) {
+                BigDecimal lucro = new BigDecimal("0");
+                BigDecimal precoVenda = Util.convertMoneEmBigDecimal(ordemServicoList.get(i).getItens().get(j).getPreco_venda());
+                BigDecimal precoCusto = Util.convertMoneEmBigDecimal(ordemServicoList.get(i).getItens().get(j).getPreco_custo());
+
+                lucro = precoVenda.subtract(precoCusto);
+                lucro = lucro.multiply(new BigDecimal(ordemServicoList.get(i).getItens().get(j).getQtd()));
+                lucro = lucro.add(maoDeObra);
+                lucro = lucro.divide(new BigDecimal("100"));
+                totalLucroOs = totalLucroOs.add(lucro);
+
+            }
+
+        }
+        totalLucroVendas = totalLucroVendas.add(totalLucroOs);
+
+        Toast.makeText(getContext(), String.valueOf(ordemServicoList.size()), Toast.LENGTH_SHORT).show();
+        binding.textLucro.setText(NumberFormat.getCurrencyInstance().format(totalLucroVendas));
 
 
     }

@@ -50,6 +50,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -560,6 +562,14 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
     private void enviarPDFWhatsapp(Bitmap bitmap ,Produto produto) {
         binding.progressBar2.setVisibility(View.VISIBLE);
 
+        BigDecimal divisor = new BigDecimal("100");
+        BigDecimal a = Util.convertMoneEmBigDecimal(produto.getPrecoVenda());
+        BigDecimal b = Util.convertMoneEmBigDecimal(produto.getDesconto());
+        a = a.divide(divisor);
+        BigDecimal c = a.multiply(b.divide(new BigDecimal("100")));
+        c = c.add(a);
+        String precoSemDesconto = NumberFormat.getCurrencyInstance().format(c);
+
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
@@ -576,12 +586,15 @@ public class ListaProdutoActivity extends AppCompatActivity implements ListaProd
         }
         sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sendIntent.setType("image/*");
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "*" + produto.getNome() +"*" + "\n" +produto.getPrecoVenda());
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "⚡ *PROMOÇÃO* ⚡"+ "\n" + " *" + produto.getNome() +"*" + "\n" + " de " + "~"+ precoSemDesconto + "~"+ "\n" +
+                 " por " + produto.getPrecoVenda());
         sendIntent.putExtra(Intent.EXTRA_STREAM, imagem);
         sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(sendIntent);
         binding.progressBar2.setVisibility(View.GONE);
     }
+
+
 
     private boolean isAppInstalled(String packageName) {
         try {

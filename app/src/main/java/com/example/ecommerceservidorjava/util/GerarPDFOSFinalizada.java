@@ -573,15 +573,18 @@ public class GerarPDFOSFinalizada extends AppCompatActivity {
         (c1).setBackgroundColor(BaseColor.BLACK);
         table.addCell(c1);
         table.setHeaderRows(1);
+        if (ordemServico.getItens() != null){
+            for (int i = 0; i < ordemServico.getItens().size(); i++) {
 
-        for (int i = 0; i < ordemServico.getItens().size(); i++) {
-
-            table.addCell(new PdfPCell(new Phrase(ordemServico.getItens().get(i).getCodigo(), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(ordemServico.getItens().get(i).getNome(), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(String.valueOf(ordemServico.getItens().get(i).getQtd()), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(ordemServico.getItens().get(i).getPreco_venda(), paragraphFont2)));
-            table.addCell(new PdfPCell(new Phrase(NumberFormat.getCurrencyInstance().format(somatoriaDosProdutosIguais(ordemServico.getItens().get(i).getPreco_venda(), String.valueOf(ordemServico.getItens().get(i).getQtd()))), paragraphFont2)));
+                table.addCell(new PdfPCell(new Phrase(ordemServico.getItens().get(i).getCodigo(), paragraphFont2)));
+                table.addCell(new PdfPCell(new Phrase(ordemServico.getItens().get(i).getNome(), paragraphFont2)));
+                table.addCell(new PdfPCell(new Phrase(String.valueOf(ordemServico.getItens().get(i).getQtd()), paragraphFont2)));
+                table.addCell(new PdfPCell(new Phrase(ordemServico.getItens().get(i).getPreco_venda(), paragraphFont2)));
+                table.addCell(new PdfPCell(new Phrase(NumberFormat.getCurrencyInstance().format(somatoriaDosProdutosIguais(ordemServico.getItens().get(i).getPreco_venda(), String.valueOf(ordemServico.getItens().get(i).getQtd()))), paragraphFont2)));
+            }
         }
+
+
 
         document.add(table);
 
