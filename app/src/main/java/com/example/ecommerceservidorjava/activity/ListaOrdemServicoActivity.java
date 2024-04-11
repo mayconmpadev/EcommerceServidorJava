@@ -60,6 +60,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListaOrdemServicoActivity extends AppCompatActivity implements ListaOrdemServicoAdapter.OnClickLister, ListaOrdemServicoAdapter.OnLongClickLister {
+
     ActivityListaOrdemServicoBinding binding;
     ListaOrdemServicoAdapter ordemServicoAdapter;
     private final List<OrdemServico> ordemServicoList = new ArrayList<>();

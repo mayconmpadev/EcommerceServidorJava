@@ -46,6 +46,7 @@ import com.example.ecommerceservidorjava.model.Produto;
 import com.example.ecommerceservidorjava.util.Base64Custom;
 import com.example.ecommerceservidorjava.util.FirebaseHelper;
 import com.example.ecommerceservidorjava.util.GerarPDFOrcamento;
+import com.example.ecommerceservidorjava.util.GerarPDFVendas;
 import com.example.ecommerceservidorjava.util.PdfDocumentAdapter;
 import com.example.ecommerceservidorjava.util.PrintJobMonitorService;
 import com.example.ecommerceservidorjava.util.SPM;
@@ -405,7 +406,8 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
         String telefone = "55" + orcamento.getIdCliente().getTelefone1().replaceAll("\\D", "");
         Intent sendIntent = new Intent("android.intent.action.SEND");
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", myFile);
-        if (isAppInstalled("com.whatsapp")) {
+        boolean tipowhts = isAppInstalled("com.whatsapp");
+        if (tipowhts) {
             sendIntent.setPackage("com.whatsapp");
         } else {
             sendIntent.setPackage("com.whatsapp.w4b");
@@ -646,6 +648,7 @@ public class ListaOrcamentoActivity extends AppCompatActivity implements ListaOr
     }
 
     private void showDialogEnviar() {
+        GerarPDFOrcamento gerarPDFOrcamento = new GerarPDFOrcamento(orcamento, this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         DialogOpcaoEnviarBinding dialogBinding = DialogOpcaoEnviarBinding

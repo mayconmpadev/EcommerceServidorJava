@@ -961,8 +961,7 @@ public class InicioFragment extends Fragment {
 
         }
         totalLucroVendas = totalLucroVendas.add(totalLucroOs);
-
-        Toast.makeText(getContext(), String.valueOf(ordemServicoList.size()), Toast.LENGTH_SHORT).show();
+        
         binding.textLucro.setText(NumberFormat.getCurrencyInstance().format(totalLucroVendas));
 
 
